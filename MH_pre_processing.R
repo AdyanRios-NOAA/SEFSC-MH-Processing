@@ -65,7 +65,7 @@ mh_preprocess <- mh_preprocess %>%
 # FIND SECTOR FORKS
 
 #SAFE FOR PIVOT TABLE TESTS IN EXCEL
-write.csv(mh_preprocess, paste0("./cleaning and preprocessing/MHpreprocess_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
+write.csv(mh_preprocess, paste0("./MHpreprocess_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
 
 multi_subsector <- mh_preprocess %>%
   filter(GENERAL == 0) %>%
@@ -103,6 +103,6 @@ expand_mh <- function(datin, i) {
 }
 
 # READ IN AND RUN EXPANSIONS ####
-expansions <- read.csv("./cleaning and preprocessing/MHpreprocess_expansions.csv", stringsAsFactors = FALSE,
+expansions <- read.csv("./MHpreprocess_expansions.csv", stringsAsFactors = FALSE,
                        fileEncoding = "latin1")
 mh_ready <- Reduce(expand_mh, 1:length(expansions$column_name), init = mh_preprocess, accumulate = FALSE)
