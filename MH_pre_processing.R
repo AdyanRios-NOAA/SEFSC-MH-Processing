@@ -4,6 +4,8 @@
   # Rename mtype "adjustment" to be a flag
   # Create various new variables for processing
 
+# Suppress warning if Output directory already exists
+options(warn=-1)
 
 # Areas clean up
 # Read in Google sheets for new zone name for some Gulf Reef Fish zone names
@@ -59,7 +61,13 @@ mh_preprocess <- mh_preprocess %>%
          END_DAY_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_DAY),
          END_MONTH_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_MONTH),
          END_TIME_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_TIME),
-         END_DAY_OF_WEEK_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_DAY_OF_WEEK))
+         END_DAY_OF_WEEK_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_DAY_OF_WEEK),
+         # Start date from start day, month, year fields
+         START_DATE = case_when(MANAGEMENT_STATUS_USE == "ONCE" &
+                                  !is.na(START_DAY) &
+                                  !is.na(START_MONTH) &
+                                  !is.na(START_YEAR) ~ as.Date(paste(START_MONTH, START_DAY, START_YEAR, sep = "/"), "%m/%d/%Y"),
+                                TRUE ~ EFFECTIVE_DATE))
 
 
 # FIND SECTOR FORKS
