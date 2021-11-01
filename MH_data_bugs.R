@@ -5,11 +5,9 @@
 # For data bugs, all bugs have been previously addressed or entered into the data bug tracking system
   # Record each data bug ID in each step
 
-library(tidyverse)
-library(lubridate)
 
 # Read in data
-mh <- read.csv("./cleaning and preprocessing/MHdownload09212021.csv", stringsAsFactors = FALSE)
+mh <- read.csv("./MHdownload09212021.csv", stringsAsFactors = FALSE)
 
 # Run only if you want to find the data type of MH variables
 # str(mh)
