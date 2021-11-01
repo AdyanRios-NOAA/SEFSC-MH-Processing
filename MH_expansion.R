@@ -3,6 +3,8 @@
 # Expand species ALL and species aggregate and group fields so each record has a common name and ITIS code associated with it
 # Expansion on species only relevant for management types that are NOT FYI
 
+# Suppress summarise info
+options(dplyr.summarise.inform = FALSE)
 
 # Expand records with SECTOR = 'ALL" to be commercial and recreational
 mh_sect_expanded <- mh_cleaned %>%
