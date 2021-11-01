@@ -39,7 +39,7 @@ source('./MH_expansion.R')
 
 
 # 3: Pre-processing clean up (new zone names, renaming "adjusted", creating various new variables)
-# Dataframe result = mh_preprocess
+# Dataframe result = mh_ready
 source('./MH_pre_processing.R')
 
 
