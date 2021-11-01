@@ -66,15 +66,8 @@ dim(multi_reg)
 mh_prep_use <- mh_prep %>%
   left_join(., multi_reg, by = c("FR_CITATION", "CLUSTER")) %>%
   mutate_at("MULTI_REG", ~replace(., is.na(.), 0)) %>%
-  mutate(MULTI_REG_CLUSTER = as.numeric(CLUSTER %in% multi_reg$CLUSTER)) %>%
-  # FORMAT DATES
-  mutate(EFFECTIVE_DATE = as.Date(EFFECTIVE_DATE, "%m/%d/%Y"),
-         INEFFECTIVE_DATE = as.Date(INEFFECTIVE_DATE, "%m/%d/%Y"),
-         START_DATE = case_when(MANAGEMENT_STATUS_USE == "ONCE" &
-                                  !is.na(START_DAY) &
-                                  !is.na(START_MONTH) &
-                                  !is.na(START_YEAR) ~ as.Date(paste(START_MONTH, START_DAY, START_YEAR, sep = "/"), "%m/%d/%Y"),
-                                TRUE ~ EFFECTIVE_DATE))
+  mutate(MULTI_REG_CLUSTER = as.numeric(CLUSTER %in% multi_reg$CLUSTER)) 
+
 
 # 2 DEFINE VARIABLES THAT DETECT REG CHANGES BASED ON STATUS TYPE ####
 # SFA added ineffective date to accommodate issue in cluster 657
