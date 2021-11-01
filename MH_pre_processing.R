@@ -64,8 +64,11 @@ mh_preprocess <- mh_preprocess %>%
 
 # FIND SECTOR FORKS
 
+# Create the Output directory folder where all .csv files will be sent to (this folder will be in the gitignore)
+dir.create("./Output")
+
 #SAFE FOR PIVOT TABLE TESTS IN EXCEL
-write.csv(mh_preprocess, paste0("./MHpreprocess_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
+write.csv(mh_preprocess, paste0("./Output/MHpreprocess_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
 
 multi_subsector <- mh_preprocess %>%
   filter(GENERAL == 0) %>%
