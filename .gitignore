@@ -41,3 +41,6 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
+# Output folder where all .csv files saved to
+Output/
+
