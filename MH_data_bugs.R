@@ -15,9 +15,9 @@ mh <- read.csv("./MHdownload09212021.csv", stringsAsFactors = FALSE)
 # Changes that are a result of the csv download (the database does not have these issues)
 # No longer appears to be an issue when downloading the data to a csv - SFA 9/27/2021
 mh_cleaned <- mh %>%
-  # Format dates to be mm/dd/yyyy
+  # Format dates to be mm/dd/yyyy to match added data (this may not be an issue in the future when pull directly from the database)
   mutate(EFFECTIVE_DATE = format(mdy(EFFECTIVE_DATE), "%m/%d/%Y"),
-         INEFFECTIVE_DATE = format(mdy(INEFFECTIVE_DATE), "%m/%d/%Y"))
+         INEFFECTIVE_DATE2 = format(mdy(INEFFECTIVE_DATE), "%m/%d/%Y"))
   # Rename regulation ID to match what appears in the database
   #rename(REGULATION_ID = REGULATION_ID.) %>%
   # Remove ="..." characters in species ITIS codes
@@ -1308,3 +1308,8 @@ mh_cleaned <- bind_rows(mh_added, mh_cleaned)
 # Also makes it easier to query data when null values are all NA
 mh_cleaned <- mh_cleaned %>%
   replace(. == '', NA)
+
+# Format dates from character to be mm/dd/yyyy (this is a product of reading in MH as a csv file, the database should already be in date format)
+mh_cleaned <- mh_cleaned %>%
+    mutate(EFFECTIVE_DATE = as.Date(EFFECTIVE_DATE, "%m/%d/%Y"),
+           INEFFECTIVE_DATE = as.Date(INEFFECTIVE_DATE, "%m/%d/%Y"))
