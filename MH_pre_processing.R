@@ -78,21 +78,54 @@ dir.create("./Output")
 #SAFE FOR PIVOT TABLE TESTS IN EXCEL
 write.csv(mh_preprocess, paste0("./Output/MHpreprocess_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
 
-multi_subsector <- mh_preprocess %>%
-  filter(GENERAL == 0) %>%
-  select(FMP, MANAGEMENT_TYPE_USE, COMMON_NAME, SPECIES_AGGREGATE, SPECIES_GROUP, SECTOR_USE, SUBSECTOR) %>%
+#CREATE A WAY TO TRACK WHICH SECTORS HAVE MULTIPLE SUBSECTORS
+sector.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
+                  "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
+                  "SECTOR_USE",
+                  "REGION",
+                  "COMMON_NAME", "SPECIES_AGGREGATE", "SPECIES_GROUP")
+
+sector_precluster <- mh_preprocess %>%
+  select(one_of(sector.match)) %>%
   distinct() %>%
-  group_by(FMP, MANAGEMENT_TYPE_USE, COMMON_NAME, SPECIES_AGGREGATE, SPECIES_GROUP, SECTOR_USE) %>%
-  mutate(subsector_count = length(SUBSECTOR)) %>%
+  mutate(SECTOR_ID = as.numeric(row.names(.))) %>%
+  right_join(., mh_preprocess)
+
+# ONLY COUNT NUMBER OF SUBSECTORS FOR IMPORTANT REGULATION TYPES
+multi_subsector <- sector_preclusters %>%
+  filter(GENERAL == 0) %>%
+  select(FMP, SECTOR_USE, SUBSECTOR_ID, SUBSECTOR) %>%
+  distinct() %>%
+  group_by(FMP, SECTOR_USE, SUBSECTOR_ID) %>%
+  mutate(subsector_count = length(SUBSECTOR),
+         #FLAG IF ALL IS USED
+         all_used = sum(SUBSECTOR == "ALL")) %>%
   filter(subsector_count > 1) %>%
-  arrange(FMP, MANAGEMENT_TYPE_USE, COMMON_NAME, SPECIES_AGGREGATE, SPECIES_GROUP, SECTOR_USE)
+  arrange(SUBSECTOR_ID, SUBSECTOR) %>%
+  data.frame()
 
-table(multi_subsector$subsector_count)
-table(multi_subsector$subsector_count, multi_subsector$SECTOR_USE)
 
-test = filter(multi_subsector, FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO")
-table(test$subsector_count)
-table(test$subsector_count, test$SECTOR_USE) #add minimum date to see when they happen
+multi_subsector2 <- sector_preclusters %>%
+  select(FMP, SECTOR_USE, SUBSECTOR_ID, SUBSECTOR, EFFECTIVE_DATE) %>%
+  group_by(FMP, SECTOR_USE, SUBSECTOR_ID, SUBSECTOR) %>%
+  summarize(start_use = min(EFFECTIVE_DATE)) %>%
+  right_join(., multi_subsector) %>%
+  group_by(FMP, SECTOR_USE, SUBSECTOR_ID) %>%
+  mutate(date_count = length(unique(start_use))) %>%
+  arrange(SUBSECTOR_ID) %>%
+  filter(!(all_used == 0 & date_count == 1)) %>%
+  group_by(SUBSECTOR_ID) %>%
+  mutate(SUBSECTOR_KEY = paste(unique(SUBSECTOR), sep = ",", collapse=', ')) %>%
+  data.frame()
+
+unique_sector_keys = multi_subsector2 %>%
+  select(SECTOR_USE, SUBSECTOR_KEY) %>%
+  distinct()
+
+test = multi_subsector2 %>%
+  filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO") %>%
+  select(SECTOR_USE, SUBSECTOR_KEY) %>%
+  distinct()
 
 # EXPANSION FUNTION ####
 # ADAPTED TO ALLOW CONDITIONS AND EXPANSION TO BE REGION/FMP/SECTOR/SPECIES SPECIFIC (ETC)
