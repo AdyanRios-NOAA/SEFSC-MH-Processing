@@ -92,29 +92,29 @@ sector_precluster <- mh_preprocess %>%
   right_join(., mh_preprocess)
 
 # ONLY COUNT NUMBER OF SUBSECTORS FOR IMPORTANT REGULATION TYPES
-multi_subsector <- sector_preclusters %>%
+multi_subsector <- sector_precluster %>%
   filter(GENERAL == 0) %>%
-  select(FMP, SECTOR_USE, SUBSECTOR_ID, SUBSECTOR) %>%
+  select(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR) %>%
   distinct() %>%
-  group_by(FMP, SECTOR_USE, SUBSECTOR_ID) %>%
+  group_by(FMP, SECTOR_USE, SECTOR_ID) %>%
   mutate(subsector_count = length(SUBSECTOR),
          #FLAG IF ALL IS USED
          all_used = sum(SUBSECTOR == "ALL")) %>%
   filter(subsector_count > 1) %>%
-  arrange(SUBSECTOR_ID, SUBSECTOR) %>%
+  arrange(SECTOR_ID, SUBSECTOR) %>%
   data.frame()
 
 
-multi_subsector2 <- sector_preclusters %>%
-  select(FMP, SECTOR_USE, SUBSECTOR_ID, SUBSECTOR, EFFECTIVE_DATE) %>%
-  group_by(FMP, SECTOR_USE, SUBSECTOR_ID, SUBSECTOR) %>%
+multi_subsector2 <- sector_precluster %>%
+  select(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR, EFFECTIVE_DATE) %>%
+  group_by(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR) %>%
   summarize(start_use = min(EFFECTIVE_DATE)) %>%
   right_join(., multi_subsector) %>%
-  group_by(FMP, SECTOR_USE, SUBSECTOR_ID) %>%
+  group_by(FMP, SECTOR_USE, SECTOR_ID) %>%
   mutate(date_count = length(unique(start_use))) %>%
-  arrange(SUBSECTOR_ID) %>%
+  arrange(SECTOR_ID) %>%
   filter(!(all_used == 0 & date_count == 1)) %>%
-  group_by(SUBSECTOR_ID) %>%
+  group_by(SECTOR_ID) %>%
   mutate(SUBSECTOR_KEY = paste(unique(SUBSECTOR), sep = ",", collapse=', ')) %>%
   data.frame()
 
