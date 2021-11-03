@@ -120,7 +120,11 @@ multi_subsector2 <- sector_precluster %>%
 
 unique_sector_keys = multi_subsector2 %>%
   select(SECTOR_USE, SUBSECTOR_KEY) %>%
-  distinct()
+  group_by(SECTOR_USE, SUBSECTOR_KEY) %>%
+  mutate(SUBSECTOR_N = length(SECTOR_USE)) %>%
+  distinct() %>%
+  arrange(SUBSECTOR_N) %>%
+  data.frame()
 
 test = multi_subsector2 %>%
   filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO") %>%
