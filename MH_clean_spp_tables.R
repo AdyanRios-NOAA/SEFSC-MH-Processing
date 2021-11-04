@@ -65,7 +65,9 @@ fmp_info_use <- fmp_group_info %>%
   # Set species_name_type to ALL
   mutate(SPECIES_NAME_TYPE = "COMMON_NAME",
          NAME = 'ALL') %>%
-  select(SPECIES_NAME_TYPE, NAME, FMP, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_DT, REMOVED_DT) %>%
+  select(SPECIES_NAME_TYPE, NAME, FMP, SUBGRP_NAME, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_DT, REMOVED_DT) %>%
+  # Some FMP are further broken into multiple regions (i.e. CMP) so species may be duplicated and need to distinct
+  distinct() %>%
   # Set common name for species ITIS codes missing common name
   mutate(COMMON_NAME_USE = case_when(SPECIES_ITIS_USE == '614546' ~ 'RAZORFISH, GREEN',
                                      SPECIES_ITIS_USE == '159878' ~ 'SHARK, SAND TIGER',
@@ -76,8 +78,14 @@ fmp_info_use <- fmp_group_info %>%
   # In Oracle date 11/8/1984 changes to 1984-11-07 23:00:00
   mutate(ADDED_SP_DATE = format(as.Date(ADDED_DT), "%Y-%m-%d"),
          REMOVED_SP_DATE = format(as.Date(REMOVED_DT), "%Y-%m-%d")) %>%
-  select(-c(ADDED_DT, REMOVED_DT))
+  select(-c(ADDED_DT, REMOVED_DT)) 
 
+# Becuase the fmp table is capturing two purposes, species within a FMP and species within groups, 
+  # it is hard to track the unique species and their time within a FMP. 
+  # This becomes particulary confusing with Reef Fish Fishery of Puerto Rico and the U.S. Virgin Islands when group names change but species within FMP remain unchanged
+  # Suggest breaking this up into two tables
+
+chk <- fmp_info_use %>% filter(FMP == 'Coastal Migratory Pelagic Resources')
 
 
 # Species group data
@@ -121,7 +129,9 @@ agg_info_use <- agg_info %>%
 
 # COMBINE SPECIES LISTS
 sp_info_use = bind_rows(fmp_info_use, grp_info_use, agg_info_use) %>%
-  mutate(FMP = toupper(FMP))
+  mutate(FMP = toupper(FMP)) %>%
+  # Remove HMS because species list may have duplicates and not in the data anyways so no nedded
+  filter(FMP != 'ATLANTIC HIGHLY MIGRATORY SPECIES')
 
 # Remove connection to Oracle when saving data to workspace
 rm(con)
