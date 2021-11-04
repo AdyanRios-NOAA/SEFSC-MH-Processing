@@ -24,7 +24,7 @@ mh_cleaned <- mh %>%
   #mutate(SPECIES_ITIS = gsub('="', '', SPECIES_ITIS),
   #       SPECIES_ITIS = gsub('"', '', SPECIES_ITIS))
 
-# Change all closed areas to closures
+# Change all closed areas to closures and management category from spatial closure to temporal controls
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(MANAGEMENT_TYPE == 'CLOSED AREA' ~ 'CLOSURE',
                                      # This means if the previous condition is not met, then MANAGEMENT_TYPE should be the original MANAGEMENT_TYPE
@@ -854,9 +854,9 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 1355 ~ 'WITHDRAWN',
                                        TRUE ~ MANAGEMENT_STATUS),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1355 ~ 'SPATIAL CONTROLS',
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1355 ~ 'TEMPORAL CONTROLS',
                                          TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1355 ~ 'CLOSED AREA',
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1355 ~ 'CLOSURE',
                                      TRUE ~ MANAGEMENT_TYPE))
 # Bug ID 4446 - change zone for more accuracy to specific to counties
 mh_cleaned <- mh_cleaned %>%
@@ -1005,8 +1005,10 @@ mh_cleaned <- mh_cleaned %>%
 
 #BUG ID -7 - Correct missing mng. type/sector/region for reg id 2197
 mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 2197 ~ 'CLOSED AREA',
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 2197 ~ 'CLOSURE',
                                      TRUE ~ MANAGEMENT_TYPE),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2197 ~ 'TEMPORAL CONTROLS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
          SECTOR = case_when(REGULATION_ID == 2197 ~ 'ALL',
                             TRUE ~ SECTOR),
          REGION = case_when(REGULATION_ID == 2197 ~ 'CARIBBEAN',
