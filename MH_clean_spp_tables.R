@@ -8,7 +8,7 @@ con <- dbConnect(dbDriver("Oracle"),
 
 
 # Ask the repo owner for the .env file
-load_dot_env("./cleaning and preprocessing/mh_spp.env")
+load_dot_env("mh_spp.env")
 spp_grp_view <- Sys.getenv("FMP_SPECIES_GRP")
 spp_agg_view <- Sys.getenv("FMP_SPECIES_AGG")
 spp_itis_xref <- Sys.getenv("SEDAT_SPP_ITIS")
@@ -29,6 +29,7 @@ fmp_group_info = dbGetQuery(con, paste("select a.fmp_group_id,
                                   from ", spp_grp_view, " a
                                   left join (select distinct itis_code, itis_commonname, itis_scientificname from ", spp_itis_xref, ") b
                                   on a.species_itis = b.itis_code"))
+
 # There was one record that was missing species ITIS, but the comments section had valid ITIS code
 agg_info = dbGetQuery(con, paste("select a.fmp_group_name,
                             a.fmp_species_agg_name,
@@ -58,63 +59,64 @@ agg_info = dbGetQuery(con, paste("select a.fmp_group_name,
 
 # FMP Species data
 fmp_info_use <- fmp_group_info %>%
-  rename(ADDED_SP_DATE = ADDED_DT,
-         REMOVED_SP_DATE = REMOVED_DT,
-         COMMON_NAME_USE = COMMON_NAME,
+  rename(COMMON_NAME_USE = COMMON_NAME,
          SPECIES_ITIS_USE = SPECIES_ITIS,
          FMP = FMP_GROUP_NAME) %>%
   # Set species_name_type to ALL
   mutate(SPECIES_NAME_TYPE = "COMMON_NAME",
-         NAME = 'ALL',
-         ADDED_SP_DATE = format(as.Date(ADDED_SP_DATE), "%Y-%m-%d"),
-         REMOVED_SP_DATE = format(as.Date(REMOVED_SP_DATE), "%Y-%m-%d")) %>%
-  select(SPECIES_NAME_TYPE, NAME, FMP, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_SP_DATE, REMOVED_SP_DATE) %>%
+         NAME = 'ALL') %>%
+  select(SPECIES_NAME_TYPE, NAME, FMP, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_DT, REMOVED_DT) %>%
   # Set common name for species ITIS codes missing common name
   mutate(COMMON_NAME_USE = case_when(SPECIES_ITIS_USE == '614546' ~ 'RAZORFISH, GREEN',
                                      SPECIES_ITIS_USE == '159878' ~ 'SHARK, SAND TIGER',
                                      SPECIES_ITIS_USE == '159821' ~ 'SHARK, SIXGILL',
                                      SPECIES_ITIS_USE == '614513' ~ 'RAZORFISH, PEARLY',
-                                     TRUE ~ COMMON_NAME_USE))
+                                     TRUE ~ COMMON_NAME_USE)) %>%
+  # Reformat added and removed dates to remove time (this was not collected and does not appear in datebase) 
+  # In Oracle date 11/8/1984 changes to 1984-11-07 23:00:00
+  mutate(ADDED_SP_DATE = format(as.Date(ADDED_DT), "%Y-%m-%d"),
+         REMOVED_SP_DATE = format(as.Date(REMOVED_DT), "%Y-%m-%d")) %>%
+  select(-c(ADDED_DT, REMOVED_DT))
 
 
 
 # Species group data
 grp_info_use <- fmp_group_info %>%
-  rename(ADDED_SP_DATE = ADDED_DT,
-         REMOVED_SP_DATE = REMOVED_DT,
-         COMMON_NAME_USE = COMMON_NAME,
+  rename(COMMON_NAME_USE = COMMON_NAME,
          SPECIES_ITIS_USE = SPECIES_ITIS,
          FMP = FMP_GROUP_NAME) %>%
   # Set species_name_type to species group
   mutate(SPECIES_NAME_TYPE = "SPECIES_GROUP",
-         NAME = SUBGRP_NAME,
-         ADDED_SP_DATE = format(as.Date(ADDED_SP_DATE), "%Y-%m-%d"),
-         REMOVED_SP_DATE = format(as.Date(REMOVED_SP_DATE), "%Y-%m-%d")) %>%
-  select(SPECIES_NAME_TYPE, NAME, FMP, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_SP_DATE, REMOVED_SP_DATE) %>%
+         NAME = SUBGRP_NAME) %>%
+  select(SPECIES_NAME_TYPE, NAME, FMP, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_DT, REMOVED_DT) %>%
   filter(!is.na(NAME)) %>%
   # Set common name for species ITIS codes missing common name
   mutate(COMMON_NAME_USE = case_when(SPECIES_ITIS_USE == '614546' ~ 'RAZORFISH, GREEN',
                                      SPECIES_ITIS_USE == '159878' ~ 'SHARK, SAND TIGER',
                                      SPECIES_ITIS_USE == '159821' ~ 'SHARK, SIXGILL',
                                      SPECIES_ITIS_USE == '614513' ~ 'RAZORFISH, PEARLY',
-                                     TRUE ~ COMMON_NAME_USE))
+                                     TRUE ~ COMMON_NAME_USE)) %>%
+  # Reformat added and removed dates to remove time (this was not collected and does not appear in datebase) 
+  mutate(ADDED_SP_DATE = format(as.Date(ADDED_DT), "%Y-%m-%d"),
+         REMOVED_SP_DATE = format(as.Date(REMOVED_DT), "%Y-%m-%d")) %>%
+  select(-c(ADDED_DT, REMOVED_DT))
 
 # Species aggregate data
 agg_info_use <- agg_info %>%
-  rename(ADDED_SP_DATE = ADDED_DT,
-         REMOVED_SP_DATE = REMOVED_DT,
-         COMMON_NAME_USE = COMMON_NAME,
+  rename(COMMON_NAME_USE = COMMON_NAME,
          SPECIES_ITIS_USE = SPECIES_ITIS,
          FMP = FMP_GROUP_NAME) %>%
   # Set species_name_type to species aggregate
   mutate(SPECIES_NAME_TYPE = "SPECIES_AGGREGATE",
-         NAME = FMP_SPECIES_AGG_NAME,
-         ADDED_SP_DATE = format(as.Date(ADDED_SP_DATE), "%Y-%m-%d"),
-         REMOVED_SP_DATE = format(as.Date(REMOVED_SP_DATE), "%Y-%m-%d")) %>%
-  select(SPECIES_NAME_TYPE, NAME, FMP, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_SP_DATE, REMOVED_SP_DATE) %>%
+         NAME = FMP_SPECIES_AGG_NAME) %>%
+  select(SPECIES_NAME_TYPE, NAME, FMP, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_DT, REMOVED_DT) %>%
   # Set common name for species ITIS codes missing common name
   mutate(COMMON_NAME_USE = case_when(SPECIES_ITIS_USE == '159821' ~ 'SHARK, SIXGILL',
-                                     TRUE ~ COMMON_NAME_USE))
+                                     TRUE ~ COMMON_NAME_USE)) %>%
+  # Reformat added and removed dates to remove time (this was not collected and does not appear in datebase) 
+  mutate(ADDED_SP_DATE = format(as.Date(ADDED_DT), "%Y-%m-%d"),
+         REMOVED_SP_DATE = format(as.Date(REMOVED_DT), "%Y-%m-%d")) %>%
+  select(-c(ADDED_DT, REMOVED_DT))
 
 
 # COMBINE SPECIES LISTS
@@ -125,7 +127,7 @@ sp_info_use = bind_rows(fmp_info_use, grp_info_use, agg_info_use) %>%
 rm(con)
 
 # Save workspace
-save.image("./cleaning and preprocessing/MH_clean_spp_tables.RData")
+save.image("./MH_clean_spp_tables.RData")
 
 
 
