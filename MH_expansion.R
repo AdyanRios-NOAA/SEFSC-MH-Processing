@@ -16,7 +16,13 @@ mh_sect_expanded <- mh_cleaned %>%
   separate_rows(SECTOR_USE)
 
 # Bring in management type detailed (Y/N) table from Google sheets to only expand mtypes we care about
+# Read in Google sheets 
+detailed_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1PViPVtqkY3q1fWUFGZm1UyIIYrFxt-YDitEUGaHBjsg/edit#gid=1115852389") %>%
+  select(-MANAGEMENT_CATEGORY)
 
+# Add field for detailed (Y/N)
+mh_sect_expanded <- mh_sect_expanded %>%
+  left_join(detailed_xref, by = "MANAGEMENT_TYPE")
 
 # Species list (duplicate issue - need to revist once dbase is back up and running)
 sp_info_use2 <- sp_info_use %>%
