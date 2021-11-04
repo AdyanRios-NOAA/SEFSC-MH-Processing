@@ -214,7 +214,11 @@ mh_cleaned <- mh_cleaned %>%
   # Bug ID 4590
   filter(REGULATION_ID != 511)%>%
   #Bug ID 4591
-  filter(REGULATION_ID != 1341)
+  filter(REGULATION_ID != 1341) %>%
+  #BUG ID -9 - REMOVING DUPLICATE ERRONEOUS FR (85 FR 50333)
+  filter(REGULATION_ID != 207) %>%
+  #BUG ID -10 - REMOVING DUPLICATE ERRONEOUS FR (85 FR 50334)
+  filter(REGULATION_ID != 206)
 
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
@@ -1016,7 +1020,6 @@ mh_cleaned <- mh_cleaned %>%
                             TRUE ~ SECTOR),
          REGION = case_when(REGULATION_ID == 2440 ~ 'GULF OF MEXICO',
                             TRUE ~ REGION))
-
 
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
