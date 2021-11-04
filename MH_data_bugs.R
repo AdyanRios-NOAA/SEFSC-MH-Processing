@@ -1132,7 +1132,7 @@ mh_added <- mh_added %>%
           FR_SECTION	= "50 FR 641.23",
           FR_URL	= "https://www.govinfo.gov/app/details/FR-1984-10-09",
           MANAGEMENT_CATEGORY	= "CATCH LIMITS",
-          MANAGEMENT_TYPE	= "INCIDENTAL CATCH",
+          MANAGEMENT_TYPE	= "INCIDENTAL CATCH LIMIT",
           SECTOR	= "ALL",
           SUBSECTOR	= "ALL",
           REGION	= "GULF OF MEXICO",
