@@ -14,43 +14,57 @@ spp_agg_view <- Sys.getenv("FMP_SPECIES_AGG")
 spp_itis_xref <- Sys.getenv("SEDAT_SPP_ITIS")
 
 # READ IN SPECIES LISTS #
+# Exclude HMS in all species tables 
 # Join SEDAT species ITIS table to standardize the common name field
     # Example: 169593 says 'longsnout butterflyfish' in V_S_FMP_SPECIES_GRP_DET table and SEDAT has common name as 'BUTTERFLYFISH, LONGSNOUT
-fmp_group_info = dbGetQuery(con, paste("select a.fmp_group_id,
-                                  a.fmp_group_name,
-                                  a.fmp_group_region,
-                                  a.subgrp_name,
-                                  a.species_itis,
-                                  coalesce(b.itis_commonname, a.common_name) as common_name,
-                                  coalesce(a.scientific_name, b.itis_scientificname) as scientific_name,
-                                  a.added_dt,
-                                  a.removed_dt,
-                                  a.alias_name
-                                  from ", spp_grp_view, " a
-                                  left join (select distinct itis_code, itis_commonname, itis_scientificname from ", spp_itis_xref, ") b
-                                  on a.species_itis = b.itis_code"))
 
-# There was one record that was missing species ITIS, but the comments section had valid ITIS code
-agg_info = dbGetQuery(con, paste("select a.fmp_group_name,
-                            a.fmp_species_agg_name,
-                            a.species_itis,
-                            coalesce(b.itis_commonname, a.common_name) as common_name,
-                            coalesce(a.scientific_name, b.itis_scientificname) as scientific_name,
-                            a.species_agg_region,
-                            a.added_dt,
-                            a.FR_citation_for_added,
-                            a.removed_dt,
-                            a.FR_citation_for_removed,
-                            a.relevant_section,
-                            a.comments
-                            from (select fmp_group_name, fmp_species_agg_name,
-                                  case when species_itis is null then '614740' else species_itis end species_itis,
-                                  common_name, scientific_name, species_agg_region,
-                                  added_dt, FR_citation_for_added, removed_dt, FR_citation_for_removed,
-                                  relevant_section, comments
-                                  from ", spp_agg_view, ") a
-                            left join (select distinct itis_code, itis_commonname, itis_scientificname from ", spp_itis_xref, ") b
-                            on a.species_itis = b.itis_code"))
+# Species FMP table
+fmp_info = dbGetQuery(con, paste0("select distinct
+                                    a.FMP_GROUP_ID,
+                                    a.FMP_GROUP_NAME,
+                                    a.SPECIES_ITIS,
+                                    coalesce(b.itis_commonname, a.common_name) as common_name,
+                                    coalesce(a.scientific_name, b.itis_scientificname) as scientific_name,
+                                    MIN(a.ADDED_DT) OVER (PARTITION BY a.FMP_GROUP_ID, a.FMP_GROUP_NAME, a.SPECIES_ITIS, a.COMMON_NAME, a.SCIENTIFIC_NAME, a.ALIAS_NAME) AS ADDED_DT,
+                                    case when (MAX(case when a.removed_dt is null then 1 else 0 end) OVER (PARTITION BY a.FMP_GROUP_ID, a.FMP_GROUP_NAME, a.SPECIES_ITIS, a.COMMON_NAME, a.SCIENTIFIC_NAME, a.ALIAS_NAME)) = 1 then
+                                    NULL else
+                                    MAX(a.REMOVED_DT) OVER (PARTITION BY a.FMP_GROUP_ID, a.FMP_GROUP_NAME, a.SPECIES_ITIS, a.COMMON_NAME, a.SCIENTIFIC_NAME, a.ALIAS_NAME) end AS REMOVED_DT
+                        from ", spp_grp_view, " a
+                        left join (select distinct itis_code, itis_commonname, itis_scientificname from ", spp_itis_xref, ") b
+                        on a.species_itis = b.itis_code
+                        where FMP_GROUP_NAME <> 'Atlantic Highly Migratory Species'
+                        order by FMP_GROUP_NAME, COMMON_NAME"))
+
+
+# Species group table
+group_info = dbGetQuery(con, paste("select distinct
+                                          a.fmp_group_id,
+                                          a.fmp_group_name,
+                                          a.subgrp_name,
+                                          a.species_itis,
+                                          coalesce(b.itis_commonname, a.common_name) as common_name,
+                                          coalesce(a.scientific_name, b.itis_scientificname) as scientific_name,
+                                          a.added_dt,
+                                          a.removed_dt
+                                from ", spp_grp_view, " a
+                                left join (select distinct itis_code, itis_commonname, itis_scientificname from ", spp_itis_xref, ") b
+                                on a.species_itis = b.itis_code
+                                where a.subgrp_name is not null and FMP_GROUP_NAME <> 'Atlantic Highly Migratory Species'"))
+
+# Species aggregate table
+agg_info = dbGetQuery(con, paste("select distinct 
+                                    a.fmp_group_name,
+                                    a.fmp_species_agg_name,
+                                    a.species_itis,
+                                    coalesce(b.itis_commonname, a.common_name) as common_name,
+                                    coalesce(a.scientific_name, b.itis_scientificname) as scientific_name,
+                                    a.added_dt,
+                                    a.removed_dt
+                          from ", spp_agg_view, " a
+                          left join (select distinct itis_code, itis_commonname, itis_scientificname from ", spp_itis_xref, ") b
+                          on a.species_itis = b.itis_code
+                          where FMP_GROUP_NAME <> 'Atlantic Highly Migratory Species'
+                          order by FMP_GROUP_NAME, FMP_SPECIES_AGG_NAME"))
 
 # REFORMAT SPECIES LISTS FOR MERGE TO MH
 # Transposed data to eliminate the need for 3 fields and dealing with null values
@@ -58,80 +72,46 @@ agg_info = dbGetQuery(con, paste("select a.fmp_group_name,
 # Name is the actual group or aggregate name for expansion or when common name is ALL for expansion
 
 # FMP Species data
-fmp_info_use <- fmp_group_info %>%
-  rename(COMMON_NAME_USE = COMMON_NAME,
-         SPECIES_ITIS_USE = SPECIES_ITIS,
-         FMP = FMP_GROUP_NAME) %>%
+fmp_info_use <- fmp_info %>%
   # Set species_name_type to ALL
   mutate(SPECIES_NAME_TYPE = "COMMON_NAME",
          NAME = 'ALL') %>%
-  select(SPECIES_NAME_TYPE, NAME, FMP, SUBGRP_NAME, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_DT, REMOVED_DT) %>%
-  # Some FMP are further broken into multiple regions (i.e. CMP) so species may be duplicated and need to distinct
-  distinct() %>%
-  # Set common name for species ITIS codes missing common name
-  mutate(COMMON_NAME_USE = case_when(SPECIES_ITIS_USE == '614546' ~ 'RAZORFISH, GREEN',
-                                     SPECIES_ITIS_USE == '159878' ~ 'SHARK, SAND TIGER',
-                                     SPECIES_ITIS_USE == '159821' ~ 'SHARK, SIXGILL',
-                                     SPECIES_ITIS_USE == '614513' ~ 'RAZORFISH, PEARLY',
-                                     TRUE ~ COMMON_NAME_USE)) %>%
-  # Reformat added and removed dates to remove time (this was not collected and does not appear in datebase) 
-  # In Oracle date 11/8/1984 changes to 1984-11-07 23:00:00
-  mutate(ADDED_SP_DATE = format(as.Date(ADDED_DT), "%Y-%m-%d"),
-         REMOVED_SP_DATE = format(as.Date(REMOVED_DT), "%Y-%m-%d")) %>%
-  select(-c(ADDED_DT, REMOVED_DT)) 
-
-# Becuase the fmp table is capturing two purposes, species within a FMP and species within groups, 
-  # it is hard to track the unique species and their time within a FMP. 
-  # This becomes particulary confusing with Reef Fish Fishery of Puerto Rico and the U.S. Virgin Islands when group names change but species within FMP remain unchanged
-  # Suggest breaking this up into two tables
-
-chk <- fmp_info_use %>% filter(FMP == 'Coastal Migratory Pelagic Resources')
-
+  select(FMP_GROUP_NAME, SPECIES_NAME_TYPE, NAME, SPECIES_ITIS, COMMON_NAME, SCIENTIFIC_NAME, ADDED_DT, REMOVED_DT)
 
 # Species group data
-grp_info_use <- fmp_group_info %>%
-  rename(COMMON_NAME_USE = COMMON_NAME,
-         SPECIES_ITIS_USE = SPECIES_ITIS,
-         FMP = FMP_GROUP_NAME) %>%
+grp_info_use <- group_info %>%
   # Set species_name_type to species group
   mutate(SPECIES_NAME_TYPE = "SPECIES_GROUP",
          NAME = SUBGRP_NAME) %>%
-  select(SPECIES_NAME_TYPE, NAME, FMP, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_DT, REMOVED_DT) %>%
-  filter(!is.na(NAME)) %>%
-  # Set common name for species ITIS codes missing common name
-  mutate(COMMON_NAME_USE = case_when(SPECIES_ITIS_USE == '614546' ~ 'RAZORFISH, GREEN',
-                                     SPECIES_ITIS_USE == '159878' ~ 'SHARK, SAND TIGER',
-                                     SPECIES_ITIS_USE == '159821' ~ 'SHARK, SIXGILL',
-                                     SPECIES_ITIS_USE == '614513' ~ 'RAZORFISH, PEARLY',
-                                     TRUE ~ COMMON_NAME_USE)) %>%
-  # Reformat added and removed dates to remove time (this was not collected and does not appear in datebase) 
-  mutate(ADDED_SP_DATE = format(as.Date(ADDED_DT), "%Y-%m-%d"),
-         REMOVED_SP_DATE = format(as.Date(REMOVED_DT), "%Y-%m-%d")) %>%
-  select(-c(ADDED_DT, REMOVED_DT))
+  select(FMP_GROUP_NAME, SPECIES_NAME_TYPE, NAME, SPECIES_ITIS, COMMON_NAME, SCIENTIFIC_NAME, ADDED_DT, REMOVED_DT)
 
 # Species aggregate data
 agg_info_use <- agg_info %>%
-  rename(COMMON_NAME_USE = COMMON_NAME,
-         SPECIES_ITIS_USE = SPECIES_ITIS,
-         FMP = FMP_GROUP_NAME) %>%
   # Set species_name_type to species aggregate
   mutate(SPECIES_NAME_TYPE = "SPECIES_AGGREGATE",
          NAME = FMP_SPECIES_AGG_NAME) %>%
-  select(SPECIES_NAME_TYPE, NAME, FMP, COMMON_NAME_USE, SPECIES_ITIS_USE, ADDED_DT, REMOVED_DT) %>%
-  # Set common name for species ITIS codes missing common name
-  mutate(COMMON_NAME_USE = case_when(SPECIES_ITIS_USE == '159821' ~ 'SHARK, SIXGILL',
-                                     TRUE ~ COMMON_NAME_USE)) %>%
-  # Reformat added and removed dates to remove time (this was not collected and does not appear in datebase) 
-  mutate(ADDED_SP_DATE = format(as.Date(ADDED_DT), "%Y-%m-%d"),
-         REMOVED_SP_DATE = format(as.Date(REMOVED_DT), "%Y-%m-%d")) %>%
-  select(-c(ADDED_DT, REMOVED_DT))
+  select(FMP_GROUP_NAME, SPECIES_NAME_TYPE, NAME, SPECIES_ITIS, COMMON_NAME, SCIENTIFIC_NAME, ADDED_DT, REMOVED_DT) %>%
+  # One record has common name null for 'Bag Limit: Parrotfishes' - error to fix in database
+  filter(!is.na(COMMON_NAME))
 
 
 # COMBINE SPECIES LISTS
 sp_info_use = bind_rows(fmp_info_use, grp_info_use, agg_info_use) %>%
-  mutate(FMP = toupper(FMP)) %>%
-  # Remove HMS because species list may have duplicates and not in the data anyways so no nedded
-  filter(FMP != 'ATLANTIC HIGHLY MIGRATORY SPECIES')
+  rename(COMMON_NAME_USE = COMMON_NAME,
+         SPECIES_ITIS_USE = SPECIES_ITIS,
+         FMP = FMP_GROUP_NAME) %>%
+  # Set field to upper to match MH dataset
+  mutate(FMP = toupper(FMP),
+         NAME = toupper(NAME),
+         # Set common name for species ITIS codes missing common name
+         COMMON_NAME_USE = case_when(SPECIES_ITIS_USE == '614546' ~ 'RAZORFISH, GREEN',
+                                     SPECIES_ITIS_USE == '614513' ~ 'RAZORFISH, PEARLY',
+                                     TRUE ~ COMMON_NAME_USE)) %>%
+  # Reformat added and removed dates to remove time (this was not collected and does not appear in datebase) 
+  # In Oracle date 11/8/1984 changes to 1984-11-07 23:00:00
+  mutate(ADDED_SP_DATE = as.Date(strftime(ADDED_DT, format = "%Y-%m-%d")),
+         REMOVED_SP_DATE = as.Date(strftime(REMOVED_DT, format = "%Y-%m-%d"))) %>%
+  select(-c(ADDED_DT, REMOVED_DT)) 
 
 # Remove connection to Oracle when saving data to workspace
 rm(con)
