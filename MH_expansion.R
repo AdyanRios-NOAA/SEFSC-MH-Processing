@@ -20,6 +20,11 @@ mh_sect_expanded <- mh_cleaned %>%
 detailed_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1PViPVtqkY3q1fWUFGZm1UyIIYrFxt-YDitEUGaHBjsg/edit#gid=1115852389") %>%
   select(-MANAGEMENT_CATEGORY)
 
+# Check species table -- 7 have duplicates still
+sp_info_use2 <- sp_info_use %>%
+  group_by(FMP, SPECIES_NAME_TYPE, NAME, COMMON_NAME_USE) %>%
+  summarise(N = n())
+
 # Prep data for species expansion
 mh_sect_expanded <- mh_sect_expanded %>%
   # Add field for detailed (Y/N)
