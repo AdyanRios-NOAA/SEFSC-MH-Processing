@@ -13,6 +13,10 @@ spp_grp_view <- Sys.getenv("FMP_SPECIES_GRP")
 spp_agg_view <- Sys.getenv("FMP_SPECIES_AGG")
 spp_itis_xref <- Sys.getenv("SEDAT_SPP_ITIS")
 
+# Original species tables in Oracle
+Oracle_fmp_spp_grp <- dbGetQuery(con, paste0("select * from ", spp_grp_view, ""))
+Oracle_fmp_spp_agg <- dbGetQuery(con, paste0("select * from ", spp_agg_view, ""))
+
 # READ IN SPECIES LISTS #
 # Exclude HMS in all species tables 
 # Join SEDAT species ITIS table to standardize the common name field
