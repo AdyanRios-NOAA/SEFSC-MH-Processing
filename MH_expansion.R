@@ -22,7 +22,7 @@ detailed_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1PViPVtqkY3q
 
 # Check species table -- 7 have duplicates still
 sp_info_use2 <- sp_info_use %>%
-  group_by(FMP, SPECIES_NAME_TYPE, NAME, COMMON_NAME_USE) %>%
+  group_by(FMP, SPP_TYPE, SPP_NAME, COMMON_NAME_USE) %>%
   summarise(N = n())
 
 # Prep data for species expansion
@@ -30,39 +30,39 @@ mh_sect_expanded <- mh_sect_expanded %>%
   # Add field for detailed (Y/N)
   left_join(detailed_xref, by = "MANAGEMENT_TYPE") %>%
   # Transpose species fields to only have to join in the expansion on a single field
-  pivot_longer(cols = c(COMMON_NAME, SPECIES_AGGREGATE, SPECIES_GROUP), names_to = "SPECIES_NAME_TYPE", values_to = "NAME") %>%
+  pivot_longer(cols = c(COMMON_NAME, SPECIES_AGGREGATE, SPECIES_GROUP), names_to = "SPP_TYPE", values_to = "SPP_NAME") %>%
   # Remove records where name is null 
-  filter(!is.na(NAME))
+  filter(!is.na(SPP_NAME))
 
-# EXPAND MH on species only when detailed mtype
+# OVER EXPAND MH on species only when detailed mtype
 mh_sp_expanded_y <- mh_sect_expanded %>%
   # Filter to remove non-detailed records
   filter(DETAILED == 'YES') %>%
   # Join to species list table by species name type, name,  and FMP
-  full_join(., sp_info_use, by = c("SPECIES_NAME_TYPE", "NAME", "FMP")) %>%
+  full_join(., sp_info_use, by = c("FMP", "SPP_TYPE", "SPP_NAME")) %>%
   # Remove species group/aggregate name that do not appear in the database or FMP that are not in the data (i.e. HMS)
   filter(!is.na(REGULATION_ID)) %>%
-  mutate(COMMON_NAME_USE = case_when(is.na(COMMON_NAME_USE) ~ NAME,
+  mutate(COMMON_NAME_USE = case_when(is.na(COMMON_NAME_USE) ~ SPP_NAME,
                                      TRUE ~ COMMON_NAME_USE),
          SPECIES_ITIS_USE = case_when(is.na(SPECIES_ITIS_USE) ~ as.character(SPECIES_ITIS),
                                       TRUE ~ SPECIES_ITIS_USE)) %>%
   # Remove species when expanded if effective date > removed date
   # Remove species when expanded if ineffective date < added date
-  filter(EFFECTIVE_DATE < REMOVED_SP_DATE | is.na(REMOVED_SP_DATE) | INEFFECTIVE_DATE > ADDED_SP_DATE) %>%
-  # Impute ineffective date with the removed date for records where there is a removed date, but no ineffective date
-  mutate(IMP_INEFFECTIVE = case_when(is.na(INEFFECTIVE_DATE) & !is.na(REMOVED_SP_DATE) ~ 1,
-                                     TRUE ~ 0),
-         INEFFECTIVE_DATE = case_when(is.na(INEFFECTIVE_DATE) & !is.na(REMOVED_SP_DATE) ~ REMOVED_SP_DATE,
-                                      TRUE ~ INEFFECTIVE_DATE)) %>%
+  # filter(EFFECTIVE_DATE < REMOVED_SP_DATE | is.na(REMOVED_SP_DATE) | INEFFECTIVE_DATE > ADDED_SP_DATE) %>%
+  # # Impute ineffective date with the removed date for records where there is a removed date, but no ineffective date
+  # mutate(IMP_INEFFECTIVE = case_when(is.na(INEFFECTIVE_DATE) & !is.na(REMOVED_SP_DATE) ~ 1,
+  #                                    TRUE ~ 0),
+  #        INEFFECTIVE_DATE = case_when(is.na(INEFFECTIVE_DATE) & !is.na(REMOVED_SP_DATE) ~ REMOVED_SP_DATE,
+  #                                     TRUE ~ INEFFECTIVE_DATE)) %>%
   # Remove species expansion date variables
-  select(-c(ADDED_SP_DATE, REMOVED_SP_DATE, SPECIES_ITIS, SCIENTIFIC_NAME))
+  select(-c(SPECIES_ITIS, SCIENTIFIC_NAME))
 
 # Dataframe of non-detailed records in long form to join with expanded dataframe
 mh_sp_expanded_n <- mh_sect_expanded %>%
   # Filter to remove non-detailed records
   filter(DETAILED == 'NO') %>%
   # Get fields to match
-  mutate(COMMON_NAME_USE = NAME,
+  mutate(COMMON_NAME_USE = SPP_NAME,
          SPECIES_ITIS_USE = as.character(SPECIES_ITIS)) %>%
   select(-SPECIES_ITIS)
   
