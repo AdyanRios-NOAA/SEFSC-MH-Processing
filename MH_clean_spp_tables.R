@@ -78,23 +78,23 @@ agg_info = dbGetQuery(con, paste("select distinct
 # FMP Species data
 fmp_info_use <- fmp_info %>%
   # Set species_name_type to ALL
-  mutate(SPECIES_NAME_TYPE = "COMMON_NAME",
-         NAME = 'ALL') %>%
-  select(FMP_GROUP_NAME, SPECIES_NAME_TYPE, NAME, SPECIES_ITIS, COMMON_NAME, SCIENTIFIC_NAME, ADDED_DT, REMOVED_DT)
+  mutate(SPP_TYPE = "COMMON_NAME",
+         SPP_NAME = 'ALL') %>%
+  select(FMP_GROUP_NAME, SPP_TYPE, SPP_NAME, SPECIES_ITIS, COMMON_NAME, SCIENTIFIC_NAME, ADDED_DT, REMOVED_DT)
 
 # Species group data
 grp_info_use <- group_info %>%
   # Set species_name_type to species group
-  mutate(SPECIES_NAME_TYPE = "SPECIES_GROUP",
-         NAME = SUBGRP_NAME) %>%
-  select(FMP_GROUP_NAME, SPECIES_NAME_TYPE, NAME, SPECIES_ITIS, COMMON_NAME, SCIENTIFIC_NAME, ADDED_DT, REMOVED_DT)
+  mutate(SPP_TYPE = "SPECIES_GROUP",
+         SPP_NAME = SUBGRP_NAME) %>%
+  select(FMP_GROUP_NAME, SPP_TYPE, SPP_NAME, SPECIES_ITIS, COMMON_NAME, SCIENTIFIC_NAME, ADDED_DT, REMOVED_DT)
 
 # Species aggregate data
 agg_info_use <- agg_info %>%
   # Set species_name_type to species aggregate
-  mutate(SPECIES_NAME_TYPE = "SPECIES_AGGREGATE",
-         NAME = FMP_SPECIES_AGG_NAME) %>%
-  select(FMP_GROUP_NAME, SPECIES_NAME_TYPE, NAME, SPECIES_ITIS, COMMON_NAME, SCIENTIFIC_NAME, ADDED_DT, REMOVED_DT) %>%
+  mutate(SPP_TYPE = "SPECIES_AGGREGATE",
+         SPP_NAME = FMP_SPECIES_AGG_NAME) %>%
+  select(FMP_GROUP_NAME, SPP_TYPE, SPP_NAME, SPECIES_ITIS, COMMON_NAME, SCIENTIFIC_NAME, ADDED_DT, REMOVED_DT) %>%
   # One record has common name null for 'Bag Limit: Parrotfishes' - error to fix in database
   filter(!is.na(COMMON_NAME))
 
@@ -106,7 +106,7 @@ sp_info_use = bind_rows(fmp_info_use, grp_info_use, agg_info_use) %>%
          FMP = FMP_GROUP_NAME) %>%
   # Set field to upper to match MH dataset
   mutate(FMP = toupper(FMP),
-         NAME = toupper(NAME),
+         SPP_NAME = toupper(SPP_NAME),
          # Set common name for species ITIS codes missing common name
          COMMON_NAME_USE = case_when(SPECIES_ITIS_USE == '614546' ~ 'RAZORFISH, GREEN',
                                      SPECIES_ITIS_USE == '614513' ~ 'RAZORFISH, PEARLY',
