@@ -17,7 +17,7 @@ area_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1gVFz6UUiN5LU3Fr
 
 # New zone name variable called ZONE_USE as the standard zone name
 # Starting from sector expansion and not species because the species list have duplicates and need to be cleaned up first
-mh_preprocess <- mh_sect_expanded %>%
+mh_preprocess <- mh_sp_expanded %>%
   left_join(area_xref, by = c("ZONE" = "OLD_ZONE_NAME")) %>%
   rename(ZONE_USE = "NEW_ZONE_NAME") %>%
   # Since the cross reference table is only for Gulf Reef Fish, replace all NAs with the original zone name
