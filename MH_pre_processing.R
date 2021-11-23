@@ -131,7 +131,7 @@ test = multi_subsector2 %>%
   select(SECTOR_USE, SUBSECTOR_KEY) %>%
   distinct()
 
-# EXPANSION FUNTION ####
+# EXPANSION FUNCTION ####
 # ADAPTED TO ALLOW CONDITIONS AND EXPANSION TO BE REGION/FMP/SECTOR/SPECIES SPECIFIC (ETC)
 expand_mh <- function(datin, i) {
   data_expand <- datin %>%
