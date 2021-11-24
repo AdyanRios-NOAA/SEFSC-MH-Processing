@@ -109,6 +109,20 @@ for (i in 1:max(mh_prep_use$CLUSTER)) {
     mutate(REG_CHANGE = change_event)
 }
 
+# Create a blank list for storing all the cluster that will be looked at one by one 
+# For each cluster, filter to just that cluster and sort by effective and start date
+  # Create a new variable to track change events
+  # Start with the assumption that every event is a change event
+  # Only run comparison when there is more than one record in a cluster
+    # For each record (2:total number), compare to record immediately before
+      # The comparison is done by selecting the variables being tracked and filtering to just the two records being compared 
+      # If compare is 2 records long that means the two records are different (change event TRUE)
+      # If compare is 1 record long that means the two records were identical (change event FALSE) 
+  # Merge change event tracker back into the filtered cluster and save inside the list 
+  # Each element of that list is tied to one cluster
+# Flatten list and add flag that implies a redundant record
+
+# REVISIT the fact that reg_removed, multi_reg, general, and complex, and adjusted are currently considered never redundant
 
 # 4 FLATTEN LIST ADD FLAG THAT IMPLY A REDUNDANT RECORD ####
 
