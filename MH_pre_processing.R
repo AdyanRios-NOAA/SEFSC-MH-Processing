@@ -83,7 +83,7 @@ sector.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
                   "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
                   "SECTOR_USE",
                   "REGION",
-                  "COMMON_NAME", "SPECIES_AGGREGATE", "SPECIES_GROUP")
+                  "SPP_NAME", "COMMON_NAME_USE")
 
 sector_precluster <- mh_preprocess %>%
   select(one_of(sector.match)) %>%
@@ -138,9 +138,8 @@ expand_mh <- function(datin, i) {
     filter(if (expansions$MANAGEMENT_TYPE_USE[i] != "") MANAGEMENT_TYPE_USE == expansions$MANAGEMENT_TYPE_USE[i] else TRUE) %>%
     filter(if (expansions$FMP[i] != "") FMP == expansions$FMP[i] else TRUE) %>%
     filter(if (expansions$REGION[i] != "") REGION == expansions$REGION[i] else TRUE) %>%
-    filter(if (expansions$COMMON_NAME[i] != "") COMMON_NAME == expansions$COMMON_NAME[i] else TRUE) %>%
-    #filter(if (expansions$SPECIES_AGGREGATE[i] != "") SPECIES_AGGREGATE == expansions$SPECIES_AGGREGATE[i] else TRUE) %>%
-    #filter(if (expansions$SPECIES_GROUP[i] != "") SPECIES_GROUP == expansions$SPECIES_GROUP[i] else TRUE) %>%
+    filter(if (expansions$SPP_NAME[i] != "") SPP_NAME == expansions$SPP_NAME[i] else TRUE) %>%
+    filter(if (expansions$COMMON_NAME_USE[i] != "") COMMON_NAME_USE == expansions$COMMON_NAME_USE[i] else TRUE) %>%
     mutate(!!expansions$column_name[i] := case_when(get(expansions$column_name[i]) == expansions$expand_from[i] ~ expansions$expand_to[i],
                                                     get(expansions$column_name[i]) != expansions$expand_from[i] ~ get(expansions$column_name[i]))) %>%
     separate_rows(!!expansions$column_name[i], sep = ", ")
