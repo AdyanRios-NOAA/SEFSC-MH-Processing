@@ -25,12 +25,12 @@
 cluster.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
                    "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
                    "SECTOR_USE", "SUBSECTOR", "REGION", "ZONE_USE",
-                   "COMMON_NAME", "SPECIES_AGGREGATE", "SPECIES_GROUP")
+                   "SPP_NAME", "COMMON_NAME_USE")
 
 collection.match <- c("MANAGEMENT_TYPE_USE",
                       "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
                       "SECTOR_USE", "SUBSECTOR", "REGION", "ZONE_USE",
-                      "COMMON_NAME", "SPECIES_AGGREGATE", "SPECIES_GROUP")
+                      "SPP_NAME", "COMMON_NAME_USE")
 
 # 1B COUNT HOW MANY CLUSTERS TO PROCESS ####
 
@@ -109,6 +109,20 @@ for (i in 1:max(mh_prep_use$CLUSTER)) {
     mutate(REG_CHANGE = change_event)
 }
 
+# Create a blank list for storing all the cluster that will be looked at one by one 
+# For each cluster, filter to just that cluster and sort by effective and start date
+  # Create a new variable to track change events
+  # Start with the assumption that every event is a change event
+  # Only run comparison when there is more than one record in a cluster
+    # For each record (2:total number), compare to record immediately before
+      # The comparison is done by selecting the variables being tracked and filtering to just the two records being compared 
+      # If compare is 2 records long that means the two records are different (change event TRUE)
+      # If compare is 1 record long that means the two records were identical (change event FALSE) 
+  # Merge change event tracker back into the filtered cluster and save inside the list 
+  # Each element of that list is tied to one cluster
+# Flatten list and add flag that implies a redundant record
+
+# REVISIT the fact that reg_removed, multi_reg, general, and complex, and adjusted are currently considered never redundant
 
 # 4 FLATTEN LIST ADD FLAG THAT IMPLY A REDUNDANT RECORD ####
 
@@ -158,7 +172,7 @@ mh_redundant_GOMRF <- mh_detect %>%
 mh_gulf_reef_review <- mh_sort %>% filter(FMP == 'REEF FISH RESOURCES OF THE GULF OF MEXICO') %>%
   bind_rows(., mh_redundant_GOMRF) %>%
   select(., REGION, REGULATION_ID, FR_CITATION, SECTOR_USE, SUBSECTOR, MANAGEMENT_CATEGORY, MANAGEMENT_TYPE, MANAGEMENT_STATUS, ZONE_USE,
-         COMMON_NAME, SPECIES_AGGREGATE, SPECIES_GROUP, EFFECTIVE_DATE, INEFFECTIVE_DATE,
+         SPP_NAME, COMMON_NAME_USE, EFFECTIVE_DATE, INEFFECTIVE_DATE,
          START_DAY_RECURRING, START_MONTH_RECURRING, START_TIME_RECURRING, START_DAY_OF_WEEK_RECURRING,
          END_DAY_RECURRING, END_MONTH_RECURRING, END_TIME_RECURRING, END_DAY_OF_WEEK_RECURRING,
          MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, CLUSTER, COLLECTION, GENERAL, COMPLEX,
