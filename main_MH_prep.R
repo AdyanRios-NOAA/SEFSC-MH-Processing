@@ -31,12 +31,13 @@ source('./MH_expansion.R')
 
 
 # 3: Pre-processing clean up (new zone names, renaming "adjusted", creating various new variables)
-# Dataframe result = mh_ready
+  # Dataframe result = mh_ready
 source('./MH_pre_processing.R')
 
 
 # 4: Sorting by cluster and fill in dates
-# Dataframe result = mh_sort
+  # Dataframe result = mh_sort (before final species expansion cleaning)
+  # Dataframe result = mh_sort2 (remove expanded species that are no longer in the group and adjust start and end dates to reflect species added and removed dates)
 source('./MH_process.R')
 
 # 5: Post-processing by collection - grouping related mtypes (mtype = cluster)
