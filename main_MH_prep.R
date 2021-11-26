@@ -1,16 +1,9 @@
 # Main Management History Processing
 
 # Load packages
-pkgs <- c('tidyverse', 'lubridate', 'googlesheets4', 'dotenv', 'ROracle', 'keyring')
+install.packages("pacman")
 
-load.packages = function(a){
-  if(!require(a, character.only = TRUE)){
-    install.packages(a)
-    library(a, character.only = TRUE)
-  }
-}
-
-lapply(pkgs, load.packages)
+pacman::p_load(tidyverse, lubridate, googlesheets4, dotenv, ROracle, keyring)
 
 # For accessing tables as Google sheets, need to authenticate email address
 gs4_auth()
