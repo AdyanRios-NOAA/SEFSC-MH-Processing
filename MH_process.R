@@ -189,8 +189,10 @@ chk_spp_sum <- chk_spp %>%
                                 chk_spp == 3 ~ 'adjust start date',
                                 chk_spp == 4 ~ 'remove'))
 
-mh_sort2 <- mh_sort %>%
-  mutate(IMP_START_DATE = case_when(ADDED_SP_DATE > START_DATE & END_DATE > ADDED_SP_DATE ~ 1,
+mh_sort_flagged <- mh_sort %>%
+  mutate(RM_SPP = case_when(REMOVED_SP_DATE < START_DATE | (ADDED_SP_DATE > START_DATE & END_DATE < ADDED_SP_DATE) ~ 1,
+                            TRUE ~ 0),
+         IMP_START_DATE = case_when(ADDED_SP_DATE > START_DATE & END_DATE > ADDED_SP_DATE ~ 1,
                                     TRUE ~ 0),
          START_DATE = case_when(ADDED_SP_DATE > START_DATE & END_DATE > ADDED_SP_DATE ~ ADDED_SP_DATE,
                                 TRUE ~ START_DATE),
@@ -202,24 +204,24 @@ mh_sort2 <- mh_sort %>%
 
 # 8 EXPORT DATA ####
 
-write.csv(mh_sort, paste0("./Output/MHprocessed_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
+write.csv(mh_sort_flagged, paste0("./Output/MHprocessed_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
 
-## Export for reviewing results for Gulf Reef Fish (SFA)
-mh_redundant_GOMRF <- mh_detect %>%
-  filter(REDUNDANT == 1, FMP == 'REEF FISH RESOURCES OF THE GULF OF MEXICO')
-mh_gulf_reef_review <- mh_sort2 %>% filter(FMP == 'REEF FISH RESOURCES OF THE GULF OF MEXICO') %>%
-  bind_rows(., mh_redundant_GOMRF) %>%
-  select(., REGION, REGULATION_ID, FR_CITATION, SECTOR_USE, SUBSECTOR, MANAGEMENT_CATEGORY, MANAGEMENT_TYPE, MANAGEMENT_STATUS, ZONE_USE,
-         SPP_NAME, COMMON_NAME_USE, EFFECTIVE_DATE, INEFFECTIVE_DATE,
-         START_DAY_RECURRING, START_MONTH_RECURRING, START_TIME_RECURRING, START_DAY_OF_WEEK_RECURRING,
-         END_DAY_RECURRING, END_MONTH_RECURRING, END_TIME_RECURRING, END_DAY_OF_WEEK_RECURRING,
-         MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, CLUSTER, COLLECTION, GENERAL, COMPLEX,
-         VALUE, VALUE_UNITS, VALUE_TYPE, VALUE_RATE,
-         REG_CHANGE, MULTI_REG, MULTI_REG_CLUSTER, REG_REMOVED, REDUNDANT, NEVER_IMPLEMENTED, diff, diff_days, CHANGE_DATE,
-         vol, page, START_DATE, END_DATE, IMP_START_DATE, IMP_END_DATE) %>%
-  arrange(., CLUSTER, START_DATE, vol, page)
-
-write.csv(mh_sort, paste0("./Output/MHprocessed_clean_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
+# ## Export for reviewing results for Gulf Reef Fish (SFA)
+# mh_redundant_GOMRF <- mh_detect %>%
+#   filter(REDUNDANT == 1, FMP == 'REEF FISH RESOURCES OF THE GULF OF MEXICO')
+# mh_gulf_reef_review <- mh_sort2 %>% filter(FMP == 'REEF FISH RESOURCES OF THE GULF OF MEXICO') %>%
+#   bind_rows(., mh_redundant_GOMRF) %>%
+#   select(., REGION, REGULATION_ID, FR_CITATION, SECTOR_USE, SUBSECTOR, MANAGEMENT_CATEGORY, MANAGEMENT_TYPE, MANAGEMENT_STATUS, ZONE_USE,
+#          SPP_NAME, COMMON_NAME_USE, EFFECTIVE_DATE, INEFFECTIVE_DATE,
+#          START_DAY_RECURRING, START_MONTH_RECURRING, START_TIME_RECURRING, START_DAY_OF_WEEK_RECURRING,
+#          END_DAY_RECURRING, END_MONTH_RECURRING, END_TIME_RECURRING, END_DAY_OF_WEEK_RECURRING,
+#          MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, CLUSTER, COLLECTION, GENERAL, COMPLEX,
+#          VALUE, VALUE_UNITS, VALUE_TYPE, VALUE_RATE,
+#          REG_CHANGE, MULTI_REG, MULTI_REG_CLUSTER, REG_REMOVED, REDUNDANT, NEVER_IMPLEMENTED, diff, diff_days, CHANGE_DATE,
+#          vol, page, START_DATE, END_DATE, IMP_START_DATE, IMP_END_DATE) %>%
+#   arrange(., CLUSTER, START_DATE, vol, page)
+# 
+# write.csv(mh_sort2, paste0("./Output/MHprocessed_clean_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
 
 
 # FOLLOW UP: REG OFF, CHECK CLUSTERS
