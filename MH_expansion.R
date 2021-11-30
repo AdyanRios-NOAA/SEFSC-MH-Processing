@@ -29,8 +29,13 @@ sp_info_use2 <- sp_info_use %>%
 mh_sect_expanded <- mh_sect_expanded %>%
   # Add field for detailed (Y/N)
   left_join(detailed_xref, by = "MANAGEMENT_TYPE") %>%
+  # Create duplicates of species fields to retain original data format
+  mutate(O_COMMON_NAME = COMMON_NAME,
+         O_SPECIES_AGGREGATE = SPECIES_AGGREGATE,
+         O_SPECIES_GROUP = SPECIES_GROUP) %>%
   # Transpose species fields to only have to join in the expansion on a single field
-  pivot_longer(cols = c(COMMON_NAME, SPECIES_AGGREGATE, SPECIES_GROUP), names_to = "SPP_TYPE", values_to = "SPP_NAME") %>%
+  pivot_longer(cols = c("COMMON_NAME" = O_COMMON_NAME, "SPECIES_AGGREGATE" = O_SPECIES_AGGREGATE, 
+                        "SPECIES_GROUP" = O_SPECIES_GROUP), names_to = "SPP_TYPE", values_to = "SPP_NAME") %>%
   # Remove records where name is null 
   filter(!is.na(SPP_NAME))
 
