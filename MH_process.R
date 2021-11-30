@@ -32,26 +32,41 @@ collection.match <- c("MANAGEMENT_TYPE_USE",
                       "SECTOR_USE", "SUBSECTOR", "REGION", "ZONE_USE",
                       "SPP_NAME", "COMMON_NAME_USE")
 
+# READ IN EXISTING CLUSTERS AND COLLECTIONS
+batch_date <- "30Nov2021"
+existing_clusters <- read.csv(paste0("mh_unique_clusters", batch_date, ".csv"))
+existing_collections <- read.csv(paste0("mh_unique_collections", batch_date, ".csv"))
+
+# GET STARTING NUMBER OF CURRENT CLUSTERS
+
+max(existing_clusters$CLUSTER)
+max(unique_collections$CLUSTER)
+  
 # 1B COUNT HOW MANY CLUSTERS TO PROCESS ####
 
-mh_unique_clusters <- mh_ready %>%
+unique_clusters <- mh_ready %>%
   select(one_of(cluster.match)) %>%
   distinct() %>%
   mutate(CLUSTER = as.numeric(row.names(.)))
 
-mh_unique_collections <- mh_ready %>%
+unique_collections <- mh_ready %>%
   select(one_of(collection.match)) %>%
   distinct() %>%
   mutate(COLLECTION = as.numeric(row.names(.)))
+
+# EXPORT NEW LIST OF CLUSTERS
+write.csv(unique_clusters, paste0("mh_unique_clusters", format(Sys.Date(), "%d%b%Y"),".csv"), row.names = FALSE)
+write.csv(unique_collections, paste0("mh_unique_collections,", format(Sys.Date(), "%d%b%Y"),".csv"), row.names = FALSE)
+
+max(unique_clusters$CLUSTER) # NEW NUMBER OF "CLUSTERS" TO PROCESS
+max(unique_collections$COLLECTION) # NEW NUMBER OF "COLLECTIONS" TO PROCESS
+
+# JOIN IN CLUSTERS
 
 mh_prep <- mh_ready %>%
   left_join(., mh_unique_clusters, by = cluster.match) %>%
   left_join(., mh_unique_collections, by = collection.match) %>%
   mutate(REG_CHANGE = 1)
-
-max(mh_prep$CLUSTER) # NUMBER OF "CLUSTERS" TO PROCESS
-max(mh_prep$COLLECTION) # NUMBER OF "COLLECTIONS" TO PROCESS
-
 
 # 1C NOTE WHEN THERE ARE MULTIPLE RECORDS PER CLUSTER PER FR ACTIVE AT THE SAME TIME####
 
