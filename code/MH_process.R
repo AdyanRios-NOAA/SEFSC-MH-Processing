@@ -33,14 +33,14 @@ collection.match <- c("MANAGEMENT_TYPE_USE",
                       "SPP_NAME", "COMMON_NAME_USE")
 
 # READ IN EXISTING CLUSTERS AND COLLECTIONS
-batch_date <- "30Nov2021"
-existing_clusters <- read.csv(paste0("mh_unique_clusters", batch_date, ".csv"))
-existing_collections <- read.csv(paste0("mh_unique_collections", batch_date, ".csv"))
+batch_date <- "01Dec2021"
+existing_clusters <- read.csv(here("data/process", paste0("mh_unique_clusters_", batch_date, ".csv")))
+existing_collections <- read.csv(here("data/process", paste0("mh_unique_collections_", batch_date, ".csv")))
 
 # GET STARTING NUMBER OF CURRENT CLUSTERS FOR REFERENCE
 
-clu_max = max(existing_clusters$CLUSTER)
-col_max = max(unique_collections$CLUSTER)
+clusters_max = max(existing_clusters$CLUSTER)
+collections_max = max(unique_collections$CLUSTER)
   
 # 1B COUNT HOW MANY CLUSTERS TO PROCESS ####
 
@@ -55,8 +55,8 @@ unique_collections <- mh_ready %>%
   mutate(COLLECTION = as.numeric(row.names(.)))
 
 # EXPORT NEW LIST OF CLUSTERS
-write.csv(unique_clusters, paste0("mh_unique_clusters", format(Sys.Date(), "%d%b%Y"),".csv"), row.names = FALSE)
-write.csv(unique_collections, paste0("mh_unique_collections,", format(Sys.Date(), "%d%b%Y"),".csv"), row.names = FALSE)
+write.csv(unique_clusters, here("data/process", paste0("mh_unique_clusters_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
+write.csv(unique_collections, here("data/process", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
 
 max(unique_clusters$CLUSTER) # NEW NUMBER OF "CLUSTERS" TO PROCESS
 max(unique_collections$COLLECTION) # NEW NUMBER OF "COLLECTIONS" TO PROCESS
