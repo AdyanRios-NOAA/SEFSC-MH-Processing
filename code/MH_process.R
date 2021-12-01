@@ -37,10 +37,10 @@ batch_date <- "30Nov2021"
 existing_clusters <- read.csv(paste0("mh_unique_clusters", batch_date, ".csv"))
 existing_collections <- read.csv(paste0("mh_unique_collections", batch_date, ".csv"))
 
-# GET STARTING NUMBER OF CURRENT CLUSTERS
+# GET STARTING NUMBER OF CURRENT CLUSTERS FOR REFERENCE
 
-max(existing_clusters$CLUSTER)
-max(unique_collections$CLUSTER)
+clu_max = max(existing_clusters$CLUSTER)
+col_max = max(unique_collections$CLUSTER)
   
 # 1B COUNT HOW MANY CLUSTERS TO PROCESS ####
 
