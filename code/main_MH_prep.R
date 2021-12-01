@@ -7,6 +7,10 @@ librarian::shelf(here, tidyverse, lubridate, googlesheets4, dotenv, ROracle, key
 # SET WD RELATIVE TO PROJECT LOCATION
 here::i_am('code/main_MH_prep.R')
 
+# CREATE FOLDERS FOR PROCESSED DATA (THESE ARE IGNORED BY GIT DUE TO FILE SIZE)
+dir.create(here('data', "preprocessed"), showWarnings = FALSE)
+dir.create(here('data', "processed"), showWarnings = FALSE)
+
 # For accessing tables as Google sheets, need to authenticate email address
 gs4_auth()
 

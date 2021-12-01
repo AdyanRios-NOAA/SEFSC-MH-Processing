@@ -34,38 +34,45 @@ collection.match <- c("MANAGEMENT_TYPE_USE",
 
 # READ IN EXISTING CLUSTERS AND COLLECTIONS
 batch_date <- "01Dec2021"
-existing_clusters <- read.csv(here("data/process", paste0("mh_unique_clusters_", batch_date, ".csv")))
-existing_collections <- read.csv(here("data/process", paste0("mh_unique_collections_", batch_date, ".csv")))
+existing_clusters <- read.csv(here("data/processed", paste0("mh_unique_clusters_", batch_date, ".csv")))
+existing_collections <- read.csv(here("data/processed", paste0("mh_unique_collections_", batch_date, ".csv")))
 
 # GET STARTING NUMBER OF CURRENT CLUSTERS FOR REFERENCE
 
 clusters_max = max(existing_clusters$CLUSTER)
-collections_max = max(unique_collections$CLUSTER)
+collections_max = max(unique_collections$COLLECTION)
   
 # 1B COUNT HOW MANY CLUSTERS TO PROCESS ####
 
 unique_clusters <- mh_ready %>%
   select(one_of(cluster.match)) %>%
   distinct() %>%
-  mutate(CLUSTER = as.numeric(row.names(.)))
+  left_join(existing_clusters) %>%
+  arrange(CLUSTER) %>%
+  mutate(CLUSTER = 1:n())
 
 unique_collections <- mh_ready %>%
   select(one_of(collection.match)) %>%
   distinct() %>%
-  mutate(COLLECTION = as.numeric(row.names(.)))
+  left_join(existing_collections) %>%
+  arrange(COLLECTION) %>%
+  mutate(COLLECTION = 1:n())
 
 # EXPORT NEW LIST OF CLUSTERS
-write.csv(unique_clusters, here("data/process", paste0("mh_unique_clusters_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
-write.csv(unique_collections, here("data/process", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
+write.csv(unique_clusters, here("data/processed", paste0("mh_unique_clusters_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
+write.csv(unique_collections, here("data/processed", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
 
-max(unique_clusters$CLUSTER) # NEW NUMBER OF "CLUSTERS" TO PROCESS
-max(unique_collections$COLLECTION) # NEW NUMBER OF "COLLECTIONS" TO PROCESS
+# NEW "CLUSTERS" ADDED
+max(unique_clusters$CLUSTER) - clusters_max 
+
+# NEW "COLLECTIONS" ADDED
+max(unique_collections$COLLECTION) - collections_max 
 
 # JOIN IN CLUSTERS
 
 mh_prep <- mh_ready %>%
-  left_join(., mh_unique_clusters, by = cluster.match) %>%
-  left_join(., mh_unique_collections, by = collection.match) %>%
+  left_join(., unique_clusters, by = cluster.match) %>%
+  left_join(., unique_collections, by = collection.match) %>%
   mutate(REG_CHANGE = 1)
 
 # 1C NOTE WHEN THERE ARE MULTIPLE RECORDS PER CLUSTER PER FR ACTIVE AT THE SAME TIME####
