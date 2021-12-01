@@ -43,4 +43,5 @@ vignettes/*.pdf
 
 # Processed data (output) folder where all .csv files saved to
 processed/
+preprocessed/
 

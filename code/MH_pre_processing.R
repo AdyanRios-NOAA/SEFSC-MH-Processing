@@ -4,9 +4,6 @@
   # Rename mtype "adjustment" to be a flag
   # Create various new variables for processing
 
-# Suppress warning if Output directory already exists
-options(warn=-1)
-
 # Areas clean up
 # Read in Google sheets for new zone name for some Gulf Reef Fish zone names
 area_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1gVFz6UUiN5LU3Fr9NuFSumKGeHvRubgZviJt7R73Gvg/edit#gid=0") %>%
@@ -72,11 +69,8 @@ mh_preprocess <- mh_preprocess %>%
 
 # FIND SECTOR FORKS
 
-# Create the Output directory folder where all .csv files will be sent to (this folder will be in the gitignore)
-dir.create("./Output")
-
 #SAFE FOR PIVOT TABLE TESTS IN EXCEL
-write.csv(mh_preprocess, paste0("./Output/MHpreprocess_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
+write.csv(mh_preprocess, here('data/preprocessed', paste0("MHpreprocess_", format(Sys.Date(), "%d%b%Y"), ".csv")), row.names = FALSE)
 
 #CREATE A WAY TO TRACK WHICH SECTORS HAVE MULTIPLE SUBSECTORS
 sector.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
@@ -150,6 +144,6 @@ expand_mh <- function(datin, i) {
 }
 
 # READ IN AND RUN EXPANSIONS ####
-expansions <- read.csv("./MHpreprocess_expansions.csv", stringsAsFactors = FALSE,
+expansions <- read.csv(here('data/interim', "./MHpreprocess_expansions.csv"), stringsAsFactors = FALSE,
                        fileEncoding = "latin1")
 mh_ready <- Reduce(expand_mh, 1:length(expansions$column_name), init = mh_preprocess, accumulate = FALSE)
