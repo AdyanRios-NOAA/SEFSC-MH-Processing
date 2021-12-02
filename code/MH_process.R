@@ -34,8 +34,8 @@ collection.match <- c("MANAGEMENT_TYPE_USE",
 
 # READ IN EXISTING CLUSTERS AND COLLECTIONS
 batch_date <- "01Dec2021"
-existing_clusters <- read.csv(here("data/processed", paste0("mh_unique_clusters_", batch_date, ".csv")))
-existing_collections <- read.csv(here("data/processed", paste0("mh_unique_collections_", batch_date, ".csv")))
+existing_clusters <- read.csv(here("data/interim", paste0("mh_unique_clusters_", batch_date, ".csv")))
+existing_collections <- read.csv(here("data/interim", paste0("mh_unique_collections_", batch_date, ".csv")))
 
 # GET STARTING NUMBER OF CURRENT CLUSTERS FOR REFERENCE
 
@@ -59,8 +59,8 @@ unique_collections <- mh_ready %>%
   mutate(COLLECTION = 1:n())
 
 # EXPORT NEW LIST OF CLUSTERS
-write.csv(unique_clusters, here("data/processed", paste0("mh_unique_clusters_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
-write.csv(unique_collections, here("data/processed", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
+write.csv(unique_clusters, here("data/interim", paste0("mh_unique_clusters_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
+write.csv(unique_collections, here("data/interim", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
 
 # NEW "CLUSTERS" ADDED
 max(unique_clusters$CLUSTER) - clusters_max 
