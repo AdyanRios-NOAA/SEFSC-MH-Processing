@@ -27,52 +27,70 @@ cluster.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
                    "SECTOR_USE", "SUBSECTOR", "REGION", "ZONE_USE",
                    "SPP_NAME", "COMMON_NAME_USE")
 
-collection.match <- c("MANAGEMENT_TYPE_USE",
-                      "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
-                      "SECTOR_USE", "SUBSECTOR", "REGION", "ZONE_USE",
-                      "SPP_NAME", "COMMON_NAME_USE")
+# READ IN EXISTING CLUSTERS
 
-# READ IN EXISTING CLUSTERS AND COLLECTIONS
-batch_date <- "01Dec2021"
-existing_clusters <- read.csv(here("data/interim", paste0("mh_unique_clusters_", batch_date, ".csv")))
-existing_collections <- read.csv(here("data/interim", paste0("mh_unique_collections_", batch_date, ".csv")))
+cluster_files <- dir(here('data/interim/clusters'), full.names = TRUE)
+
+existing_clusters <- cluster_files %>%
+  map(read_csv) %>% 
+  reduce(rbind)
 
 # GET STARTING NUMBER OF CURRENT CLUSTERS FOR REFERENCE
 
 clusters_max = max(existing_clusters$CLUSTER)
-collections_max = max(unique_collections$COLLECTION)
-  
-# 1B COUNT HOW MANY CLUSTERS TO PROCESS ####
 
-unique_clusters <- mh_ready %>%
+# ASSIGN NUMBERS TO NEW CLUSTERS
+
+new_clusters <- mh_ready %>%
   select(one_of(cluster.match)) %>%
   distinct() %>%
-  left_join(existing_clusters) %>%
-  arrange(CLUSTER) %>%
-  mutate(CLUSTER = 1:n())
+  anti_join(existing_clusters) %>%
+  mutate(CLUSTER = (1:n() + clusters_max)[seq_len(nrow(.))])
 
-unique_collections <- mh_ready %>%
-  select(one_of(collection.match)) %>%
-  distinct() %>%
-  left_join(existing_collections) %>%
-  arrange(COLLECTION) %>%
-  mutate(COLLECTION = 1:n())
+# EXPORT NEW CLUSTERS
+if(length(new_clusters$CLUSTER) > 0) {
+  write_csv(new_clusters, 
+            here("data/interim/clusters", paste0("mh_unique_clusters_", format(Sys.Date(), "%d%b%Y"),"b.csv")))
+}
 
-# EXPORT NEW LIST OF CLUSTERS
-write.csv(unique_clusters, here("data/interim", paste0("mh_unique_clusters_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
-write.csv(unique_collections, here("data/interim", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
+# MERGE OLD AND NEW CLUSTERS
+unique_clusters <- rbind(existing_clusters, new_clusters)
 
-# NEW "CLUSTERS" ADDED
-max(unique_clusters$CLUSTER) - clusters_max 
+# # GROUP DATA INTO PROCESSING COLLECTIONS ####
+# 
+# collection.match <- c("MANAGEMENT_TYPE_USE",
+#                       "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
+#                       "SECTOR_USE", "SUBSECTOR", "REGION", "ZONE_USE",
+#                       "SPP_NAME", "COMMON_NAME_USE")
+# 
+# # READ IN EXISTING COLLECTIONS
+# collection_files <- dir(here('data/interim/collections'), full.names = TRUE)
+#   
+# existing_collections <- collection_files %>%
+#   map(read_csv) %>% 
+#   reduce(rbind)
+# 
+# # GET STARTING NUMBER OF CURRENT COLLECTIONS FOR REFERENCE
+# collections_max = max(existing_collections$COLLECTION)
+#   
+# # ASSIGN NUMBERS TO NEW COLLECTIONS  ####
+# 
+# new_collections <- mh_ready %>%
+#   select(one_of(collection.match)) %>%
+#   distinct() %>%
+#   anti_join(existing_collections) %>%
+#   mutate(COLLECTION = (1:n() + collections_max)[seq_len(nrow(.))])
+# 
+# # EXPORT NEW COLLECTIONS
+# 
+# write.csv(new_collections, here("data/interim/collections", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
 
-# NEW "COLLECTIONS" ADDED
-max(unique_collections$COLLECTION) - collections_max 
 
-# JOIN IN CLUSTERS
+# JOIN IN CLUSTERS AND COLLECTIONS
 
 mh_prep <- mh_ready %>%
   left_join(., unique_clusters, by = cluster.match) %>%
-  left_join(., unique_collections, by = collection.match) %>%
+  # left_join(., unique_collections, by = collection.match) %>%
   mutate(REG_CHANGE = 1)
 
 # 1C NOTE WHEN THERE ARE MULTIPLE RECORDS PER CLUSTER PER FR ACTIVE AT THE SAME TIME####
