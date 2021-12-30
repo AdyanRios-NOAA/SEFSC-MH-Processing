@@ -122,7 +122,7 @@ unique_sector_keys = multi_subsector2 %>%
 
 test = multi_subsector2 %>%
   filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO") %>%
-  select(SECTOR_USE, SUBSECTOR_KEY) %>%
+  select(SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY) %>%
   distinct()
 
 # EXPANSION FUNCTION ####
