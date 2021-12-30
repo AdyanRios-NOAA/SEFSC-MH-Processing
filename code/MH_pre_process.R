@@ -14,7 +14,7 @@ area_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1gVFz6UUiN5LU3Fr
 
 # New zone name variable called ZONE_USE as the standard zone name
 # Starting from sector expansion and not species because the species list have duplicates and need to be cleaned up first
-mh_preprocess <- mh_sp_expanded %>%
+mh_setup <- mh_sp_expanded %>%
   left_join(area_xref, by = c("ZONE" = "OLD_ZONE_NAME")) %>%
   rename(ZONE_USE = "NEW_ZONE_NAME") %>%
   # Since the cross reference table is only for Gulf Reef Fish, replace all NAs with the original zone name
@@ -24,7 +24,7 @@ mh_preprocess <- mh_sp_expanded %>%
   mutate(ZONE_USE = gsub(",", "", ZONE_USE))
 
 # Create new variables
-mh_preprocess <- mh_preprocess %>%
+mh_preprocess <- mh_setup %>%
   # Pull out the volume and page number as separate fields from the FR CITATION (currently warning appears because page is NA for "81 FR 33150 B", but once fixed as a bug the warning should go away)
   mutate(vol = as.numeric(sub(" FR.*", "", FR_CITATION)),
          page = as.numeric(sub(".*FR ", "", FR_CITATION)),
@@ -113,8 +113,8 @@ multi_subsector2 <- sector_precluster %>%
   data.frame()
 
 unique_sector_keys = multi_subsector2 %>%
-  select(SECTOR_USE, SUBSECTOR_KEY) %>%
-  group_by(SECTOR_USE, SUBSECTOR_KEY) %>%
+  select(SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY) %>%
+  group_by(SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY) %>%
   mutate(SUBSECTOR_N = length(SECTOR_USE)) %>%
   distinct() %>%
   arrange(SUBSECTOR_N) %>%
