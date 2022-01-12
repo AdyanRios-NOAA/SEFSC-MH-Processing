@@ -28,7 +28,9 @@ mh_cleaned <- mh %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(MANAGEMENT_TYPE == 'CLOSED AREA' ~ 'CLOSURE',
                                      # This means if the previous condition is not met, then MANAGEMENT_TYPE should be the original MANAGEMENT_TYPE
-                                     TRUE ~ MANAGEMENT_TYPE))
+                                     TRUE ~ MANAGEMENT_TYPE),
+         MANAGEMENT_CATEGORY = case_when(MANAGEMENT_CATEGORY == 'SPATIAL CLOSURE' ~ 'TEMPORAL CONTROLS',
+                                         TRUE ~ MANAGEMENT_CATEGORY))
 
 # Move all definition terms to value and rename management category = OTHER and management type = DEFINITION
 mh_cleaned <- mh_cleaned %>%
@@ -212,14 +214,34 @@ mh_cleaned <- mh_cleaned %>%
   # BUG ID 4464
   filter(REGULATION_ID != 1227) %>%
   # Bug ID 4590
-  filter(REGULATION_ID != 511)%>%
+  filter(REGULATION_ID != 511) %>%
   #Bug ID 4591
   filter(REGULATION_ID != 1341) %>%
   #BUG ID -9 - REMOVING DUPLICATE ERRONEOUS FR (85 FR 50333)
   filter(REGULATION_ID != 207) %>%
   #BUG ID -10 - REMOVING DUPLICATE ERRONEOUS FR (85 FR 50334)
-  filter(REGULATION_ID != 206)
-
+  filter(REGULATION_ID != 206) %>%
+  #Bug ID 5286 
+  filter(REGULATION_ID != 640) %>%
+  #Bug ID 5287
+  filter(REGULATION_ID != 573) %>%
+  #Bug ID 5296
+  filter(REGULATION_ID != 457) %>%
+  #Bug ID 5297
+  filter(REGULATION_ID != 824) %>%
+  #Bug ID 5326
+  filter(REGULATION_ID != 872) %>%
+  #Bug ID 5336
+  filter(REGULATION_ID != 306) %>%
+  #Bug ID 5337
+  filter(REGULATION_ID != 305) %>%
+  #Bug ID 5338
+  filter(REGULATION_ID != 304) %>%
+  #Bug ID 5346
+  filter(REGULATION_ID != 421) %>%
+  #Bug ID 5456
+  filter(REGULATION_ID != 692)
+  
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
   mutate(FR_CITATION = case_when(REGULATION_ID == 2126 ~ '78 FR 22950',
@@ -269,6 +291,54 @@ mh_cleaned <- mh_cleaned %>%
          VALUE_TYPE = case_when(REGULATION_ID != 671 ~ VALUE_TYPE),
          VALUE_RATE = case_when(REGULATION_ID != 671 ~ VALUE_RATE))
 
+#Bug ID 5288 - Update MCat:MType to Other: Ignorable for record related to correction
+mh_cleaned <- mh_cleaned %>%
+  mutate(FR_SECTION = case_when(REGULATION_ID == 223 ~ '50 CFR 622',
+                                TRUE ~ FR_SECTION),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 223 ~ 'OTHER',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 223 ~ 'IGNORABLE',
+                                     TRUE ~ MANAGEMENT_TYPE),
+         SECTOR = case_when(REGULATION_ID == 223 ~ 'ALL',
+                               TRUE ~ SECTOR),
+         VALUE = case_when(REGULATION_ID != 223 ~ VALUE),
+         VALUE_UNITS = case_when(REGULATION_ID != 223 ~ VALUE_UNITS),
+         VALUE_TYPE = case_when(REGULATION_ID != 223 ~ VALUE_TYPE),
+         VALUE_RATE = case_when(REGULATION_ID != 223 ~ VALUE_RATE))
+
+#Bug ID 5306 - Update MCat:MType to Other: Ignorable for record related to correction
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 412 ~ 'OTHER',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 412 ~ 'IGNORABLE',
+                                     TRUE ~ MANAGEMENT_TYPE),
+         SECTOR = case_when(REGULATION_ID == 412 ~ 'ALL',
+                            TRUE ~ SECTOR),
+         VALUE = case_when(REGULATION_ID != 412 ~ VALUE),
+         VALUE_UNITS = case_when(REGULATION_ID != 412 ~ VALUE_UNITS),
+         VALUE_TYPE = case_when(REGULATION_ID != 412 ~ VALUE_TYPE),
+         VALUE_RATE = case_when(REGULATION_ID != 412 ~ VALUE_RATE),
+         FLAG = case_when(REGULATION_ID == 412 ~ 'NO',
+                          TRUE ~ FLAG))
+
+#Bug ID 5316 - Update MCat:MType to Other:Ignorable for record related to correction
+mh_cleaned <- mh_cleaned %>%
+  mutate(FR_SECTION = case_when(REGULATION_ID == 298 ~ '50 CFR 622',
+                                TRUE ~ FR_SECTION),
+        MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 298 ~ 'OTHER',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 298 ~ 'IGNORABLE',
+                                     TRUE ~ MANAGEMENT_TYPE),
+         MANAGEMENT_STATUS = case_when(REGULATION_ID != 298 ~ MANAGEMENT_STATUS),
+        START_DAY = case_when(REGULATION_ID == 298 ~ 26L,
+                              TRUE ~ START_DAY),
+        START_MONTH = case_when(REGULATION_ID == 298 ~ 5L,
+                                TRUE ~ START_MONTH),
+        START_YEAR = case_when(REGULATION_ID == 298 ~ 2010L,
+                               TRUE ~ START_YEAR),
+        END_DAY = case_when(REGULATION_ID != 298 ~ END_DAY),
+        END_MONTH = case_when(REGULATION_ID != 298 ~ END_DAY))
+
 # Bug ID 4954 - remove the 1,000 hook limit
 mh_cleaned <- mh_cleaned %>%
   mutate(VALUE = case_when(REGULATION_ID == 911 ~ '1000',
@@ -308,6 +378,17 @@ mh_cleaned <- mh_cleaned %>%
                                TRUE ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID == 1460 ~ END_MONTH,
                                  TRUE ~ START_MONTH))
+
+#Bug ID 5506 - Update effective and start date information since it was incorrectly captured
+mh_cleaned <- mh_cleaned %>%
+  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1317 ~ "04/01/1996",
+                                    TRUE ~ EFFECTIVE_DATE),
+         START_DAY = case_when(REGULATION_ID == 1317 ~ 1L,
+                               TRUE ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID == 1317 ~ 4L,
+                                 TRUE ~ START_MONTH),
+         START_YEAR = case_when(REGULATION_ID == 1317 ~ 1996L,
+                                TRUE ~ START_YEAR))
 
 #Bug ID 4949 - update mng. status to once and added start and end year since it is not a seasonal reg
 mh_cleaned <- mh_cleaned %>%
@@ -630,6 +711,19 @@ mh_cleaned <- mh_cleaned %>%
          END_MONTH = case_when(REGULATION_ID != 1358 ~ END_MONTH),
          END_DAY = case_when(REGULATION_ID != 1358 ~ END_DAY))
 
+#Bug ID 5696 - Update Ineffective and end date information based on correction in 80 FR 77588
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 392 ~ "10/01/2016",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         END_YEAR = case_when(REGULATION_ID == 392 ~ 2016L,
+                              TRUE ~ END_YEAR),
+         END_MONTH = case_when(REGULATION_ID == 392 ~ 10L,
+                               TRUE ~ END_MONTH),
+         END_DAY = case_when(REGULATION_ID == 392 ~ 1L,
+                             TRUE ~ END_DAY),
+         END_TIME = case_when(REGULATION_ID == 392 ~ "12:01:00 AM",
+                              TRUE ~ END_TIME))
+
 #Bug ID 4950 -  Management Category and Management Type updated from Other: Regulatory Reporting to Other: VMS Related
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1109 ~ 'OTHER',
@@ -770,6 +864,50 @@ mh_cleaned <- mh_cleaned %>%
          MANAGEMENT_TYPE = case_when(REGULATION_ID == 919 ~ 'BAG LIMIT ADJUSTMENT',
                                      TRUE ~ MANAGEMENT_TYPE))
 
+#Bug ID 5386 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 925 ~ 'EFFORT LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 925 ~ 'BAG LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5406 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 926 ~ 'EFFORT LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 926 ~ 'BAG LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5416 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 930 ~ 'EFFORT LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 930 ~ 'BAG LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5417 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 929 ~ 'EFFORT LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 929 ~ 'BAG LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5536 - Management Category and Management Type updated from Catch Limits: Quota to Catch Limits: Quota Adjustment 
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 436 ~ 'CATCH LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 436 ~ 'QUOTA ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5537 - Management Category and Management Type updated from Catch Limits: Quota to Catch Limits: Quota Adjustment and adds NO for the flag since the field is blank
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 5472 ~ 'CATCH LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 5472 ~ 'QUOTA ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE),
+         FLAG = case_when(REGULATION_ID == 5472 ~ 'NO',
+                          TRUE ~ FLAG))
+
 #Bug ID 4947 - Management Category and Management Type updated from Effort Limits: Prohibited Species to Temporal Controls: Closure
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1242 ~ 'TEMPORAL CONTROLS',
@@ -785,6 +923,41 @@ mh_cleaned <- mh_cleaned %>%
                                      TRUE ~ MANAGEMENT_TYPE),
          FR_SECTION = case_when(REGULATION_ID == 2421 ~ '50 CFR 622.20',
                                 TRUE ~ FR_SECTION))
+
+#Bug ID 5726 - Management Category and Type updated to Other: Observer Requirement
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3468 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 3468 ~ "OBSERVER REQUIREMENT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5727 - Management Category and Type updated to Other: Observer Requirement
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3469 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 3469 ~ "OBSERVER REQUIREMENT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5728 - Management Category and Type updated to Other: Observer Requirement
+mh_cleaned <- mh_cleaned %>% 
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3422 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 3422 ~ "OBSERVER REQUIREMENT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5729 - Management Category and Type updated to Other: Observer Requirement
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3423 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 3423 ~ "OBSERVER REQUIREMENT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5736 - Management Category and Type updated to Other: Permit Moratorium 
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 11435 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 11435 ~ "PERMIT MORATORIUM",
+                                     TRUE ~ MANAGEMENT_TYPE))
 
 # Bug ID 4589 - Management Category and Type updated to Other: Ignorable, FR Section updated to general 50 CFR 622, start date changed, value fields left blank - Other record removed above with all removals
 # Updated by SFA 10/12/2021 start year, month day should not be character
@@ -1022,6 +1195,70 @@ mh_cleaned <- mh_cleaned %>%
                             TRUE ~ SECTOR),
          REGION = case_when(REGULATION_ID == 2440 ~ 'GULF OF MEXICO',
                             TRUE ~ REGION))
+
+#Bug ID 5356 - Update flag to YES to indicate that the exemptions from the bag limit have changed
+mh_cleaned <- mh_cleaned %>%
+  mutate(FLAG = case_when(REGULATION_ID == 942 ~ 'YES',
+                          TRUE ~ FLAG))
+
+#Bug ID 5426 - Update flag to YES to indicate the change to the species included in the grouper aggregate
+mh_cleaned <- mh_cleaned %>%
+  mutate(FLAG = case_when(REGULATION_ID == 931 ~ 'YES',
+                          TRUE ~ FLAG))
+
+#Bug ID 5447 - Update flag to YES to indicate the change to the species included in the gulf reef fish aggregate
+mh_cleaned <- mh_cleaned %>%
+  mutate(FLAG = case_when(REGULATION_ID == 943 ~ 'YES',
+                          TRUE ~ FLAG))
+
+#Bug ID 5436 - Update Sector to Recreational since Bag Limits apply to the Recreational sector
+mh_cleaned <- mh_cleaned %>%
+  mutate(SECTOR = case_when(REGULATION_ID == 1011 ~ 'RECREATIONAL',
+                            TRUE ~ SECTOR))
+
+#Bug ID 5437 - Update Sector to Recreational since Bag Limits apply to the Recreational sector
+mh_cleaned <- mh_cleaned %>%
+  mutate(SECTOR = case_when(REGULATION_ID == 1010 ~ 'RECREATIONAL',
+                            TRUE ~ SECTOR))
+
+#Bug ID 5538 - Start Month and Day should be removed for Catch Limit record since start information is not explicitly stated
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 437 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 437 ~ START_MONTH))
+
+#Bug ID 5539 - Start Month and Day should be removed for Catch Limit record since start information is not explicitly stated
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 516 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 516 ~ START_MONTH))
+
+#Bug ID 5540 - Start Month and Day should be removed for Catch Limit record since start information is not explicitly stated
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 444 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 444 ~ START_MONTH))
+
+#Bug ID 5541 - Start Month and Day should be removed for Catch Limit record since start information is not explicitly stated
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 455 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 455 ~ START_MONTH))
+
+#Bug ID 5542 - Start Month and Day should be removed for Catch Limit record since start information is not explicitly stated
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 454 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 454 ~ START_MONTH))
+
+#Bug ID 5546 - Management status changed to blank for fishing season record since it is implied that it is a seasonal regulation using the Managment Type
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID != 1322 ~ MANAGEMENT_STATUS))
+
+#Bug ID 5616 - Update Value due to correction published in 52 FR 33594
+mh_cleaned <- mh_cleaned %>%
+  mutate(VALUE = case_when(REGULATION_ID == 526 ~ '480000',
+                                TRUE ~ VALUE))
+
+#Bug ID 5617 - Update Value due to correction published in 52 FR 35594
+mh_cleaned <- mh_cleaned %>% 
+  mutate(VALUE = case_when(REGULATION_ID == 527 ~ "220000",
+                           TRUE ~ VALUE))
 
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
@@ -1276,7 +1513,7 @@ mh_added <- mh_added %>%
           END_YEAR	= 2009,
           FLAG = "YES")
 
-#BUG ID 5116 - Add ITQ program est. record to 61 FR 7751
+#BUG ID 5116 and -14 - Add ITQ program est. record to 61 FR 7751, updated Management Category, Management Status, and start date information based on Bug ID -14
 mh_added <- mh_added %>%
   add_row(REGULATION_ID = -993,
           LAST_UPDATED	= "10/01/2021",
@@ -1286,7 +1523,7 @@ mh_added <- mh_added %>%
           FR_CITATION	= "61 FR 7751",
           FR_SECTION	= "50 CFR 641.10",
           FR_URL	= "https://www.federalregister.gov/documents/1996/02/29/96-4432/reef-fish-fishery-of-the-gulf-of-mexico-revised-1996-red-snapper-season",
-          MANAGEMENT_CATEGORY	= "CATCH SHARES",
+          MANAGEMENT_CATEGORY	= "UNIVERSAL",
           MANAGEMENT_TYPE	= "ITQ PROGRAM ESTABLISHED",
           SECTOR	= "COMMERCIAL",
           SUBSECTOR	= "ALL",
@@ -1296,15 +1533,68 @@ mh_added <- mh_added %>%
           COMMON_NAME	= "SNAPPER, RED",
           SPECIES_ITIS	= 168853,
           FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
-          MANAGEMENT_STATUS	= "ONCE",
+          MANAGEMENT_STATUS	= "DELAYED",
           EFFECTIVE_DATE	= "02/23/1996",
           INEFFECTIVE_DATE	= "05/29/1996",
-          START_DAY	= 23,
-          START_MONTH	= 2,
-          START_YEAR	= 1996,
           END_DAY	= 29,
           END_MONTH	= 5,
           END_YEAR	= 1996,
+          FLAG = "YES")
+
+#BUG ID 5376 - Add Bag Limit record for 64 FR 57403
+mh_added <- mh_added %>%
+  add_row(REGULATION_ID = -992,
+          LAST_UPDATED	= "01/12/2022",
+          JURISDICTION 	= "FEDERAL",
+          ACTION = "FINAL",
+          ACTION_TYPE = "AMENDMENT",
+          AMENDMENT_NUMBER = "16B",
+          ACCOUNTABILITY_MEASURE	= "NO",
+          FR_CITATION	= "64 FR 57403",
+          FR_SECTION	= "50 CFR 622.39",
+          FR_URL	= "https://www.federalregister.gov/documents/1999/10/25/99-27584/fisheries-of-the-caribbean-gulf-of-mexico-and-south-atlantic-reef-fish-fishery-of-the-gulf-of-mexico",
+          MANAGEMENT_CATEGORY	= "EFFORT LIMITS",
+          MANAGEMENT_TYPE	= "BAG LIMIT",
+          SECTOR	= "RECREATIONAL",
+          SUBSECTOR	= "ALL",
+          REGION	= "GULF OF MEXICO",
+          ZONE	= "ALL",
+          JURISDICTIONAL_WATERS	= "EEZ",
+          SPECIES_AGGREGATE = "BAG LIMIT: GROUPERS, COMBINED",
+          FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
+          EFFECTIVE_DATE = "11/24/1999",
+          START_DAY	= 24,
+          START_MONTH	=11,
+          START_YEAR	= 1999,
+          VALUE = "5",
+          VALUE_UNITS = "FISH",
+          VALUE_TYPE = "COUNT",
+          VALUE_RATE = "PER PERSON PER DAY",
+          FLAG = "YES")
+
+#BUG ID 5566 - Add Gear Requirements: Trap Specifications record for 48 FR 39463
+mh_added <- mh_added %>%
+  add_row(REGULATION_ID = -991,
+          LAST_UPDATED	= "01/12/2022",
+          JURISDICTION 	= "FEDERAL",
+          ACTION = "FINAL",
+          ACCOUNTABILITY_MEASURE	= "NO",
+          FR_CITATION	= "48 FR 39463",
+          FR_SECTION	= "50 CFR 646.22",
+          FR_URL	= "https://www.loc.gov/item/fr048170/",
+          MANAGEMENT_CATEGORY	= "GEAR REQUIREMENTS",
+          MANAGEMENT_TYPE	= "TRAP SPECIFICATIONS",
+          SECTOR	= "COMMERCIAL",
+          SUBSECTOR	= "FISH TRAPS",
+          REGION	= "SOUTH ATLANTIC",
+          ZONE	= "ALL",
+          JURISDICTIONAL_WATERS	= "EEZ",
+          COMMON_NAME	= "ALL",
+          FMP	= "SNAPPER_GROUPER FISHERY OF THE SOUTH ATLANTIC REGION",
+          EFFECTIVE_DATE	= "09/28/1983",
+          START_DAY	= 28,
+          START_MONTH	= 9,
+          START_YEAR	= 1984,
           FLAG = "YES")
 
 mh_cleaned <- bind_rows(mh_added, mh_cleaned)
