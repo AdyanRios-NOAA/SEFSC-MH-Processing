@@ -76,7 +76,7 @@ write.csv(mh_preprocess, here('data/preprocessed', paste0("MHpreprocess_", forma
 sector.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
                   "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
                   "SECTOR_USE",
-                  "REGION",
+                  "REGION", "ZONE_USE",
                   "SPP_NAME", "COMMON_NAME_USE")
 
 sector_precluster <- mh_preprocess %>%
@@ -123,6 +123,7 @@ unique_sector_keys = multi_subsector2 %>%
 test = multi_subsector2 %>%
   filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO") %>%
   select(SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY) %>%
+  filter(SECTOR_USE == "RECREATIONAL") %>%
   distinct()
 
 # EXPANSION FUNCTION ####
