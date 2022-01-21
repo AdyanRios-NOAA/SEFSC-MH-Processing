@@ -55,6 +55,17 @@ group_info = dbGetQuery(con, paste("select distinct
                                 on a.species_itis = b.itis_code
                                 where a.subgrp_name is not null and FMP_GROUP_NAME <> 'Atlantic Highly Migratory Species'"))
 
+# Clean up duplicates
+# Gray snapper is consistently in the snapper species group
+# Golden tilefish is connsistently in the tilefishes species group
+group_info  <- group_info %>%
+  #filter(SUBGRP_NAME == 'Snappers—Lutjanidae', FMP_GROUP_NAME == 'Reef Fish Fishery of Puerto Rico and the U.S. Virgin Islands', COMMON_NAME == 'SNAPPER, GRAY')
+  #filter(SUBGRP_NAME == 'Tilefishes—Malacanthidae', FMP_GROUP_NAME == 'Snapper-Grouper Fishery of the South Atlantic Region', COMMON_NAME == 'TILEFISH, GOLDEN') %>%
+  group_by(FMP_GROUP_ID, FMP_GROUP_NAME, SUBGRP_NAME, SPECIES_ITIS, COMMON_NAME, SCIENTIFIC_NAME) %>%
+  summarise(ADDED_DT = min(ADDED_DT),
+            REMOVED_DT = max(REMOVED_DT)) 
+  
+
 # Species aggregate table
 agg_info = dbGetQuery(con, paste("select distinct 
                                     a.fmp_group_name,
@@ -121,7 +132,7 @@ sp_info_use = bind_rows(fmp_info_use, grp_info_use, agg_info_use) %>%
 rm(con, spp_grp_view, spp_agg_view, spp_itis_xref)
 
 # Save workspace
-save.image("./MH_clean_spp_tables.RData")
+save.image(here('data/interim', './MH_clean_spp_tables.RData'))
 
 
 
