@@ -1,7 +1,7 @@
 # Main Management History Processing
 
 # Load packages
-# install.packages("librarian")
+#install.packages("librarian")
 librarian::shelf(here, tidyverse, lubridate, googlesheets4, dotenv, ROracle, keyring)
 
 # SET WD RELATIVE TO PROJECT LOCATION
@@ -43,7 +43,7 @@ source(here('code', 'MH_pre_process.R'))
 
 # 4: Sorting by cluster and fill in dates
   # Dataframe result = mh_sort (before final species expansion cleaning)
-  # Dataframe result = mh_sort2 (remove expanded species that are no longer in the group and adjust start and end dates to reflect species added and removed dates)
+  # Dataframe result = mh_sort_flagged (flag expanded species that are no longer in the group and adjust start and end dates to reflect species added and removed dates)
 source(here('code', 'MH_process.R'))
 
 # 5: Post-processing by collection - grouping related mtypes (mtype = cluster)
