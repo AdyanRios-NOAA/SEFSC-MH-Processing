@@ -1,8 +1,38 @@
-# 3
+# 2
 # Pre-processing clean up
-  # Translate to new zone names (from Google sheets),
+  # Expand sector ALL to Commercial and Recreational
+  # Add "detailed" yes/no field
+  # Translate to new zone names (from Google sheets)
   # Rename mtype "adjustment" to be a flag
   # Create various new variables for processing
+
+# Expand records with SECTOR = 'ALL" to be commercial and recreational
+mh_sect_expanded <- mh_cleaned %>%
+  #CREATE SECTOR USE
+  mutate(SECTOR_USE = SECTOR) %>%
+  # Rename "ALL" records to 'RECREATIONAL,COMMERCIAL' to separate at the comma
+  mutate(SECTOR_USE = case_when(SECTOR_USE == 'ALL' ~ 'RECREATIONAL,COMMERCIAL',
+                                TRUE ~ SECTOR_USE)) %>%
+  separate_rows(SECTOR_USE)
+
+# Bring in management type detailed (Y/N) table from Google sheets to only expand mtypes we care about
+# Read in Google sheets 
+detailed_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1PViPVtqkY3q1fWUFGZm1UyIIYrFxt-YDitEUGaHBjsg/edit#gid=1115852389") %>%
+  select(-MANAGEMENT_CATEGORY)
+
+# Reformat data 
+mh_sect_expanded <- mh_sect_expanded %>%
+  # Add field for detailed (Y/N)
+  left_join(detailed_xref, by = "MANAGEMENT_TYPE") %>%
+  # Create duplicates of species fields to retain original data format
+  mutate(O_COMMON_NAME = COMMON_NAME,
+         O_SPECIES_AGGREGATE = SPECIES_AGGREGATE,
+         O_SPECIES_GROUP = SPECIES_GROUP) %>%
+  # Transpose species fields to only have to join in the expansion on a single field
+  pivot_longer(cols = c("COMMON_NAME" = O_COMMON_NAME, "SPECIES_AGGREGATE" = O_SPECIES_AGGREGATE, 
+                        "SPECIES_GROUP" = O_SPECIES_GROUP), names_to = "SPP_TYPE", values_to = "SPP_NAME") %>%
+  # Remove records where name is null 
+  filter(!is.na(SPP_NAME))
 
 # Areas clean up
 # Read in Google sheets for new zone name for some Gulf Reef Fish zone names
@@ -14,7 +44,7 @@ area_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1gVFz6UUiN5LU3Fr
 
 # New zone name variable called ZONE_USE as the standard zone name
 # Starting from sector expansion and not species because the species list have duplicates and need to be cleaned up first
-mh_setup <- mh_sp_expanded %>%
+mh_setup <- mh_sect_expanded %>%
   left_join(area_xref, by = c("ZONE" = "OLD_ZONE_NAME")) %>%
   rename(ZONE_USE = "NEW_ZONE_NAME") %>%
   # Since the cross reference table is only for Gulf Reef Fish, replace all NAs with the original zone name
@@ -77,7 +107,7 @@ sector.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
                   "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
                   "SECTOR_USE",
                   "REGION", "ZONE_USE",
-                  "SPP_NAME", "COMMON_NAME_USE")
+                  "SPP_NAME")
 
 sector_precluster <- mh_preprocess %>%
   select(one_of(sector.match)) %>%
@@ -134,7 +164,7 @@ expand_mh <- function(datin, i) {
     filter(if (expansions$FMP[i] != "") FMP == expansions$FMP[i] else TRUE) %>%
     filter(if (expansions$REGION[i] != "") REGION == expansions$REGION[i] else TRUE) %>%
     filter(if (expansions$SPP_NAME[i] != "") SPP_NAME == expansions$SPP_NAME[i] else TRUE) %>%
-    filter(if (expansions$COMMON_NAME_USE[i] != "") COMMON_NAME_USE == expansions$COMMON_NAME_USE[i] else TRUE) %>%
+    #filter(if (expansions$COMMON_NAME_USE[i] != "") COMMON_NAME_USE == expansions$COMMON_NAME_USE[i] else TRUE) %>%
     mutate(!!expansions$column_name[i] := case_when(get(expansions$column_name[i]) == expansions$expand_from[i] ~ expansions$expand_to[i],
                                                     get(expansions$column_name[i]) != expansions$expand_from[i] ~ get(expansions$column_name[i]))) %>%
     separate_rows(!!expansions$column_name[i], sep = ", ")
