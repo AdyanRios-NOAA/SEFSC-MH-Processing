@@ -31,19 +31,18 @@ load(here('data/interim', 'MH_clean_spp_tables.RData'))
 source(here('code', 'MH_data_bugs.R'))
 
 
-# 2: Sector and species related expansion (aggregates, groups, all species); retain orignal columns, but fills in common name always
-  # Dataframe result = mh_expanded
-source(here('code', 'MH_expansion.R'))
-
-
-# 3: Pre-processing clean up (new zone names, renaming "adjusted", creating various new variables)
+# 2: Pre-processing clean up (new zone names, renaming "adjusted", creating various new variables)
+  # Sector expansion
   # Dataframe result = mh_ready
 source(here('code', 'MH_pre_process.R'))
 
 
-# 4: Sorting by cluster and fill in dates
+# 3: Sorting by cluster and fill in dates
   # Dataframe result = mh_sort (before final species expansion cleaning)
   # Dataframe result = mh_sort_flagged (flag expanded species that are no longer in the group and adjust start and end dates to reflect species added and removed dates)
 source(here('code', 'MH_process.R'))
+
+# 4: Species expansion
+source(here('code', 'MH_expansion.R'))
 
 # 5: Post-processing by collection - grouping related mtypes (mtype = cluster)
