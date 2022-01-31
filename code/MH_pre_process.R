@@ -1,11 +1,13 @@
-# 2
+# Script 2
 # Pre-processing clean up
   # Expand sector ALL to Commercial and Recreational
   # Add "detailed" yes/no field
+  # Expand species
   # Translate to new zone names (from Google sheets)
   # Rename mtype "adjustment" to be a flag
   # Create various new variables for processing
 
+#### 1 ####
 # Expand records with SECTOR = 'ALL" to be commercial and recreational
 mh_sect_expanded <- mh_cleaned %>%
   #CREATE SECTOR USE
@@ -15,6 +17,7 @@ mh_sect_expanded <- mh_cleaned %>%
                                 TRUE ~ SECTOR_USE)) %>%
   separate_rows(SECTOR_USE)
 
+#### 2 ####
 # Bring in management type detailed (Y/N) table from Google sheets to only expand mtypes we care about
 # Read in Google sheets 
 detailed_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1PViPVtqkY3q1fWUFGZm1UyIIYrFxt-YDitEUGaHBjsg/edit#gid=1115852389") %>%
@@ -34,6 +37,94 @@ mh_sect_expanded <- mh_sect_expanded %>%
   # Remove records where name is null 
   filter(!is.na(SPP_NAME))
 
+#### 3 ####
+# Check species table -- 5 have duplicates still because they are species that were a part of an aggregate, removed, then reinstated
+sp_info_use2 <- sp_info_use %>%
+  group_by(FMP, SPP_TYPE, SPP_NAME, COMMON_NAME_USE) %>%
+  summarise(N = n())
+
+# Break up species table into two tables
+# (1) Single record for species in aggregate or group
+# (2) More than one record for species in aggregate or group
+sp_info_use_s <- sp_info_use %>%
+  left_join(sp_info_use2, by = c("FMP", "SPP_TYPE", "SPP_NAME", "COMMON_NAME_USE")) %>%
+  filter(N == 1) %>% 
+  select(-c(N, FMP_GROUP_ID, SUBGRP_NAME))
+sp_info_use_m <- sp_info_use %>%
+  left_join(sp_info_use2, by = c("FMP", "SPP_TYPE", "SPP_NAME", "COMMON_NAME_USE")) %>%
+  filter(N == 2) %>% 
+  select(-c(N, FMP_GROUP_ID, SUBGRP_NAME))
+
+# OVER EXPAND MH on species for detailed mtypes where there is a single record for that species in species aggrgate/group table
+mh_sp_expanded_y1 <- mh_sect_expanded %>%
+  # Filter to remove non-detailed records
+  filter(DETAILED == 'YES') %>%
+  # Join to species list table by species name type, name,  and FMP
+  full_join(., sp_info_use_s, by = c("FMP", "SPP_TYPE", "SPP_NAME")) %>%
+  # Remove species group/aggregate name that do not appear in the database or FMP that are not in the data (i.e. HMS)
+  filter(!is.na(REGULATION_ID)) %>%
+  mutate(COMMON_NAME_USE = case_when(is.na(COMMON_NAME_USE) ~ SPP_NAME,
+                                     TRUE ~ COMMON_NAME_USE),
+         SPECIES_ITIS_USE = case_when(is.na(SPECIES_ITIS_USE) ~ as.character(SPECIES_ITIS),
+                                      TRUE ~ SPECIES_ITIS_USE)) %>%
+  # Remove species when the start date is outside the added and removed dates
+  # Remove species when the start date is outside the added and removed dates
+  #filter(is.na(REMOVED_SP_DATE) | between(START_DATE, ADDED_SP_DATE, REMOVED_SP_DATE) | between(END_DATE, ADDED_SP_DATE, REMOVED_SP_DATE)) %>%
+  # Impute ineffective date with the removed date for records where there is a removed date, but no ineffective date
+  # mutate(IMP_INEFFECTIVE = case_when(is.na(INEFFECTIVE_DATE) & !is.na(REMOVED_SP_DATE) ~ REMOVED_SP_DATE,
+  #                                    TRUE ~ INEFFECTIVE_DATE),
+  #        IMP_EFFECTIVE = NA) %>%
+  # Remove species expansion date variables
+  select(-c(SPECIES_ITIS, SCIENTIFIC_NAME))
+
+# OVER EXPAND MH on species for detailed mtypes where there are multiple records for that species in species aggrgate/group table
+mh_sp_expanded_y2 <- mh_sect_expanded %>%
+  # Filter to remove non-detailed records
+  filter(DETAILED == 'YES') %>%
+  # Join to species list table by species name type, name,  and FMP
+  full_join(., sp_info_use_m, by = c("FMP", "SPP_TYPE", "SPP_NAME")) %>%
+  # Remove species group/aggregate name that do not appear in the database or FMP that are not in the data (i.e. HMS)
+  filter(!is.na(REGULATION_ID), !is.na(ADDED_SP_DATE)) %>%
+  mutate(COMMON_NAME_USE = case_when(is.na(COMMON_NAME_USE) ~ SPP_NAME,
+                                     TRUE ~ COMMON_NAME_USE),
+         SPECIES_ITIS_USE = case_when(is.na(SPECIES_ITIS_USE) ~ as.character(SPECIES_ITIS),
+                                      TRUE ~ SPECIES_ITIS_USE)) %>%
+  # Remove species when expanded if effective date > removed date
+  # Remove species when expanded if ineffective date < added date
+  #filter(EFFECTIVE_DATE < REMOVED_SP_DATE | is.na(REMOVED_SP_DATE) | INEFFECTIVE_DATE > ADDED_SP_DATE) %>%
+  # Rank duplicate records for same species
+  # group_by(REGULATION_ID) %>%
+  # mutate(rnk = order(REMOVED_SP_DATE)) %>%
+  # ungroup() %>%
+  # Remove species when expanded if effective date > added date
+  # mutate(del = case_when(EFFECTIVE_DATE > ADDED_SP_DATE & EFFECTIVE_DATE > REMOVED_SP_DATE ~ 1,
+  #                        rnk == 2 & INEFFECTIVE_DATE < ADDED_SP_DATE ~ 1,
+  #                        TRUE ~ 0)) %>%
+  # filter(del == 0) %>%
+  # Impute effective date for the duplicate record so that EFFECTIVE_DATE = ADD_SP_DATE, adjusting effective date retains both records and indicates during the gap in timeline the species was not a part of that aggregate/group
+  # mutate(IMP_EFFECTIVE = case_when(rnk == 2 ~ ADDED_SP_DATE,
+  #                                  TRUE ~ EFFECTIVE_DATE)) %>%
+  # # Impute ineffective date with the removed date for records where there is a removed date, but no ineffective date
+  # mutate(IMP_INEFFECTIVE = case_when(is.na(INEFFECTIVE_DATE) & !is.na(REMOVED_SP_DATE) ~ REMOVED_SP_DATE,
+  #                                    INEFFECTIVE_DATE > REMOVED_SP_DATE ~ REMOVED_SP_DATE,
+#                                    TRUE ~ INEFFECTIVE_DATE)) %>%
+# Remove species expansion date variables
+select(-c(SPECIES_ITIS, SCIENTIFIC_NAME#, rnk, del
+))
+
+# Dataframe of non-detailed records in long form to join with expanded dataframe
+mh_sp_expanded_n <- mh_sect_expanded %>%
+  # Filter to remove non-detailed records
+  filter(DETAILED == 'NO') %>%
+  # Get fields to match
+  mutate(COMMON_NAME_USE = SPP_NAME,
+         SPECIES_ITIS_USE = as.character(SPECIES_ITIS)) %>%
+  select(-SPECIES_ITIS)
+
+mh_sp_expanded <- mh_sp_expanded_y1 %>%
+  bind_rows(mh_sp_expanded_y2, mh_sp_expanded_n)
+
+#### 4 ####
 # Areas clean up
 # Read in Google sheets for new zone name for some Gulf Reef Fish zone names
 area_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1gVFz6UUiN5LU3Fr9NuFSumKGeHvRubgZviJt7R73Gvg/edit#gid=0") %>%
@@ -44,7 +135,7 @@ area_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1gVFz6UUiN5LU3Fr
 
 # New zone name variable called ZONE_USE as the standard zone name
 # Starting from sector expansion and not species because the species list have duplicates and need to be cleaned up first
-mh_setup <- mh_sect_expanded %>%
+mh_setup <- mh_sp_expanded %>%
   left_join(area_xref, by = c("ZONE" = "OLD_ZONE_NAME")) %>%
   rename(ZONE_USE = "NEW_ZONE_NAME") %>%
   # Since the cross reference table is only for Gulf Reef Fish, replace all NAs with the original zone name
@@ -53,6 +144,7 @@ mh_setup <- mh_sect_expanded %>%
   # Remove commas
   mutate(ZONE_USE = gsub(",", "", ZONE_USE))
 
+### 5 ###
 # Create new variables
 mh_preprocess <- mh_setup %>%
   # Pull out the volume and page number as separate fields from the FR CITATION (currently warning appears because page is NA for "81 FR 33150 B", but once fixed as a bug the warning should go away)
@@ -96,7 +188,7 @@ mh_preprocess <- mh_setup %>%
                                   !is.na(START_YEAR) ~ as.Date(paste(START_MONTH, START_DAY, START_YEAR, sep = "/"), "%m/%d/%Y"),
                                 TRUE ~ EFFECTIVE_DATE))
 
-
+#### 6 ####
 # FIND SECTOR FORKS
 
 #SAFE FOR PIVOT TABLE TESTS IN EXCEL
@@ -163,7 +255,7 @@ expand_mh <- function(datin, i) {
     filter(if (expansions$MANAGEMENT_TYPE_USE[i] != "") MANAGEMENT_TYPE_USE == expansions$MANAGEMENT_TYPE_USE[i] else TRUE) %>%
     filter(if (expansions$FMP[i] != "") FMP == expansions$FMP[i] else TRUE) %>%
     filter(if (expansions$REGION[i] != "") REGION == expansions$REGION[i] else TRUE) %>%
-    filter(if (expansions$SPP_NAME[i] != "") SPP_NAME == expansions$SPP_NAME[i] else TRUE) %>%
+    filter(if (expansions$COMMON_NAME_USE[i] != "") COMMON_NAME_USE == expansions$SPP_NAME[i] else TRUE) %>%
     #filter(if (expansions$COMMON_NAME_USE[i] != "") COMMON_NAME_USE == expansions$COMMON_NAME_USE[i] else TRUE) %>%
     mutate(!!expansions$column_name[i] := case_when(get(expansions$column_name[i]) == expansions$expand_from[i] ~ expansions$expand_to[i],
                                                     get(expansions$column_name[i]) != expansions$expand_from[i] ~ get(expansions$column_name[i]))) %>%
