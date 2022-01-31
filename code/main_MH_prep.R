@@ -26,23 +26,20 @@ end_timeseries =  as.Date("2020-12-31", "%Y-%m-%d")
   # The MH dataset is also transposed to have a single common name field and no null values
 load(here('data/interim', 'MH_clean_spp_tables.RData'))
 
-
 # 1: Bug related cleaning (these changes will eventually be made in the database)
   # Dataframe result = mh_cleaned
 source(here('code', 'MH_data_bugs.R'))
-
 
 # 2: Pre-processing clean up (sector expansion, new zone names, renaming "adjusted", creating various new variables)
   # Dataframe result = mh_ready
 source(here('code', 'MH_pre_process.R'))
 
-
-# 3: Sorting by cluster and fill in dates
+# 3: Sort by cluster and fill in dates
   # Dataframe result = mh_sort 
 source(here('code', 'MH_process.R'))
 
-# 4: Species expansion
-# Dataframe result = mh_sort_flagged (flag expanded species that are no longer in the group and adjust start and end dates to reflect species added and removed dates)
-source(here('code', 'MH_expansion.R'))
+# 4: Clean up dates
+# Dataframe result = mh_final 
+source(here('code', 'MH_date_cleanup.R'))
 
 # 5: Post-processing by collection - grouping related mtypes (mtype = cluster)
