@@ -201,13 +201,14 @@ sector.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
                   "REGION", "ZONE_USE",
                   "SPP_NAME")
 
+# ASSIGN UNIQUE SECTOR_ID
 sector_precluster <- mh_preprocess %>%
   select(one_of(sector.match)) %>%
   distinct() %>%
   mutate(SECTOR_ID = as.numeric(row.names(.))) %>%
   right_join(., mh_preprocess)
 
-# ONLY COUNT NUMBER OF SUBSECTORS FOR IMPORTANT REGULATION TYPES
+# FILTER TO SECTORS WITH MORE THAN 1 SUBSECTOR (ONLY FOR IMPORTANT REGULATION TYPES)
 multi_subsector <- sector_precluster %>%
   filter(GENERAL == 0) %>%
   select(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR) %>%
@@ -215,13 +216,13 @@ multi_subsector <- sector_precluster %>%
   group_by(FMP, SECTOR_USE, SECTOR_ID) %>%
   mutate(subsector_count = length(SUBSECTOR),
          #FLAG IF ALL IS USED
-         all_used = sum(SUBSECTOR == "ALL")) %>%
+        subsector_all_used = sum(SUBSECTOR == "ALL")) %>%
   filter(subsector_count > 1) %>%
   arrange(SECTOR_ID, SUBSECTOR) %>%
   data.frame()
 
 
-multi_subsector2 <- sector_precluster %>%
+multi_subsector_key <- sector_precluster %>%
   select(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR, EFFECTIVE_DATE) %>%
   group_by(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR) %>%
   summarize(start_use = min(EFFECTIVE_DATE)) %>%
@@ -229,12 +230,12 @@ multi_subsector2 <- sector_precluster %>%
   group_by(FMP, SECTOR_USE, SECTOR_ID) %>%
   mutate(date_count = length(unique(start_use))) %>%
   arrange(SECTOR_ID) %>%
-  filter(!(all_used == 0 & date_count == 1)) %>%
+  filter(!(subsector_all_used == 0 & date_count == 1)) %>%
   group_by(SECTOR_ID) %>%
   mutate(SUBSECTOR_KEY = paste(unique(SUBSECTOR), sep = ",", collapse=', ')) %>%
   data.frame()
 
-unique_sector_keys = multi_subsector2 %>%
+expand_sector_keys = multi_subsector_key %>%
   select(SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY) %>%
   group_by(SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY) %>%
   mutate(SUBSECTOR_N = length(SECTOR_USE)) %>%
@@ -242,21 +243,33 @@ unique_sector_keys = multi_subsector2 %>%
   arrange(SUBSECTOR_N) %>%
   data.frame()
 
-test = multi_subsector2 %>%
+expand_sector_keys_recGOMRF <- multi_subsector_key %>%
   filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO") %>%
-  select(SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY) %>%
+  select(SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY, subsector_all_used) %>%
   filter(SECTOR_USE == "RECREATIONAL") %>%
-  distinct()
+  distinct() %>%
+  mutate(column_name = "SECTOR_USE",
+         expand_from = case_when(subsector_all_used == 1 ~ "ALL"),
+         expand_temp = str_remove(SUBSECTOR_KEY, paste0(expand_from, ", ")),
+         expand_to = case_when(str_count(expand_temp, ',') >= 1 ~ expand_temp,
+                               TRUE ~ "MANUAL CHECK"))
+  
+expand_sector_keys_recGOMRF_use <- expand_sector_keys_recGOMRF %>%
+  mutate(expand_to = case_when(SECTOR_ID == 513 ~ "FOR-HIRE, PRIVATE",
+                               SECTOR_ID == 584 ~ "FOR-HIRE, PRIVATE",
+                               TRUE ~ expand_to))
+  
 
 # EXPANSION FUNCTION ####
 # ADAPTED TO ALLOW CONDITIONS AND EXPANSION TO BE REGION/FMP/SECTOR/SPECIES SPECIFIC (ETC)
 expand_mh <- function(datin, i) {
   data_expand <- datin %>%
-    filter(if (expansions$MANAGEMENT_TYPE_USE[i] != "") MANAGEMENT_TYPE_USE == expansions$MANAGEMENT_TYPE_USE[i] else TRUE) %>%
-    filter(if (expansions$FMP[i] != "") FMP == expansions$FMP[i] else TRUE) %>%
-    filter(if (expansions$REGION[i] != "") REGION == expansions$REGION[i] else TRUE) %>%
-    filter(if (expansions$COMMON_NAME_USE[i] != "") COMMON_NAME_USE == expansions$SPP_NAME[i] else TRUE) %>%
-    #filter(if (expansions$COMMON_NAME_USE[i] != "") COMMON_NAME_USE == expansions$COMMON_NAME_USE[i] else TRUE) %>%
+    filter(if (!is.na(expansions$SECTOR_ID[i])) SECTOR_ID == expansions$SECTOR_ID[i] else TRUE) %>%
+    filter(if (!is.na(expansions$MANAGEMENT_TYPE_USE[i])) MANAGEMENT_TYPE_USE == expansions$MANAGEMENT_TYPE_USE[i] else TRUE) %>%
+    filter(if (!is.na(expansions$FMP[i])) FMP == expansions$FMP[i] else TRUE) %>%
+    filter(if (!is.na(expansions$REGION[i])) REGION == expansions$REGION[i] else TRUE) %>%
+    filter(if (!is.na(expansions$COMMON_NAME_USE[i])) COMMON_NAME_USE == expansions$SPP_NAME[i] else TRUE) %>%
+    #filter(if (!is.na(expansions$COMMON_NAME_USE[i])) COMMON_NAME_USE == expansions$COMMON_NAME_USE[i] else TRUE) %>%
     mutate(!!expansions$column_name[i] := case_when(get(expansions$column_name[i]) == expansions$expand_from[i] ~ expansions$expand_to[i],
                                                     get(expansions$column_name[i]) != expansions$expand_from[i] ~ get(expansions$column_name[i]))) %>%
     separate_rows(!!expansions$column_name[i], sep = ", ")
@@ -267,6 +280,12 @@ expand_mh <- function(datin, i) {
 }
 
 # READ IN AND RUN EXPANSIONS ####
-expansions <- read.csv(here('data/interim', "./MHpreprocess_expansions.csv"), stringsAsFactors = FALSE,
+expansions_from_csv <- read.csv(here('data/interim', "./MHpreprocess_expansions.csv"), stringsAsFactors = FALSE,
                        fileEncoding = "latin1")
-mh_ready <- Reduce(expand_mh, 1:length(expansions$column_name), init = mh_preprocess, accumulate = FALSE)
+expansions <- bind_rows(expansions_from_csv, expand_sector_keys_recGOMRF_use)
+mh_ready <- Reduce(expand_mh, 1:length(expansions$column_name), init = sector_precluster, accumulate = FALSE)
+
+test = mh_ready %>% 
+  filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO",
+         SECTOR_USE == "RECREATIONAL") 
+table(test$SUBSECTOR)
