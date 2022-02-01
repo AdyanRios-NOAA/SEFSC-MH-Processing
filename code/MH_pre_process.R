@@ -258,7 +258,6 @@ expand_sector_keys_recGOMRF_use <- expand_sector_keys_recGOMRF %>%
   mutate(expand_to = case_when(SECTOR_ID == 513 ~ "FOR-HIRE, PRIVATE",
                                SECTOR_ID == 584 ~ "FOR-HIRE, PRIVATE",
                                TRUE ~ expand_to))
-  
 
 # EXPANSION FUNCTION ####
 # ADAPTED TO ALLOW CONDITIONS AND EXPANSION TO BE REGION/FMP/SECTOR/SPECIES SPECIFIC (ETC)
@@ -284,8 +283,3 @@ expansions_from_csv <- read.csv(here('data/interim', "./MHpreprocess_expansions.
                        fileEncoding = "latin1")
 expansions <- bind_rows(expansions_from_csv, expand_sector_keys_recGOMRF_use)
 mh_ready <- Reduce(expand_mh, 1:length(expansions$column_name), init = sector_precluster, accumulate = FALSE)
-
-test = mh_ready %>% 
-  filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO",
-         SECTOR_USE == "RECREATIONAL") 
-table(test$SUBSECTOR)
