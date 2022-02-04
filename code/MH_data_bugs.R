@@ -240,7 +240,9 @@ mh_cleaned <- mh_cleaned %>%
   #Bug ID 5346
   filter(REGULATION_ID != 421) %>%
   #Bug ID 5456
-  filter(REGULATION_ID != 692)
+  filter(REGULATION_ID != 692) %>%
+  #Bug ID 5896
+  filter(REGULATION_ID != 1402)
 
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
@@ -908,6 +910,44 @@ mh_cleaned <- mh_cleaned %>%
          FLAG = case_when(REGULATION_ID == 5472 ~ 'NO',
                           TRUE ~ FLAG))
 
+#Bug ID 5876 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment
+mh_cleaned <- mh_cleaned %>% 
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 916  ~ 'EFFORT LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 916 ~ 'BAG LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5886 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment 
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 11378 ~ 'EFFORT LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 11378 ~ 'BAG LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 5906 - Management Category and Management Type updated from Catch Limits: Quota to Catch Limits: Quota Adjustment, start month, start day, and end date information removed following Catch Limit guidance
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 11446 ~ 'CATCH LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 11446 ~ 'QUOTA ADJUSTMENT', 
+                                     TRUE ~ MANAGEMENT_TYPE),
+         START_DAY = case_when(REGULATION_ID != 11446 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 11446 ~ START_MONTH),
+         END_DAY = case_when(REGULATION_ID != 11446 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 11446 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 11446 ~ END_YEAR))
+ 
+#Bug ID 5907 - Management Category and Management Type updated from Catch Limits: Quota to Catch Limits: Quota Adjustment, start month, start day, and end date information removed following Catch Limit guidance
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 11445 ~ 'CATCH LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 11445 ~ 'QUOTA ADJUSTMENT', 
+                                     TRUE ~ MANAGEMENT_TYPE),
+         START_DAY = case_when(REGULATION_ID != 11445 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 11445 ~ START_MONTH),
+         END_DAY = case_when(REGULATION_ID != 11445 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 11445 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 11445 ~ END_YEAR))
+        
 #Bug ID 4947 - Management Category and Management Type updated from Effort Limits: Prohibited Species to Temporal Controls: Closure
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1242 ~ 'TEMPORAL CONTROLS',
