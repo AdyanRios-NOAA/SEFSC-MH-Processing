@@ -242,7 +242,17 @@ mh_cleaned <- mh_cleaned %>%
   #Bug ID 5456
   filter(REGULATION_ID != 692) %>%
   #Bug ID 5896
-  filter(REGULATION_ID != 1402)
+  filter(REGULATION_ID != 1402) %>%
+  #Bug ID 5922
+  filter(REGULATION_ID != 828) %>%
+  #Bug ID 5923
+  filter(REGULATION_ID != 829) %>%
+  #Bug ID 5924
+  filter(REGULATION_ID != 830) %>%
+  #Bug ID 5925
+  filter(REGULATION_ID != 831) %>%
+  #Bug ID 5928
+  filter(REGULATION_ID != 818)
 
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
@@ -947,7 +957,31 @@ mh_cleaned <- mh_cleaned %>%
          END_DAY = case_when(REGULATION_ID != 11445 ~ END_DAY),
          END_MONTH = case_when(REGULATION_ID != 11445 ~ END_MONTH),
          END_YEAR = case_when(REGULATION_ID != 11445 ~ END_YEAR))
-        
+ 
+#Bug 5912 - Management Category and Management Type updated to Catch Limits: Quota Adjustment, start month, start day, and end date information removed following Catch Limit guidance
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 811 ~ 'CATCH LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 811 ~ 'QUOTA ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE),
+         START_DAY = case_when(REGULATION_ID != 811 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 811 ~ START_MONTH),
+         END_DAY = case_when(REGULATION_ID != 811 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 811 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 811 ~ END_YEAR))
+
+#Bug ID -17 - Management Category and Management Type updated to Catch Limits: Quota Adjustment, start month, start day, and end date information removed following Catch Limit guidance
+mh_cleaned <- mh_cleaned %>% 
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 808 ~ 'CATCH LIMITS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 808 ~ 'QUOTA ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE),
+         START_DAY = case_when(REGULATION_ID != 808 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 808 ~ START_MONTH),
+         END_DAY = case_when(REGULATION_ID != 808 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 808 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 808 ~ END_YEAR))
+       
 #Bug ID 4947 - Management Category and Management Type updated from Effort Limits: Prohibited Species to Temporal Controls: Closure
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1242 ~ 'TEMPORAL CONTROLS',
@@ -1180,23 +1214,30 @@ mh_cleaned <- mh_cleaned %>%
          REGION = case_when(REGULATION_ID == 5473 ~ 'GULF OF MEXICO',
                             TRUE ~ REGION))
 
-#BUG ID -3 - Correct missing mng. type/sector/region for reg id 5472
+#BUG ID -3 and -16 - Correct missing mng. type/sector/region for reg id 5472, Bug ID -16 updates the Management Type to Quota Adjustment and removes the start month and day information following guidance for Catch Limit records
 mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 5472 ~ 'QUOTA',
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 5472 ~ 'QUOTA ADJUSTMENT',
                                      TRUE ~ MANAGEMENT_TYPE),
          SECTOR = case_when(REGULATION_ID == 5472 ~ 'COMMERCIAL',
                             TRUE ~ SECTOR),
          REGION = case_when(REGULATION_ID == 5472 ~ 'GULF OF MEXICO',
-                            TRUE ~ REGION))
+                            TRUE ~ REGION),
+         START_DAY = case_when(REGULATION_ID =! 5472 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID =! 5472 ~ START_MONTH))
 
-#BUG ID -4 - Correct missing mng. type/sector/region for reg id 5471
+#BUG ID -4 and -15- Correct missing mng. type/sector/region for reg id 5471, Bug ID -15 updates the Management Type to Quota Adjustment and removes the start month, day, and end date information for the record since it is a Catch Limit record
 mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 5471 ~ 'QUOTA',
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 5471 ~ 'QUOTA ADJUSTMENT',
                                      TRUE ~ MANAGEMENT_TYPE),
          SECTOR = case_when(REGULATION_ID == 5471 ~ 'RECREATIONAL',
                             TRUE ~ SECTOR),
          REGION = case_when(REGULATION_ID == 5471 ~ 'GULF OF MEXICO',
-                            TRUE ~ REGION))
+                            TRUE ~ REGION),
+         START_DAY = case_when(REGULATION_ID =! 5471 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID =! 5471 ~ START_MONTH),
+         END_DAY = case_when(REGULATION_ID =! 5471 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID =! 5471 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID =! 5471 ~ END_YEAR))
 
 #BUG ID -5 - Correct missing mng. type/sector/region for reg id 5427
 mh_cleaned <- mh_cleaned %>%
@@ -1285,6 +1326,50 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID != 454 ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID != 454 ~ START_MONTH))
+
+#Bug ID 5908 - Start Month and Day information should be removed for Catch Limit records since it is not explicitly stated
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 810 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 810 ~ START_MONTH))
+
+#Bug ID 5910 - Start Month and Day information should be removed for Catch Limit records since it is not explicitly stated 
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 849 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 849 ~ START_MONTH))
+
+#Bug ID 5917 - Start Month and Day information should be removed for Catch Limit records since it is not explicitly stated 
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 821 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 821 ~ START_MONTH))
+
+#Bug ID 5918 - Start Month and Day information should be removed for Catch Limit records since it is not explicitly stated 
+mh_cleaned <- mh_cleaned %>% 
+  mutate(START_DAY = case_when(REGULATION_ID != 822 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 822 ~ START_MONTH))
+
+#Bug ID 5920 - Start Month, Day, and End Date information should be removed for Catch Limit records since it is not explicitly stated
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 807 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 807 ~ START_MONTH),
+         END_DAY = case_when(REGULATION_ID != 807 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 807 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 807 ~ END_YEAR))
+
+#Bug ID 5921 - Start Month, Day, and End Date information should be removed for Catch Limit records since it is not explicitly stated 
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 434 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 434 ~ START_MONTH),
+         END_DAY = case_when(REGULATION_ID != 434 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 434 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 434 ~ END_YEAR))
+
+#Bug ID 5936 - Start Month, Day, and End Date information should be removed for Catch Limit records since it is not explicitly stated 
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 436 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 436 ~ START_MONTH),
+         END_DAY = case_when(REGULATION_ID != 436 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 436 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 436 ~ END_YEAR))
 
 #Bug ID 5546 - Management status changed to blank for fishing season record since it is implied that it is a seasonal regulation using the Managment Type
 mh_cleaned <- mh_cleaned %>%
