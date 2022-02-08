@@ -736,6 +736,19 @@ mh_cleaned <- mh_cleaned %>%
          END_TIME = case_when(REGULATION_ID == 392 ~ "12:01:00 AM",
                               TRUE ~ END_TIME))
 
+#Bug ID 5958 - Update Effective and start date information based on removal guidance
+mh_cleaned <- mh_cleaned %>%
+  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1112 ~ "09/03/2013",
+                                    TRUE ~ EFFECTIVE_DATE),
+         START_YEAR = case_when(REGULATION_ID == 1112 ~ 2013L,
+                                TRUE ~ START_YEAR),
+         START_DAY = case_when(REGULATION_ID == 1112 ~ 3L,
+                               TRUE ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID == 1112 ~ 9L,
+                                 TRUE ~ START_MONTH),
+         END_MONTH = case_when(REGULATION_ID == 1112 ~ 9L,
+                               TRUE ~ END_MONTH))
+
 #Bug ID 4950 -  Management Category and Management Type updated from Other: Regulatory Reporting to Other: VMS Related
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1109 ~ 'OTHER',
@@ -1065,6 +1078,26 @@ mh_cleaned <- mh_cleaned %>%
                                 TRUE ~ VALUE_TYPE),
          VALUE_RATE = case_when(REGULATION_ID == 1085 ~ '',
                                 TRUE ~ VALUE_RATE))
+
+#Bug ID 5956 - Management Category and Type should be updated to Gear Requirements: Permitted and Authorized Gear and sector:subsector should be commercial: surface trawling
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1029 ~ 'GEAR REQUIREMENTS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1029 ~ 'PERMITTED AND AUTHORIZED GEAR',
+                                     TRUE ~ MANAGEMENT_TYPE),
+         SECTOR = case_when(REGULATION_ID == 1029 ~ 'COMMERCIAL',
+                            TRUE ~ SECTOR),
+         SUBSECTOR = case_when(REGULATION_ID == 1029 ~ 'SURFACE TRAWLING',
+                               TRUE ~ SECTOR),
+         FLAG = case_when(REGULATION_ID == 1029 ~ 'NO',
+                          TRUE ~ FLAG))
+
+#Bug ID 5957 - Management Category and Type should be updated to Temporal Controls: Closure
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1243 ~ 'TEMPORAL CONTROLS',
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1243 ~ 'CLOSURE',
+                                     TRUE ~ MANAGEMENT_TYPE))
 
 #Bug ID 4948 - Updated Action Type from blank to Amendment
 mh_cleaned <- mh_cleaned %>%
