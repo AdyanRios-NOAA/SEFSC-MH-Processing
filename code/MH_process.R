@@ -25,7 +25,7 @@
 cluster.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
                    "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
                    "SECTOR_USE", "SUBSECTOR", "REGION", "ZONE_USE",
-                   "COMMON_NAME_USE")
+                   "SPP_NAME")
 
 # READ IN EXISTING CLUSTERS
 
