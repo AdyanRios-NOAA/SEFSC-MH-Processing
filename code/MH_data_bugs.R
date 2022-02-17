@@ -1425,6 +1425,43 @@ mh_cleaned <- mh_cleaned %>%
   mutate(VALUE = case_when(REGULATION_ID == 527 ~ "220000",
                            TRUE ~ VALUE))
 
+#Bug ID 6026 - update DWH part 1 - zone should be GOM:Area closure related to Deepwater Horizon oil spill, remove amendment and amendment number
+mh_cleaned <- mh_cleaned %>%
+  mutate(ZONE = case_when(REGULATION_ID == 3068 ~ "AREA CLOSURE RELATED TO DEEPWATER HORIZON OIL SPILL",
+                          TRUE ~ ZONE),
+         ACTION_TYPE = case_when(REGULATION_ID == 3068 ~ " ",
+                                 TRUE ~ ACTION_TYPE),
+         AMENDMENT_NUMBER = case_when(REGULATION_ID == 3068 ~ " ",
+                                      TRUE ~ AMENDMENT_NUMBER))
+
+#Bug ID 6027 - update DWH part 2 - zone should be SATL:Area closure related to Deepwater Horizon oil spill, remove amendment and amendment number
+mh_cleaned <- mh_cleaned %>%
+  mutate(ZONE = case_when(REGULATION_ID == 3067 ~ "AREA CLOSURE RELATED TO DEEPWATER HORIZON OIL SPILL",
+                          TRUE ~ ZONE),
+         ACTION_TYPE = case_when(REGULATION_ID == 3067 ~ " ",
+                                 TRUE ~ ACTION_TYPE),
+         AMENDMENT_NUMBER = case_when(REGULATION_ID == 3067 ~ " ",
+                                      TRUE ~ AMENDMENT_NUMBER))
+
+#Bug ID 6028 - update DWH part 3 - zone should be CAR:Area closure related to Deepwater Horizon oil spill, remove amendment and amendment number
+mh_cleaned <- mh_cleaned %>% 
+  mutate(ZONE = case_when(REGULATION_ID == 2191 ~ "AREA CLOSURE RELATED TO DEEPWATER HORIZON OIL SPILL",
+                          TRUE ~ ZONE),
+         ACTION_TYPE = case_when(REGULATION_ID == 2191 ~ " ",
+                                 TRUE ~ ACTION_TYPE),
+         AMENDMENT_NUMBER = case_when(REGULATION_ID == 2191 ~ " ",
+                                      TRUE ~ AMENDMENT_NUMBER))
+
+#Bug ID 6036 - update DWH part 4 - remove amendment and amendment number, change flag to yes
+mh_cleaned <- mh_cleaned %>% 
+  mutate(ACTION_TYPE = case_when(REGULATION_ID == 11346 ~ " ",
+                                 TRUE ~ ACTION_TYPE),
+         AMENDMENT_NUMBER = case_when(REGULATION_ID == 11346 ~ " ",
+                                      TRUE ~ AMENDMENT_NUMBER),
+         FLAG = case_when(REGULATION_ID == 11346 ~ "YES",
+                          TRUE ~ FLAG))
+
+
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
 
