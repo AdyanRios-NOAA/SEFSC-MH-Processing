@@ -1137,6 +1137,16 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 1479 ~ 'NO', TRUE ~ FLAG))
 
+#Bug ID 5986 - change flag to YES for Deepwater Horizon closure
+mh_cleaned <- mh_cleaned %>%
+  mutate(FLAG = case_when(REGULATION_ID == 11345 ~ 'YES', 
+                          TRUE ~ FLAG))
+
+#Bug ID 5987 - change flag to YES for Deepwater Horizon closure
+mh_cleaned <- mh_cleaned %>%
+  mutate(FLAG = case_when(REGULATION_ID == 11427 ~ 'YES',
+                          TRUE ~ FLAG))
+
 #BUG ID 4487 - mng status changed to withdrawn and updated to spatial controls:closed area
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 1355 ~ 'WITHDRAWN',
