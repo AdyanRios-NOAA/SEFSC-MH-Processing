@@ -38,7 +38,7 @@ source(here('code', 'MH_pre_process.R'))
   # Dataframe result = mh_sort 
 source(here('code', 'MH_process.R'))
 
-# 4: Clean up dates
+# 4: Species expansion and clean up dates
 # Dataframe result = mh_final 
 source(here('code', 'MH_spp_expansion.R'))
 
