@@ -22,7 +22,7 @@ sp_info_use_m <- sp_info_use %>%
   select(-c(N, FMP_GROUP_ID, SUBGRP_NAME))
 
 # OVER EXPAND MH on species for detailed mtypes where there is a single record for that species in species aggrgate/group table
-mh_sp_expanded_y1 <- mh_sect_expanded %>%
+mh_sp_expanded_y1 <- mh_sort %>%
   # Filter to remove non-detailed records
   filter(DETAILED == 'YES') %>%
   # Join to species list table by species name type, name,  and FMP
@@ -44,7 +44,7 @@ mh_sp_expanded_y1 <- mh_sect_expanded %>%
   select(-c(SPECIES_ITIS, SCIENTIFIC_NAME))
 
 # OVER EXPAND MH on species for detailed mtypes where there are multiple records for that species in species aggrgate/group table
-mh_sp_expanded_y2 <- mh_sect_expanded %>%
+mh_sp_expanded_y2 <- mh_sort %>%
   # Filter to remove non-detailed records
   filter(DETAILED == 'YES') %>%
   # Join to species list table by species name type, name,  and FMP
@@ -79,7 +79,7 @@ select(-c(SPECIES_ITIS, SCIENTIFIC_NAME#, rnk, del
 ))
 
 # Dataframe of non-detailed records in long form to join with expanded dataframe
-mh_sp_expanded_n <- mh_sect_expanded %>%
+mh_sp_expanded_n <- mh_sort %>%
   # Filter to remove non-detailed records
   filter(DETAILED == 'NO') %>%
   # Get fields to match
@@ -94,7 +94,7 @@ mh_sp_expanded <- mh_sp_expanded_y1 %>%
 # REMOVE EXPANDED SPECIES  THAT ARE NO LONGER A PART OF THAT GROUP 
 # ADJUST START OR END DATES USING SPECIES ADDED AND REMOVED DATES
 
-chk_spp <- mh_sort %>%
+chk_spp <- mh_sp_expanded %>%
   mutate(chk_spp = case_when(REMOVED_SP_DATE < START_DATE ~ 1,
                              REMOVED_SP_DATE < END_DATE & REMOVED_SP_DATE > START_DATE ~ 2,
                              ADDED_SP_DATE > START_DATE & END_DATE > ADDED_SP_DATE  ~ 3,
@@ -117,7 +117,7 @@ chk_spp_sum <- chk_spp %>%
                                 chk_spp == 3 ~ 'adjust start date',
                                 chk_spp == 4 ~ 'remove'))
 
-mh_final <- mh_sort %>%
+mh_final <- mh_sp_expanded %>%
   mutate(RM_SPP = case_when(REMOVED_SP_DATE < START_DATE | (ADDED_SP_DATE > START_DATE & END_DATE < ADDED_SP_DATE) ~ 1,
                             TRUE ~ 0),
          IMP_START_DATE = case_when(ADDED_SP_DATE > START_DATE & END_DATE > ADDED_SP_DATE ~ 1,
