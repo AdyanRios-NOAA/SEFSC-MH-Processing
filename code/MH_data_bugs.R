@@ -1088,7 +1088,7 @@ mh_cleaned <- mh_cleaned %>%
          SECTOR = case_when(REGULATION_ID == 1029 ~ 'COMMERCIAL',
                             TRUE ~ SECTOR),
          SUBSECTOR = case_when(REGULATION_ID == 1029 ~ 'SURFACE TRAWLING',
-                               TRUE ~ SECTOR),
+                               TRUE ~ SUBSECTOR),
          FLAG = case_when(REGULATION_ID == 1029 ~ 'NO',
                           TRUE ~ FLAG))
 
