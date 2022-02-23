@@ -24,14 +24,6 @@ mh_cleaned <- mh %>%
   #mutate(SPECIES_ITIS = gsub('="', '', SPECIES_ITIS),
   #       SPECIES_ITIS = gsub('"', '', SPECIES_ITIS))
 
-# Change all closed areas to closures and management category from spatial closure to temporal controls
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(MANAGEMENT_TYPE == 'CLOSED AREA' ~ 'CLOSURE',
-                                     # This means if the previous condition is not met, then MANAGEMENT_TYPE should be the original MANAGEMENT_TYPE
-                                     TRUE ~ MANAGEMENT_TYPE),
-         MANAGEMENT_CATEGORY = case_when(MANAGEMENT_CATEGORY == 'SPATIAL CLOSURE' ~ 'TEMPORAL CONTROLS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
 # Move all definition terms to value and rename management category = OTHER and management type = DEFINITION
 mh_cleaned <- mh_cleaned %>%
   mutate(VALUE = case_when(MANAGEMENT_CATEGORY == 'DEFINITION' ~ MANAGEMENT_TYPE,
@@ -41,144 +33,14 @@ mh_cleaned <- mh_cleaned %>%
          MANAGEMENT_CATEGORY = case_when(MANAGEMENT_CATEGORY == 'DEFINITION' ~ 'OTHER',
                                          TRUE ~ MANAGEMENT_CATEGORY))
 
-#Change all IFQ Program Adapted to Management Category: Other
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'IFQ PROGRAM ADAPTED' ~ 'OTHER',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all ITQ Program Adapted to Management Category: Other
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'ITQ PROGRAM ADAPTED' ~ 'OTHER',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Limited Access System to Management Category: Other
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'LIMITED ACCESS SYSTEM' ~ 'OTHER',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Permit Moratorium to Management Category: Other
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'PERMIT MORATORIUM' ~ 'OTHER',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all IFQ Program Established to Management Category: Universal
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'IFQ PROGRAM ESTABLISHED' ~ 'UNIVERSAL',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all ITQ Program Established to Management Category: Universal
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'ITQ PROGRAM ESTABLISHED' ~ 'UNIVERSAL',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
 #Change all Fishing Season to Management Category: Universal
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'FISHING SEASON' ~ 'UNIVERSAL',
                                          TRUE ~ MANAGEMENT_CATEGORY))
 
-#Change all Fishing Year to Management Category: Universal
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'FISHING YEAR' ~ 'UNIVERSAL',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Individual Bluefin Quota (IBQ) Program Established to Management Category: Universal
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'INDIVIDUAL BLUEFIN QUOTA (IBQ) PROGRAM ESTABLISHED' ~ 'UNIVERSAL',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Allowable Species to Management Category: Universal
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'ALLOWABLE SPECIES' ~ 'UNIVERSAL',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Prohibited Species to Management Category: Universal
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'PROHIBITED SPECIES' ~ 'UNIVERSAL',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Harvest Method to Management Category: Harvest Limitations
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'HARVEST METHOD' ~ 'HARVEST LIMITATIONS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Lobsters As Attractants to Management Category: Harvest Limitations
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'LOBSTERS AS ATTRACTANTS' ~ 'HARVEST LIMITATIONS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Bait Restriction to Management Category: Harvest Limitations
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'BAIT RESTRICTION' ~ 'HARVEST LIMITATIONS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
 #Change all Management Category: Gear Limitations to Management Category: Gear Requirements
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_CATEGORY == 'GEAR LIMITATIONS' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all BRD Requirement to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'BRD REQUIREMENT' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Dehooking Device to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'DEHOOKING DEVICE' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Descending Device to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'DESCENDING DEVICE' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Green-stick Gear Requirements to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'GREEN_STICK GEAR REQUIREMENTS' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Non-offset Circle Hook Requirements to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'NON-OFFSET CIRCLE HOOK REQUIREMENTS' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Non-offset, Non-Stainless Steel Circle Hooks to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'NON-OFFSET, NON-STAINLESS STEEL CIRCLE HOOKS' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Non-Stainless Steel Circle Hooks to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'NON-STAINLESS STEEL CIRCLE HOOKS' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Non-Stainless Steel Hooks to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'NON-STAINLESS STEEL HOOKS' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Turtle Release Gear to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'TURTLE RELEASE GEAR' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Venting Tool to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'VENTING TOOL' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Weak Hook (Offset Circle Hooks) to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'WEAK HOOK (OFFSET CIRCLE HOOKS)' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all MSST to Management Category: Catch Limits
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'MSST' ~ 'CATCH LIMITS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Hook size/type/# to Management Category: Effort Limits
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'HOOK SIZE/TYPE/#' ~ 'EFFORT LIMITS',
                                          TRUE ~ MANAGEMENT_CATEGORY))
 
 # Remove Records
