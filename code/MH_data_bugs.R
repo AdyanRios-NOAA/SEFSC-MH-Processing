@@ -1111,7 +1111,7 @@ mh_cleaned <- mh_cleaned %>%
 
 #BUG ID -1 - Correct missing mng. type/sector/region for reg id 5474
 mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 5474 ~ 'BAG LIMIT',
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 5474 ~ 'BAG LIMIT ADJUSTMENT',
                                      TRUE ~ MANAGEMENT_TYPE),
          SECTOR = case_when(REGULATION_ID == 5474 ~ 'RECREATIONAL',
                             TRUE ~ SECTOR),
