@@ -24,25 +24,6 @@ mh_cleaned <- mh %>%
   #mutate(SPECIES_ITIS = gsub('="', '', SPECIES_ITIS),
   #       SPECIES_ITIS = gsub('"', '', SPECIES_ITIS))
 
-# Move all definition terms to value and rename management category = OTHER and management type = DEFINITION
-mh_cleaned <- mh_cleaned %>%
-  mutate(VALUE = case_when(MANAGEMENT_CATEGORY == 'DEFINITION' ~ MANAGEMENT_TYPE,
-                           TRUE ~ VALUE),
-         MANAGEMENT_TYPE = case_when(MANAGEMENT_CATEGORY == 'DEFINITION' ~ 'DEFINITION',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         MANAGEMENT_CATEGORY = case_when(MANAGEMENT_CATEGORY == 'DEFINITION' ~ 'OTHER',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Fishing Season to Management Category: Universal
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_TYPE == 'FISHING SEASON' ~ 'UNIVERSAL',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Change all Management Category: Gear Limitations to Management Category: Gear Requirements
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(MANAGEMENT_CATEGORY == 'GEAR LIMITATIONS' ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
 # Remove Records
 mh_cleaned <- mh_cleaned %>%
   # Bug ID 4955
@@ -1358,6 +1339,105 @@ mh_cleaned <- mh_cleaned %>%
 #Bug ID 6059 - update Management Category due to error during the reclassification process 
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3254 ~ "UNIVERSAL",
+                                         TRUE ~ MANAGEMENT_CATEGORY))
+
+#Bug ID 6076 - update Management Category to Other for Definition records that did not reclassify correctly
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4822 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4823 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4831 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4832 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2242 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1241 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2325 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 5220 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2583 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2585 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2588 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2581 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2263 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4238 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4281 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4284 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1210 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4663 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4612 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4126 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4124 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4130 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4122 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3993 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4009 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4014 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4019 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4020 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4022 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4028 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4039 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4041 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4049 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4053 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4066 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4067 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4070 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4071 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4077 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4080 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4081 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4082 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4083 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2264 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1212 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1211 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1072 ~ "OTHER",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4319 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY))
 
 #Create empty data frame
