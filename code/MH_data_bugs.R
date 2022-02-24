@@ -114,7 +114,9 @@ mh_cleaned <- mh_cleaned %>%
   #Bug ID 5925
   filter(REGULATION_ID != 831) %>%
   #Bug ID 5928
-  filter(REGULATION_ID != 818)
+  filter(REGULATION_ID != 818)%>%
+  #Bug ID 6056
+  filter(REGULATION_ID != 11546)
 
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
@@ -864,6 +866,11 @@ mh_cleaned <- mh_cleaned %>%
          END_MONTH = case_when(REGULATION_ID != 808 ~ END_MONTH),
          END_YEAR = case_when(REGULATION_ID != 808 ~ END_YEAR))
        
+#Bug ID 6046 - Start Month and Start Day should be removed following guidance related to Catch Limit Management Types
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_DAY = case_when(REGULATION_ID != 1105 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 1105 ~ START_MONTH))
+
 #Bug ID 4947 - Management Category and Management Type updated from Effort Limits: Prohibited Species to Temporal Controls: Closure
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1242 ~ 'TEMPORAL CONTROLS',
@@ -1174,9 +1181,9 @@ mh_cleaned <- mh_cleaned %>%
 
 #BUG ID -7 - Correct missing mng. type/sector/region for reg id 2197
 mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 2197 ~ 'CLOSURE',
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 2197 ~ 'FISHING SEASON',
                                      TRUE ~ MANAGEMENT_TYPE),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2197 ~ 'TEMPORAL CONTROLS',
+         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2197 ~ 'UNIVERSAL',
                                          TRUE ~ MANAGEMENT_CATEGORY),
          SECTOR = case_when(REGULATION_ID == 2197 ~ 'ALL',
                             TRUE ~ SECTOR),
@@ -1336,6 +1343,22 @@ mh_cleaned <- mh_cleaned %>%
          FLAG = case_when(REGULATION_ID == 11346 ~ "YES",
                           TRUE ~ FLAG))
 
+#Bug ID 6057 - update Management Category and Management Type due to error during reclassification process
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1356 ~ "TEMPORAL CONTROLS",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1356 ~ "CLOSURE",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6058 - update Management Category due to error during the reclassification process
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3383 ~ "UNIVERSAL",
+                                         TRUE ~ MANAGEMENT_CATEGORY))
+
+#Bug ID 6059 - update Management Category due to error during the reclassification process 
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3254 ~ "UNIVERSAL",
+                                         TRUE ~ MANAGEMENT_CATEGORY))
 
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
