@@ -17,12 +17,12 @@ mh <- read.csv(here('data/raw', "MH_DOWNLOAD_FEB_22_2022.csv"), stringsAsFactors
 mh_cleaned <- mh %>%
   # Format dates to be mm/dd/yyyy to match added data (this may not be an issue in the future when pull directly from the database)
   mutate(EFFECTIVE_DATE = format(mdy(EFFECTIVE_DATE), "%m/%d/%Y"),
-         INEFFECTIVE_DATE = format(mdy(INEFFECTIVE_DATE), "%m/%d/%Y"))
+         INEFFECTIVE_DATE = format(mdy(INEFFECTIVE_DATE), "%m/%d/%Y")) %>%
   # Rename regulation ID to match what appears in the database
   #rename(REGULATION_ID = REGULATION_ID.) %>%
-  # Remove ="..." characters in species ITIS codes
-  #mutate(SPECIES_ITIS = gsub('="', '', SPECIES_ITIS),
-  #       SPECIES_ITIS = gsub('"', '', SPECIES_ITIS))
+  #Remove ="..." characters in species ITIS codes
+  mutate(SPECIES_ITIS = gsub('="', '', SPECIES_ITIS),
+         SPECIES_ITIS = gsub('"', '', SPECIES_ITIS))
 
 # Remove Records
 mh_cleaned <- mh_cleaned %>%
@@ -1558,7 +1558,7 @@ mh_added <- mh_added %>%
           ZONE	= "ALL",
           JURISDICTIONAL_WATERS	= "EEZ",
           COMMON_NAME	= "SNAPPER, RED",
-          SPECIES_ITIS	= 168853,
+          SPECIES_ITIS	= "168853",
           FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
           EFFECTIVE_DATE	= "11/08/1984",
           START_DAY	= 8,
@@ -1587,7 +1587,7 @@ mh_added <- mh_added %>%
           ZONE	= "ALL",
           JURISDICTIONAL_WATERS	= "EEZ",
           COMMON_NAME	= "GROUPER, GAG",
-          SPECIES_ITIS	= 167759,
+          SPECIES_ITIS	= "167759",
           FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
           MANAGEMENT_STATUS	= "ONCE",
           EFFECTIVE_DATE	= "01/01/2009",
@@ -1618,7 +1618,7 @@ mh_added <- mh_added %>%
           ZONE	= "ALL",
           JURISDICTIONAL_WATERS	= "EEZ",
           COMMON_NAME	= "SNAPPER, RED",
-          SPECIES_ITIS	= 168853,
+          SPECIES_ITIS	= "168853",
           FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
           MANAGEMENT_STATUS	= "ONCE",
           EFFECTIVE_DATE	= "01/01/2009",
@@ -1649,7 +1649,7 @@ mh_added <- mh_added %>%
           ZONE	= "ALL",
           JURISDICTIONAL_WATERS	= "EEZ",
           COMMON_NAME	= "AMBERJACK, GREATER",
-          SPECIES_ITIS	= 168689,
+          SPECIES_ITIS	= "168689",
           FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
           MANAGEMENT_STATUS	= "ONCE",
           EFFECTIVE_DATE	= "01/01/2009",
@@ -1680,7 +1680,7 @@ mh_added <- mh_added %>%
           ZONE	= "ALL",
           JURISDICTIONAL_WATERS	= "EEZ",
           COMMON_NAME	= "TRIGGERFISH, GRAY",
-          SPECIES_ITIS	= 173138,
+          SPECIES_ITIS	= "173138",
           FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
           MANAGEMENT_STATUS	= "ONCE",
           EFFECTIVE_DATE	= "01/01/2009",
@@ -1711,7 +1711,7 @@ mh_added <- mh_added %>%
           ZONE	= "ALL",
           JURISDICTIONAL_WATERS	= "EEZ",
           COMMON_NAME	= "SNAPPER, RED",
-          SPECIES_ITIS	= 168853,
+          SPECIES_ITIS	= "168853",
           FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
           MANAGEMENT_STATUS	= "DELAYED",
           EFFECTIVE_DATE	= "02/23/1996",
@@ -1849,7 +1849,7 @@ mh_added <- mh_added %>%
           ZONE	= "ALL",
           JURISDICTIONAL_WATERS	= "EEZ",
           COMMON_NAME	= "SNAPPER, RED",
-          SPECIES_ITIS	= 168853,
+          SPECIES_ITIS	= "168853",
           FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
           MANAGEMENT_STATUS	= "MONTHLY",
           EFFECTIVE_DATE	= "01/01/2007",
@@ -1881,7 +1881,7 @@ mh_added <- mh_added %>%
           ZONE	= "ALL",
           JURISDICTIONAL_WATERS	= "EEZ",
           COMMON_NAME	= "SNAPPER, RED",
-          SPECIES_ITIS	= 168853,
+          SPECIES_ITIS	= "168853",
           FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
           MANAGEMENT_STATUS	= "SEASONAL",
           EFFECTIVE_DATE	= "01/01/2007",
