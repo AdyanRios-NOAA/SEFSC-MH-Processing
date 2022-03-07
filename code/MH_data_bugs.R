@@ -97,7 +97,15 @@ mh_cleaned <- mh_cleaned %>%
   #Bug ID 5928
   filter(REGULATION_ID != 818)%>%
   #Bug ID 6056
-  filter(REGULATION_ID != 11546)
+  filter(REGULATION_ID != 11546)%>%
+  #Bug ID 6237
+  filter(REGULATION_ID != 809) %>%
+  #Bug ID 6276
+  filter(REGULATION_ID != 435) %>%
+  #Bug ID 6326
+  filter(REGULATION_ID != 11363) %>%
+  #Bug ID 6327
+  filter(REGULATION_ID != 11364)
 
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
@@ -1252,7 +1260,9 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 5920 - Start Month, Day, and End Date information should be removed for Catch Limit records since it is not explicitly stated
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_DAY = case_when(REGULATION_ID != 807 ~ START_DAY),
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 807 ~ "QUOTA ADJUSTMENT",
+                                     TRUE ~ MANAGEMENT_TYPE), 
+         START_DAY = case_when(REGULATION_ID != 807 ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID != 807 ~ START_MONTH),
          END_DAY = case_when(REGULATION_ID != 807 ~ END_DAY),
          END_MONTH = case_when(REGULATION_ID != 807 ~ END_MONTH),
@@ -1260,7 +1270,9 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 5921 - Start Month, Day, and End Date information should be removed for Catch Limit records since it is not explicitly stated 
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_DAY = case_when(REGULATION_ID != 434 ~ START_DAY),
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 434 ~ "QUOTA ADJUSTMENT",
+                                         TRUE ~ MANAGEMENT_CATEGORY),
+         START_DAY = case_when(REGULATION_ID != 434 ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID != 434 ~ START_MONTH),
          END_DAY = case_when(REGULATION_ID != 434 ~ END_DAY),
          END_MONTH = case_when(REGULATION_ID != 434 ~ END_MONTH),
@@ -1439,6 +1451,108 @@ mh_cleaned <- mh_cleaned %>%
                                          TRUE ~ MANAGEMENT_CATEGORY),
          MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4319 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY))
+
+#Bug IDs 6086, 6096 - Removing Start month and day information for Catch Limit records
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(1104, 11430, 1086, 1083, 1392, 1344, 616, 512, 515, 268, 848, 429, 430, 432, 462, 228, 662, 233, 591, 587, 466, 666, 229, 234, 470, 240, 237, 667, 595, 592, 476, 473, 670, 482, 477, 832, 490, 970, 247, 837, 964, 461, 431, 1343, 814) ~ START_MONTH),
+         START_DAY = case_when(!REGULATION_ID %in% c(1104, 11430, 1086, 1083, 1392, 1344, 616, 512, 515, 268, 848, 429, 430, 432, 462, 228, 662, 233, 591, 587, 466, 666, 229, 234, 470, 240, 237, 667, 59, 592, 476, 473, 670, 482, 477, 832, 490, 970, 247, 837, 964, 461, 431, 1343, 814) ~ START_DAY))
+
+#Bug ID 6087 - Removing start month, start day, and end date for Catch Limit records
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(11447, 11382, 11381, 11380, 451, 574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_MONTH),
+         START_DAY = case_when(!REGULATION_ID %in% c(11447, 11382, 11381, 11380, 451, 574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_DAY),
+         END_DAY = case_when(!REGULATION_ID %in% c(11447, 11382, 11381, 11380, 451, 574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_DAY),
+         END_MONTH = case_when(!REGULATION_ID %in% c(11447, 11382, 11381, 11380, 451, 574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_MONTH),
+         END_YEAR = case_when(!REGULATION_ID %in% c(11447, 11382, 11381, 11380, 451, 574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_YEAR))
+
+#Bug IDs 6116 - Removing start month, day, time, and end date information for Catch Limit records
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(11433, 11432, 11390, 11391, 11409, 11410, 11384, 11385) ~ START_MONTH),
+         START_DAY = case_when(!REGULATION_ID %in% c(11433, 11432, 11390, 11391, 11409, 11410, 11384, 11385) ~ START_DAY),
+         START_TIME = case_when(!REGULATION_ID %in% c(11433, 11432, 11390, 11391, 11409, 11410, 11384, 11385) ~ START_TIME),
+         END_DAY = case_when(!REGULATION_ID %in% c(11433, 11432, 11390, 11391, 11409, 11410, 11384, 11385) ~ END_DAY),
+         END_MONTH = case_when(!REGULATION_ID %in% c(11433, 11432, 11390, 11391, 11409, 11410, 11384, 11385) ~ END_MONTH),
+         END_YEAR = case_when(!REGULATION_ID %in% c(11433, 11432, 11390, 11391, 11409, 11410, 11384, 11385) ~ END_YEAR),
+         END_TIME = case_when(!REGULATION_ID %in% c(11433, 11432, 11390, 11391, 11409, 11410, 11384, 11385) ~ END_TIME))
+
+#Bug ID 6186  - Update Management Type to Quota Adjustment and remove start month, start day, and end date information for Catch Limit records
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID %in% c(441, 440, 452, 453, 439, 812, 442, 433, 443, 813) ~ "QUOTA ADJUSTMENT",
+                                     TRUE ~ MANAGEMENT_TYPE),
+         START_MONTH = case_when(!REGULATION_ID %in% c(441, 440, 452, 453, 439, 812, 442, 433, 443, 813) ~ START_MONTH),
+         START_DAY = case_when(!REGULATION_ID %in% c(441, 440, 452, 453, 439, 812, 442, 433, 443, 813) ~ START_DAY),
+         END_DAY = case_when(!REGULATION_ID %in% c(441, 440, 452, 453, 439, 812, 442, 433, 443, 813) ~ END_DAY),
+         END_MONTH = case_when(!REGULATION_ID %in% c(441, 440, 452, 453, 439, 812, 442, 433, 443, 813) ~ END_MONTH),
+         END_YEAR = case_when(!REGULATION_ID %in% c(441, 440, 452, 453, 439, 812, 442, 433, 443, 813) ~ END_YEAR))
+
+#Bug ID -18 - Remove start month, start day, and end date information for Catch Limit records and update flag to YES
+mh_cleaned <- mh_cleaned %>%
+  mutate(FLAG = case_when(REGULATION_ID == 458 ~ "YES",
+                                     TRUE ~ FLAG),
+         START_MONTH = case_when(REGULATION_ID != 458 ~ START_MONTH),
+         START_DAY = case_when(REGULATION_ID != 458 ~ START_DAY),
+         END_DAY = case_when(REGULATION_ID != 458 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 458 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 458 ~ END_YEAR)) 
+
+#Bug ID 6306 - Management Type should be updated to ACL Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID %in% c(11432, 11390, 11409, 11381, 11384, 633, 635, 634, 624, 626, 625, 574, 222, 572, 221, 571, 225) ~ "ACL ADJUSTMENT",
+                                         TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6316 - Effective and Start date updated based on correction
+mh_cleaned <- mh_cleaned %>%
+  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1133 ~ "03/09/1994",
+                                    TRUE ~ EFFECTIVE_DATE),
+         START_DAY = case_when(REGULATION_ID == 1133 ~ "9",
+                               TRUE ~ EFFECTIVE_DATE))
+
+#Bug ID 6336 - Management Type should be Bag Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 941 ~ "BAG LIMIT ADJUSTMENT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6346 - Management Type should be Quota Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 447 ~ "QUOTA ADJUSTMENT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6347 - Management Type should be Quota Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 448 ~ "QUOTA ADJUSTMENT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6356 - Management Type should be Quota Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 494 ~ "QUOTA ADJUSTMENT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6366 - Management Type should be Quota Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 451 ~ "QUOTA ADJUSTMENT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6317 - Management Type should be Ignorable
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 11373 ~ "IGNORABLE",
+                                     TRUE ~ MANAGEMENT_TYPE),
+         FR_SECTION = case_when(REGULATION_ID == 11373 ~ "50 CFR 641",
+                                TRUE ~ FR_SECTION),
+         EFFECTIVE_DATE = case_when(REGULATION_ID == 11373 ~ "03/07/1994",
+                                    TRUE ~ EFFECTIVE_DATE),
+         START_DAY = case_when(REGULATION_ID == 11373 ~ 7,
+                               TRUE ~ START_DAY),
+         FLAG = case_when(REGULATION_ID == 11373 ~ "NO",
+                          TRUE ~ FLAG))
+
+#Bug ID 6328 - Management Type should be Ignorable
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 11365 ~ "IGNORABLE",
+                                     TRUE ~ MANAGEMENT_TYPE),
+         FR_SECTION = case_when(REGULATION_ID == 13365 ~ "50 CFR 641",
+                                TRUE ~ FR_SECTION),
+         FLAG = case_when(REGULATION_ID == 11373 ~ "NO",
+                          TRUE ~ FLAG))
 
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
