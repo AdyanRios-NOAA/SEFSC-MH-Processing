@@ -1123,8 +1123,8 @@ mh_cleaned <- mh_cleaned %>%
                             TRUE ~ SECTOR),
          REGION = case_when(REGULATION_ID == 5472 ~ 'GULF OF MEXICO',
                             TRUE ~ REGION),
-         START_DAY = case_when(REGULATION_ID =! 5472 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID =! 5472 ~ START_MONTH))
+         START_DAY = case_when(REGULATION_ID != 5472 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 5472 ~ START_MONTH))
 
 #BUG ID -4 and -15- Correct missing mng. type/sector/region for reg id 5471, Bug ID -15 updates the Management Type to Quota Adjustment and removes the start month, day, and end date information for the record since it is a Catch Limit record
 mh_cleaned <- mh_cleaned %>%
@@ -1134,11 +1134,11 @@ mh_cleaned <- mh_cleaned %>%
                             TRUE ~ SECTOR),
          REGION = case_when(REGULATION_ID == 5471 ~ 'GULF OF MEXICO',
                             TRUE ~ REGION),
-         START_DAY = case_when(REGULATION_ID =! 5471 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID =! 5471 ~ START_MONTH),
-         END_DAY = case_when(REGULATION_ID =! 5471 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID =! 5471 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID =! 5471 ~ END_YEAR))
+         START_DAY = case_when(REGULATION_ID != 5471 ~ START_DAY),
+         START_MONTH = case_when(REGULATION_ID != 5471 ~ START_MONTH),
+         END_DAY = case_when(REGULATION_ID != 5471 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 5471 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 5471 ~ END_YEAR))
 
 #BUG ID -5 - Correct missing mng. type/sector/region for reg id 5427
 mh_cleaned <- mh_cleaned %>%
