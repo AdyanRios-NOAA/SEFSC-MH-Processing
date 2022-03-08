@@ -1504,8 +1504,8 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1133 ~ "03/09/1994",
                                     TRUE ~ EFFECTIVE_DATE),
-         START_DAY = case_when(REGULATION_ID == 1133 ~ "9",
-                               TRUE ~ EFFECTIVE_DATE))
+         START_DAY = case_when(REGULATION_ID == 1133 ~ 9L,
+                               TRUE ~ START_DAY))
 
 #Bug ID 6336 - Management Type should be Bag Limit Adjustment
 mh_cleaned <- mh_cleaned %>%
@@ -1540,7 +1540,7 @@ mh_cleaned <- mh_cleaned %>%
                                 TRUE ~ FR_SECTION),
          EFFECTIVE_DATE = case_when(REGULATION_ID == 11373 ~ "03/07/1994",
                                     TRUE ~ EFFECTIVE_DATE),
-         START_DAY = case_when(REGULATION_ID == 11373 ~ 7,
+         START_DAY = case_when(REGULATION_ID == 11373 ~ 7L,
                                TRUE ~ START_DAY),
          FLAG = case_when(REGULATION_ID == 11373 ~ "NO",
                           TRUE ~ FLAG))
@@ -1549,9 +1549,9 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 11365 ~ "IGNORABLE",
                                      TRUE ~ MANAGEMENT_TYPE),
-         FR_SECTION = case_when(REGULATION_ID == 13365 ~ "50 CFR 641",
+         FR_SECTION = case_when(REGULATION_ID == 11365 ~ "50 CFR 641",
                                 TRUE ~ FR_SECTION),
-         FLAG = case_when(REGULATION_ID == 11373 ~ "NO",
+         FLAG = case_when(REGULATION_ID == 11365 ~ "NO",
                           TRUE ~ FLAG))
 
 #Create empty data frame
