@@ -95,7 +95,7 @@ mh_prep <- mh_ready %>%
 
 # 1C NOTE WHEN THERE ARE MULTIPLE RECORDS PER CLUSTER PER FR ACTIVE AT THE SAME TIME####
 
-# FIND CASES
+# FIND CASES AND CREATE FLAG
 multi_reg <- mh_prep %>%
   group_by(CLUSTER, FR_CITATION) %>%
   summarize(MULTI_REG = as.numeric(duplicated(FR_CITATION))) %>%
@@ -104,9 +104,10 @@ multi_reg <- mh_prep %>%
   distinct()
 dim(multi_reg)
 
-#FLAG THEM
+# JOIN FLAGGED CASES INTO FULL DATA
 mh_prep_use <- mh_prep %>%
   left_join(., multi_reg, by = c("FR_CITATION", "CLUSTER")) %>%
+  # REPLACE ALL NAs WITH 0
   mutate_at("MULTI_REG", ~replace(., is.na(.), 0)) %>%
   mutate(MULTI_REG_CLUSTER = as.numeric(CLUSTER %in% multi_reg$CLUSTER)) 
 
