@@ -1,20 +1,20 @@
 # Script 2
 # Pre-processing clean up
   # Expand sector ALL to Commercial and Recreational
-  # Add "detailed" yes/no field
-  # Expand species
+  # Add "detailed" yes/no field (from google sheets)
   # Translate to new zone names (from Google sheets)
   # Rename mtype "adjustment" to be a flag
   # Create various new variables for processing
 
 #### 1 ####
 # Expand records with SECTOR = 'ALL" to be commercial and recreational
+# CREATE mh_sect_expanded ####
 mh_sect_expanded <- mh_cleaned %>%
-  #CREATE SECTOR USE
-  mutate(SECTOR_USE = SECTOR) %>%
-  # Rename "ALL" records to 'RECREATIONAL,COMMERCIAL' to separate at the comma
-  mutate(SECTOR_USE = case_when(SECTOR_USE == 'ALL' ~ 'RECREATIONAL,COMMERCIAL',
-                                TRUE ~ SECTOR_USE)) %>%
+  # CREATE SECTOR USE #### 
+  # Rename "ALL" records to 'RECREATIONAL,COMMERCIAL'
+  mutate(SECTOR_USE = case_when(SECTOR == 'ALL' ~ 'RECREATIONAL,COMMERCIAL',
+                                TRUE ~ SECTOR)) %>%
+  # EXPAND SECTOR_USE AT THE COMMAS
   separate_rows(SECTOR_USE)
 
 #### 2 ####
@@ -23,9 +23,18 @@ mh_sect_expanded <- mh_cleaned %>%
 detailed_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1PViPVtqkY3q1fWUFGZm1UyIIYrFxt-YDitEUGaHBjsg/edit#gid=1115852389") %>%
   select(-MANAGEMENT_CATEGORY)
 
+# RUN CROSSCHECKS
+# ARE ALL MH MANAGEMENT TYPES IN GOOGLE SHEET (BLANK IF YES)
+unique(mh_sect_expanded$MANAGEMENT_TYPE)[unique(mh_sect_expanded$MANAGEMENT_TYPE) %in% detailed_xref$MANAGEMENT_TYPE == FALSE]
+# ARE ALL GOOGLE SHEET MANAGEMENT TYPES IN MH (BLANK IF YES)
+detailed_xref$MANAGEMENT_TYPE[detailed_xref$MANAGEMENT_TYPE %in% mh_sect_expanded$MANAGEMENT_TYPE == FALSE]
+
+# EDIT mh_sect_expanded ####
+# CREATE O_COMMON_NAME, O_SPECIES_AGGREGATE, O_SPECIES_GROUP
+# CREATE SPP_TYPE, SP_NAME (consolidates variables above) ####
 # Reformat data - get species common name, aggregate name, and group name into single field (never null)
-mh_sect_expanded <- mh_sect_expanded %>%
-  # Add field for detailed (Y/N)
+mh_sect_expanded2 <- mh_sect_expanded %>%
+  # Add field for detailed (YES/No)
   left_join(detailed_xref, by = "MANAGEMENT_TYPE") %>%
   # Create duplicates of species fields to retain original data format
   mutate(O_COMMON_NAME = COMMON_NAME,
@@ -37,6 +46,11 @@ mh_sect_expanded <- mh_sect_expanded %>%
   # Remove records where name is null 
   filter(!is.na(SPP_NAME))
 
+# CHECK THAT NUMBER OF REG IDS AND RECORDS REMAINS THE SAME
+n_distinct(mh_sect_expanded$REGULATION_ID) == n_distinct(mh_sect_expanded2$REGULATION_ID)
+nrow(mh_sect_expanded) == nrow(mh_sect_expanded2)
+
+
 #### 3 ####
 # Areas clean up
 # Read in Google sheets for new zone name for some Gulf Reef Fish zone names
@@ -46,46 +60,65 @@ area_xref <- read_sheet("https://docs.google.com/spreadsheets/d/1gVFz6UUiN5LU3Fr
   select(OLD_ZONE_NAME, NEW_ZONE_NAME) %>%
   unique()
 
+# RUN CROSSCHECKS 
+# NOTE: ZONE CLEAN UP ONLY FOR GULF REEF SO FAR
+# ARE ALL MH MANAGEMENT TYPES IN GOOGLE SHEET (BLANK IF YES)
+unique(mh_sect_expanded2$ZONE)[unique(mh_sect_expanded2$ZONE) %in% area_xref$OLD_ZONE_NAME == FALSE]
+# ARE ALL GOOGLE SHEET MANAGEMENT TYPES IN MH (BLANK IF YES)
+area_xref$OLD_ZONE_NAME[area_xref$OLD_ZONE_NAME %in% mh_sect_expanded2$ZONE == FALSE]
+
+# CREATE mh_setup ####
+# CREATE ZONE USE ####
 # New zone name variable called ZONE_USE as the standard zone name
 # Starting from sector expansion and not species because the species list have duplicates and need to be cleaned up first
-mh_setup <- mh_sect_expanded %>%
+mh_setup <- mh_sect_expanded2 %>%
   left_join(area_xref, by = c("ZONE" = "OLD_ZONE_NAME")) %>%
   rename(ZONE_USE = "NEW_ZONE_NAME") %>%
   # Since the cross reference table is only for Gulf Reef Fish, replace all NAs with the original zone name
   mutate(ZONE_USE = case_when(is.na(ZONE_USE) ~ ZONE,
                               TRUE ~ ZONE_USE)) %>%
-  # Remove commas
+  # Remove commas (TRY NOT TO USE COMMAS IN ODM)
   mutate(ZONE_USE = gsub(",", "", ZONE_USE))
 
-### 4 ###
+### 4 ####
+# CREATE mh_preprocess ####
+# CREATE vol, page, MANAGEMENT_TYPE_USE, ADJUSTMENT, MANAGEMENT_STATUS_USE , REG_REMOVED####
+# CREATE STATUS TYPE, GENERAL, COMPLEX? ####
 # Create new variables
 mh_preprocess <- mh_setup %>%
   # Pull out the volume and page number as separate fields from the FR CITATION (currently warning appears because page is NA for "81 FR 33150 B", but once fixed as a bug the warning should go away)
-  mutate(vol = as.numeric(sub(" FR.*", "", FR_CITATION)),
+  mutate(# VOLUME AND PAGE ARE ESSENTIAL FOR SORTING 
+         vol = as.numeric(sub(" FR.*", "", FR_CITATION)),
          page = as.numeric(sub(".*FR ", "", FR_CITATION)),
          # Add flag when mtype contains adjustment and remove "adjustment" from the mtype name
+         # Adjustments are never redundant
          ADJUSTMENT = case_when(str_detect(MANAGEMENT_TYPE, "ADJUSTMENT") ~ 1,
                                 TRUE ~ 0),
          MANAGEMENT_TYPE_USE = case_when(str_detect(MANAGEMENT_TYPE, "ADJUSTMENT") ~ str_replace(MANAGEMENT_TYPE, " ADJUSTMENT", ""),
                                          TRUE ~ MANAGEMENT_TYPE),
          # Rename reopenings to closures and add open or closed to the value field
+         # DIFFERENT FROM INPUT BECAUSE INPUT STAYS TRUE TO FR LANGUAGE 
          MANAGEMENT_TYPE_USE = case_when(MANAGEMENT_TYPE == "REOPENING" ~ "CLOSURE",
-                                         TRUE ~ MANAGEMENT_TYPE),
+                                         TRUE ~ MANAGEMENT_TYPE_USE),
          VALUE= case_when(MANAGEMENT_TYPE == "CLOSURE" ~ "CLOSE",
                           MANAGEMENT_TYPE == "REOPENING" ~ "OPEN",
                           TRUE ~ VALUE),
          # Replace NA management status as ONCE because dealing with NAs gets tricky sometimes
+         # BOTH NAs and ONCE ARE MEANT TO BE PROCESSED THE SAME WAY
          MANAGEMENT_STATUS_USE = case_when(is.na(MANAGEMENT_STATUS) ~ 'ONCE',
                                            TRUE ~ MANAGEMENT_STATUS),
          # Create status type as simple, recurring, and complex
+         # STATUS TYPE ?
          STATUS_TYPE = case_when(MANAGEMENT_STATUS_USE == "ONCE" ~ "SIMPLE",
                                  MANAGEMENT_STATUS_USE %in% c("SEASONAL", "WEEKLY RECURRING", "MONTHLY RECURRING", "DAILY") ~ "RECURRING",
                                  TRUE ~ "COMPLEX"),
-         # FLAG REMOVAL AND GENERAL
+         # FLAG TURN OFF OF REGULATIONS
          REG_REMOVED = case_when(EFFECTIVE_DATE == INEFFECTIVE_DATE ~ 1, TRUE ~ 0),
+         # FLAG GENERAL AND COMPLEX?
          GENERAL = case_when(STATUS_TYPE == "SIMPLE" & is.na(VALUE) ~ 1, TRUE ~ 0),
          COMPLEX = case_when(STATUS_TYPE == "COMPLEX" ~ 1, TRUE ~ 0),
          # Create recurring start and end dates (this is to avoid the dual purpose of these fields)
+         # REVISIT WHEN WORKING WITH RECURING REGULATIONS
          START_DAY_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ START_DAY),
          START_MONTH_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ START_MONTH),
          START_TIME_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ START_TIME),
@@ -95,6 +128,7 @@ mh_preprocess <- mh_setup %>%
          END_TIME_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_TIME),
          END_DAY_OF_WEEK_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_DAY_OF_WEEK),
          # Start date from start day, month, year fields
+         # ONLY WHEN A START DATE IS PROVIDED AND DIFFERENT FROM EFFECTIVE DATE
          START_DATE = case_when(MANAGEMENT_STATUS_USE == "ONCE" &
                                   !is.na(START_DAY) &
                                   !is.na(START_MONTH) &
