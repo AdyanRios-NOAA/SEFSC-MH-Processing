@@ -2020,3 +2020,7 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
     mutate(EFFECTIVE_DATE = as.Date(EFFECTIVE_DATE, "%m/%d/%Y"),
            INEFFECTIVE_DATE = as.Date(INEFFECTIVE_DATE, "%m/%d/%Y"))
+
+# Remove A or B in FR Citation (exmaple regulation ID = 11514)
+mh_cleaned <- mh_cleaned %>%
+  mutate(FR_CITATION = str_remove(FR_CITATION, " [AB]"))
