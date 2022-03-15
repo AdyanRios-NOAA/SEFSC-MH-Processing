@@ -203,8 +203,8 @@ expand_sector_keys_recGOMRF <- multi_subsector_key %>%
                                TRUE ~ "MANUAL CHECK"))
   
 expand_sector_keys_recGOMRF_use <- expand_sector_keys_recGOMRF %>%
-  mutate(expand_to = case_when(SECTOR_ID == 704 ~ "FOR-HIRE, PRIVATE",
-                               SECTOR_ID == 774 ~ "FOR-HIRE, PRIVATE",
+  mutate(expand_to = case_when(SECTOR_ID == 728 ~ "FOR-HIRE, PRIVATE",
+                               SECTOR_ID == 1417 ~ "FOR-HIRE, PRIVATE",
                                TRUE ~ expand_to))
 
 # EXPANSION FUNCTION ####

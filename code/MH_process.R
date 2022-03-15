@@ -95,14 +95,16 @@ mh_prep <- mh_ready %>%
 
 # 1C NOTE WHEN THERE ARE MULTIPLE RECORDS PER CLUSTER PER FR ACTIVE AT THE SAME TIME####
 
+# FIND CASES
 multi_reg <- mh_prep %>%
   group_by(CLUSTER, FR_CITATION) %>%
   summarize(MULTI_REG = as.numeric(duplicated(FR_CITATION))) %>%
-  filter(MULTI_REG == TRUE) %>%
+  filter(MULTI_REG == 1) %>%
   data.frame() %>%
   distinct()
 dim(multi_reg)
 
+#FLAG THEM
 mh_prep_use <- mh_prep %>%
   left_join(., multi_reg, by = c("FR_CITATION", "CLUSTER")) %>%
   mutate_at("MULTI_REG", ~replace(., is.na(.), 0)) %>%
