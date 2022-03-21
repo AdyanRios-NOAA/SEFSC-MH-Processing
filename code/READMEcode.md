@@ -1,4 +1,14 @@
 # Read Me - Code
+Within this folder is the code used to clean and analyze the data collected in the Management History Database. 
+
+### The data cleaning and analysis takes place using R and requires the following packages: 
+* here
+* tidyverse
+* lubridate
+* googlesheets4
+* dotenv
+* ROracle
+* keyring
 
 ### To execute the code most efficiently, run the main_MH_prep.R file to run the entirety of the code available. Within the main_MH_prep.R file you will find links to the following files: 
 1. Bug related cleaning (MH_data_bugs.R)
