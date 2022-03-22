@@ -148,15 +148,44 @@ sector.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
                   "REGION", "ZONE_USE",
                   "SPP_NAME")
 
-# ASSIGN UNIQUE SECTOR_ID
-sector_precluster <- mh_preprocess %>%
+
+# BUILD LIST OF EXISTING sector_precluster FILES
+sector_id_files <- dir(here('data/interim/sector_clusters'), full.names = TRUE)
+
+# REAN IN AND COMBINE SECTOR ID FILES LISTED IN sector_id_files
+existing_sector_clusters <- sector_id_files %>%
+  map(read_csv) %>% 
+  reduce(rbind)
+
+# GET STARTING NUMBER OF EXISTING CLUSTERS FOR REFERENCE
+clusters_max = max(existing_sector_clusters$SECTOR_ID)
+
+# ASSIGN NUMBERS TO NEW CLUSTERS
+new_sector_clusters <- mh_preprocess %>%
   select(one_of(sector.match)) %>%
   distinct() %>%
-  mutate(SECTOR_ID = as.numeric(row.names(.))) %>%
-  right_join(., mh_preprocess)
+  anti_join(existing_sector_clusters) %>%
+  mutate(SECTOR_ID = (1:n() + clusters_max)[seq_len(nrow(.))])
+  
+# EXPORT NEW CLUSTERS
+if(length(new_sector_clusters$SECTOR_ID) > 0) {
+  write_csv(new_sector_clusters, 
+            here('data/interim/sector_clusters', paste0("mh_sector_clusters_", format(Sys.Date(), "%d%b%Y"),".csv")))
+}
+
+# MERGE OLD AND NEW CLUSTERS
+unique_sector_clusters <- rbind(existing_sector_clusters, new_sector_clusters)
+
+# ASSIGN UNIQUE SECTOR_ID
+# CREATE SECTOR_ID ####
+mh_sector_id <- mh_preprocess %>%
+  left_join(unique_sector_clusters, 
+            by = c("JURISDICTION", "REGION", "JURISDICTIONAL_WATERS", "FMP", 
+                   "SECTOR_USE", "SPP_NAME", "ZONE_USE", "MANAGEMENT_TYPE_USE", 
+                   "MANAGEMENT_STATUS_USE"))
 
 # FILTER TO SECTORS WITH MORE THAN 1 SUBSECTOR (ONLY FOR IMPORTANT REGULATION TYPES)
-multi_subsector <- sector_precluster %>%
+multi_subsector <- mh_sector_id %>%
   #filter(GENERAL == 0) %>%
   filter(DETAILED == "YES") %>%
   select(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR) %>%
@@ -170,7 +199,7 @@ multi_subsector <- sector_precluster %>%
   data.frame()
 
 
-multi_subsector_key <- sector_precluster %>%
+multi_subsector_key <- mh_sector_id %>%
   select(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR, EFFECTIVE_DATE) %>%
   group_by(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR) %>%
   summarize(start_use = min(EFFECTIVE_DATE)) %>%
@@ -230,4 +259,4 @@ expand_mh <- function(datin, i) {
 expansions_from_csv <- read.csv(here('data/interim', "./MHpreprocess_expansions.csv"), stringsAsFactors = FALSE,
                        fileEncoding = "latin1")
 expansions <- bind_rows(expansions_from_csv, expand_sector_keys_recGOMRF_use)
-mh_ready <- Reduce(expand_mh, 1:length(expansions$column_name), init = sector_precluster, accumulate = FALSE)
+mh_ready <- Reduce(expand_mh, 1:length(expansions$column_name), init = mh_sector_id, accumulate = FALSE)
