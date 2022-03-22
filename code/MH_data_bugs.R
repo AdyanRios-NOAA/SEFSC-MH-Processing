@@ -1554,6 +1554,16 @@ mh_cleaned <- mh_cleaned %>%
          FLAG = case_when(REGULATION_ID == 11365 ~ "NO",
                           TRUE ~ FLAG))
 
+#Bug ID 6447 - Management Category should be updated to Catch Limits
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1321 ~ "CATCH LIMITS",
+                                         TRUE ~ MANAGEMENT_CATEGORY))
+
+#Bug ID 6448 - Management Category should be updated to Catch Limits
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1320 ~ "CATCH LIMITS",
+                                         TRUE ~ MANAGEMENT_CATEGORY))
+
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
 
