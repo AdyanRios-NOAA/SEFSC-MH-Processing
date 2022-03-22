@@ -198,20 +198,23 @@ multi_subsector <- mh_sector_id %>%
   arrange(SECTOR_ID, SUBSECTOR) %>%
   data.frame()
 
-
 multi_subsector_key <- mh_sector_id %>%
   select(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR, EFFECTIVE_DATE) %>%
   group_by(FMP, SECTOR_USE, SECTOR_ID, SUBSECTOR) %>%
+  # ADD THE DATE OF THE FIRST TIME EACH SUBSECTOR IS USED
   summarize(start_use = min(EFFECTIVE_DATE)) %>%
-  right_join(., multi_subsector) %>%
+  right_join(., multi_subsector, by = c("FMP", "SECTOR_USE", "SECTOR_ID", "SUBSECTOR")) %>%
   group_by(FMP, SECTOR_USE, SECTOR_ID) %>%
   mutate(date_count = length(unique(start_use))) %>%
   arrange(SECTOR_ID) %>%
+  # REMOVE SECTORS WHERE EVERYTHING STARTED ON A SINGLE DATE AND DO NOT USE THE SUBSECTOR "ALL"
   filter(!(subsector_all_used == 0 & date_count == 1)) %>%
+  # CONCATENATE SUBSECTOR NAMES USED WITHIN SECTOR_ID
   group_by(SECTOR_ID) %>%
   mutate(SUBSECTOR_KEY = paste(unique(SUBSECTOR), sep = ",", collapse=', ')) %>%
   data.frame()
 
+# CURRENTLY NOT BEING USED BECAUSE FIRST FOCUS IS REEF FISH
 expand_sector_keys = multi_subsector_key %>%
   select(FMP, SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY) %>%
   group_by(FMP, SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY) %>%
@@ -220,10 +223,10 @@ expand_sector_keys = multi_subsector_key %>%
   arrange(SUBSECTOR_N) %>%
   data.frame()
 
+# I THINK THIS ONLY WORK WHEN "ALL" IS ONE OF THE SUBSECTORS
 expand_sector_keys_recGOMRF <- multi_subsector_key %>%
   filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO") %>%
   select(SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY, subsector_all_used) %>%
-  filter(SECTOR_USE == "RECREATIONAL") %>%
   distinct() %>%
   mutate(column_name = "SUBSECTOR",
          expand_from = case_when(subsector_all_used == 1 ~ "ALL"),
@@ -237,6 +240,7 @@ expand_sector_keys_recGOMRF_use <- expand_sector_keys_recGOMRF %>%
                                TRUE ~ expand_to))
 
 # EXPANSION FUNCTION ####
+# TO DO: SIMPLIFY THIS FUNCTION TO FACTOR IN SECTOR ID AND HAVE LESS IF STATEMENTS
 # ADAPTED TO ALLOW CONDITIONS AND EXPANSION TO BE REGION/FMP/SECTOR/SPECIES SPECIFIC (ETC)
 expand_mh <- function(datin, i) {
   data_expand <- datin %>%
@@ -255,8 +259,5 @@ expand_mh <- function(datin, i) {
            data.frame())
 }
 
-# READ IN AND RUN EXPANSIONS ####
-expansions_from_csv <- read.csv(here('data/interim', "./MHpreprocess_expansions.csv"), stringsAsFactors = FALSE,
-                       fileEncoding = "latin1")
-expansions <- bind_rows(expansions_from_csv, expand_sector_keys_recGOMRF_use)
-mh_ready <- Reduce(expand_mh, 1:length(expansions$column_name), init = mh_sector_id, accumulate = FALSE)
+# SIMPLIFY ALSO?
+mh_ready <- Reduce(expand_mh, 1:length(expand_sector_keys_recGOMRF_use$column_name), init = mh_sector_id, accumulate = FALSE)
