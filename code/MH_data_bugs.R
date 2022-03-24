@@ -1894,7 +1894,7 @@ mh_added <- mh_added %>%
           ZONE	= "ALL",
           JURISDICTIONAL_WATERS	= "EEZ",
           COMMON_NAME	= "ALL",
-          FMP	= "SNAPPER_GROUPER FISHERY OF THE SOUTH ATLANTIC REGION",
+          FMP	= "SNAPPER-GROUPER FISHERY OF THE SOUTH ATLANTIC REGION",
           EFFECTIVE_DATE	= "09/28/1983",
           START_DAY	= 28,
           START_MONTH	= 9,
