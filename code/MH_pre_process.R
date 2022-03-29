@@ -223,9 +223,14 @@ expand_sector_keys = multi_subsector_key %>%
   arrange(SUBSECTOR_N) %>%
   data.frame()
 
-# I THINK THIS ONLY WORK WHEN "ALL" IS ONE OF THE SUBSECTORS
+# TEMPORARY WHILE WE GET THIS TO INCLUDE OTHER FMPS
+quick_look <- multi_subsector_key %>%
+  filter(FMP == "SNAPPER-GROUPER FISHERY OF THE SOUTH ATLANTIC REGION") 
+
+# WE HAVE ONLY ADDRESS SITUATIONS WHERE "ALL" IS ONE OF THE SUBSECTORS
 expand_sector_keys_recGOMRF <- multi_subsector_key %>%
-  filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO") %>%
+  filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO",
+         SECTOR_USE == "RECREATIONAL") %>%
   select(SECTOR_ID, SECTOR_USE, SUBSECTOR_KEY, subsector_all_used) %>%
   distinct() %>%
   mutate(column_name = "SUBSECTOR",
