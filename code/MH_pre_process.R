@@ -239,25 +239,14 @@ expand_sector_keys_recGOMRF_use <- expand_sector_keys_recGOMRF %>%
                                SECTOR_ID == 1417 ~ "FOR-HIRE, PRIVATE",
                                TRUE ~ expand_to))
 
+expansions <- expand_sector_keys_recGOMRF_use
+
 # EXPANSION FUNCTION ####
-# TO DO: SIMPLIFY THIS FUNCTION TO FACTOR IN SECTOR ID AND HAVE LESS IF STATEMENTS
-# ADAPTED TO ALLOW CONDITIONS AND EXPANSION TO BE REGION/FMP/SECTOR/SPECIES SPECIFIC (ETC)
-expand_mh <- function(datin, i) {
-  data_expand <- datin %>%
-    filter(if (!is.na(expansions$SECTOR_ID[i])) SECTOR_ID == expansions$SECTOR_ID[i] else TRUE) %>%
-    filter(if (!is.na(expansions$MANAGEMENT_TYPE_USE[i])) MANAGEMENT_TYPE_USE == expansions$MANAGEMENT_TYPE_USE[i] else TRUE) %>%
-    filter(if (!is.na(expansions$FMP[i])) FMP == expansions$FMP[i] else TRUE) %>%
-    filter(if (!is.na(expansions$REGION[i])) REGION == expansions$REGION[i] else TRUE) %>%
-    filter(if (!is.na(expansions$SPP_NAME[i])) SPP_NAME == expansions$SPP_NAME[i] else TRUE) %>%
-    #filter(if (!is.na(expansions$COMMON_NAME_USE[i])) COMMON_NAME_USE == expansions$COMMON_NAME_USE[i] else TRUE) %>%
-    mutate(!!expansions$column_name[i] := case_when(get(expansions$column_name[i]) == expansions$expand_from[i] ~ expansions$expand_to[i],
-                                                    get(expansions$column_name[i]) != expansions$expand_from[i] ~ get(expansions$column_name[i]))) %>%
-    separate_rows(!!expansions$column_name[i], sep = ", ")
+# CREATE mh_subsect_expanded ####
 
-  return(data_expand %>%
-           bind_rows(., filter(datin, !REGULATION_ID %in% data_expand$REGULATION_ID)) %>%
-           data.frame())
-}
-
-# SIMPLIFY ALSO?
-mh_ready <- Reduce(expand_mh, 1:length(expand_sector_keys_recGOMRF_use$column_name), init = mh_sector_id, accumulate = FALSE)
+mh_subsect_expanded <- left_join(mh_sector_id, expansions, by = c("SECTOR_USE", "SECTOR_ID")) %>%
+  mutate(SUBSECTOR_USE = case_when(!is.na(expand_to) & expand_from == SUBSECTOR ~ expand_to,
+                                TRUE ~ SUBSECTOR)) %>%
+  # EXPAND SUBSECTOR_USE AT THE COMMAS
+  separate_rows(SUBSECTOR_USE, sep = ", ")
+  
