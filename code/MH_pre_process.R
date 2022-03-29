@@ -255,3 +255,6 @@ mh_subsect_expanded <- left_join(mh_sector_id, expansions, by = c("SECTOR_USE", 
   # EXPAND SUBSECTOR_USE AT THE COMMAS
   separate_rows(SUBSECTOR_USE, sep = ", ")
   
+
+# CREATE M_READ& ####
+mh_ready <- mh_subsect_expanded
