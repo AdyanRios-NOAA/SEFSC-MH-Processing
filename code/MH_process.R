@@ -106,77 +106,80 @@ dim(multi_reg)
 
 # JOIN FLAGGED CASES INTO FULL DATA
 mh_prep_use <- mh_prep %>%
+  # IDENTIFY REGULATIONS THAT ARE MULTI_REGS (SAME FR WITHIN A CLUSTER)
   left_join(., multi_reg, by = c("FR_CITATION", "CLUSTER")) %>%
   # REPLACE ALL NAs WITH 0
   mutate_at("MULTI_REG", ~replace(., is.na(.), 0)) %>%
+  # DOES THIS CLUSTER HAVE ANY INSTANCES OF A MULTI_REG
   mutate(MULTI_REG_CLUSTER = as.numeric(CLUSTER %in% multi_reg$CLUSTER)) 
 
+# INVESTIGATE WHICH MANAGEMENT TYPES AND FMPS TEND TO HAVE MULTI_REGS
 
 # 2 DEFINE VARIABLES THAT DETECT REG CHANGES BASED ON STATUS TYPE ####
 # SFA added ineffective date to accommodate issue in cluster 657
-var_track <- c("INEFFECTIVE_DATE", "START_DAY_RECURRING",	'START_MONTH_RECURRING',	#'START_YEAR_RECURRING',
-               'START_TIME_RECURRING',	'START_DAY_OF_WEEK_RECURRING',
-               "END_DAY_RECURRING",	"END_MONTH_RECURRING",	#'END_YEAR_RECURRING',
-               'END_TIME_RECURRING',	'END_DAY_OF_WEEK_RECURRING',
-               "VALUE", "VALUE_UNITS", "VALUE_TYPE", "VALUE_RATE",
-               "INEFFECTIVE_DATE", "FLAG", "MULTI_REG")
-
-
-# 3 CHECK FOR CONSECUTIVELY REPEATED REGS ####
-
-# 3A CREATE EMPTY LIST TO STORE DETECTED REG CHANGES  ####
-
-mh_detect <- list()
-
-# 3B SORT BY FR_CITATION WITHIN CLUSTER (CHANGE THIS TO A FUNCTION!!!) ####
-
-for (i in 1:max(mh_prep_use$CLUSTER)) {
-
-  mh_CLUSTER_i <- mh_prep_use %>%
-    filter(CLUSTER == i) %>%
-    arrange(vol, page, EFFECTIVE_DATE, START_DATE)
-
-  change_event = rep(1, length(mh_CLUSTER_i$CLUSTER))
-
-  #START J=2; FIRST EVENT ALWAYS IMPORTANT
-
-  if(length(mh_CLUSTER_i$CLUSTER) > 1) {
-    for (j in 2:length(mh_CLUSTER_i$CLUSTER)){
-      compare <- mh_CLUSTER_i[(j-1):j,] %>% select(all_of(var_track)) %>%
-        distinct()
-      change_event[j] = nrow(compare) == 2
-    }
-  }
-
-  mh_detect[[i]] = mh_CLUSTER_i %>%
-    mutate(REG_CHANGE = change_event)
-}
-
-# Create a blank list for storing all the cluster that will be looked at one by one 
-# For each cluster, filter to just that cluster and sort by effective and start date
-  # Create a new variable to track change events
-  # Start with the assumption that every event is a change event
-  # Only run comparison when there is more than one record in a cluster
-    # For each record (2:total number), compare to record immediately before
-      # The comparison is done by selecting the variables being tracked and filtering to just the two records being compared 
-      # If compare is 2 records long that means the two records are different (change event TRUE)
-      # If compare is 1 record long that means the two records were identical (change event FALSE) 
-  # Merge change event tracker back into the filtered cluster and save inside the list 
-  # Each element of that list is tied to one cluster
-# Flatten list and add flag that implies a redundant record
-
-# REVISIT the fact that reg_removed, multi_reg, general, and complex, and adjusted are currently considered never redundant
-
-# 4 FLATTEN LIST ADD FLAG THAT IMPLY A REDUNDANT RECORD ####
-
-mh_detect <- mh_detect %>%
-  bind_rows() %>%
-  mutate(REDUNDANT = (REG_CHANGE + REG_REMOVED + MULTI_REG + GENERAL + COMPLEX + ADJUSTMENT) == 0)
-
-# 5 FILTER TO JUST REDUNDANT RECORDS ####
-
-mh_redundant <- mh_detect %>%
-  filter(REDUNDANT == 1)
+# IF ANYTHING CHANGES IN ANY OF THESE VARIABLES THEN THAT MEANS A REG CHANGE
+# var_track <- c("INEFFECTIVE_DATE", "START_DAY_RECURRING",	'START_MONTH_RECURRING',	#'START_YEAR_RECURRING',
+#                'START_TIME_RECURRING',	'START_DAY_OF_WEEK_RECURRING',
+#                "END_DAY_RECURRING",	"END_MONTH_RECURRING",	#'END_YEAR_RECURRING',
+#                'END_TIME_RECURRING',	'END_DAY_OF_WEEK_RECURRING',
+#                "VALUE", "VALUE_UNITS", "VALUE_TYPE", "VALUE_RATE",
+#                "INEFFECTIVE_DATE", "FLAG", "MULTI_REG")
+# 
+# # 3 CHECK FOR CONSECUTIVELY REPEATED REGS ####
+# 
+# # 3A CREATE EMPTY LIST TO STORE DETECTED REG CHANGES  ####
+# 
+# mh_detect <- list()
+# 
+# # 3B SORT BY FR_CITATION WITHIN CLUSTER (CHANGE THIS TO A FUNCTION!!!) ####
+# 
+# for (i in 1:max(mh_prep_use$CLUSTER)) {
+# 
+#   mh_CLUSTER_i <- mh_prep_use %>%
+#     filter(CLUSTER == i) %>%
+#     arrange(vol, page, EFFECTIVE_DATE, START_DATE)
+# 
+#   change_event = rep(1, length(mh_CLUSTER_i$CLUSTER))
+# 
+#   #START J=2; FIRST EVENT ALWAYS IMPORTANT
+# 
+#   if(length(mh_CLUSTER_i$CLUSTER) > 1) {
+#     for (j in 2:length(mh_CLUSTER_i$CLUSTER)){
+#       compare <- mh_CLUSTER_i[(j-1):j,] %>% select(all_of(var_track)) %>%
+#         distinct()
+#       change_event[j] = nrow(compare) == 2
+#     }
+#   }
+# 
+#   mh_detect[[i]] = mh_CLUSTER_i %>%
+#     mutate(REG_CHANGE = change_event)
+# }
+# 
+# # Create a blank list for storing all the cluster that will be looked at one by one 
+# # For each cluster, filter to just that cluster and sort by effective and start date
+#   # Create a new variable to track change events
+#   # Start with the assumption that every event is a change event
+#   # Only run comparison when there is more than one record in a cluster
+#     # For each record (2:total number), compare to record immediately before
+#       # The comparison is done by selecting the variables being tracked and filtering to just the two records being compared 
+#       # If compare is 2 records long that means the two records are different (change event TRUE)
+#       # If compare is 1 record long that means the two records were identical (change event FALSE) 
+#   # Merge change event tracker back into the filtered cluster and save inside the list 
+#   # Each element of that list is tied to one cluster
+# # Flatten list and add flag that implies a redundant record
+# 
+# # REVISIT the fact that reg_removed, multi_reg, general, and complex, and adjusted are currently considered never redundant
+# 
+# # 4 FLATTEN LIST ADD FLAG THAT IMPLY A REDUNDANT RECORD ####
+# 
+# mh_detect <- mh_detect %>%
+#   bind_rows() %>%
+#   mutate(REDUNDANT = (REG_CHANGE + REG_REMOVED + MULTI_REG + as.numeric(FLAG == "YES") + as.numeric(MANAGEMENT_TYPE == "IGNORABLE")) == 0)
+# 
+# # 5 FILTER TO JUST REDUNDANT RECORDS ####
+# 
+# mh_redundant <- mh_detect %>%
+#   filter(REDUNDANT == 1)
 
 # 6 ADD END DATE TO SORTED RECORDS ####
 
