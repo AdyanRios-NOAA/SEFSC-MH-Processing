@@ -181,12 +181,17 @@ mh_prep_use <- mh_prep %>%
 # mh_redundant <- mh_detect %>%
 #   filter(REDUNDANT == 1)
 
-# 6 ADD END DATE TO SORTED RECORDS ####
+# SHORT CUT TO NAME USED IN NEXT STEP
+mh_detect <- mh_prep_use
 
+# 6 ADD END DATE TO SORTED RECORDS ####
 mh_sort <- mh_detect %>%
-  filter(EFFECTIVE_DATE <= end_timeseries, REDUNDANT == 0) %>%
+  # filter(EFFECTIVE_DATE <= end_timeseries, REDUNDANT == 0) %>%
+  # ONLY PROCESS REGULATIONS THAT HAPPEN BEFORE THE TERMINAL DATE OF THE PROCESSING PERIOD
+  filter(EFFECTIVE_DATE <= end_timeseries) %>%
   arrange(CLUSTER, desc(vol), desc(page), desc(EFFECTIVE_DATE), desc(START_DATE)) %>%
-  group_by(CLUSTER, ADJUSTMENT,) %>%
+  #group_by(CLUSTER, ADJUSTMENT,) %>%
+  group_by(CLUSTER) %>%
   mutate(diff = lag(START_DATE) - START_DATE,
          diff_days = as.numeric(diff, units = 'days') - 1,
          CHANGE_DATE = case_when(is.na(diff_days) ~ end_timeseries,
@@ -201,8 +206,13 @@ mh_sort <- mh_detect %>%
                                       as.numeric(format(END_DATE, "%m")) < 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))),
          NEVER_IMPLEMENTED = case_when(diff_days < -1 ~ 1,
                                        TRUE ~ 0)) %>%
-  bind_rows(., mh_redundant) %>%
+  # bind_rows(., mh_redundant) %>%
   data.frame()
+
+test = filter(mh_sort, CLUSTER == 1305)
+select(test, vol, page, CLUSTER, EFFECTIVE_DATE, ADJUSTMENT, VALUE, VALUE_RATE, START_DATE, diff ,diff_days, CHANGE_DATE,   END_DATE)
+
+
 
 # CONSIDER ADDING DECIMAL YEAR SUMMARY
 # DECIMAL_START_YEAR = decimal_date(as.POSIXlt(START_DATE))
