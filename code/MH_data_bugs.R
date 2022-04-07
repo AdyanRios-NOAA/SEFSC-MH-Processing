@@ -202,7 +202,7 @@ mh_cleaned <- mh_cleaned %>%
          START_YEAR = case_when(REGULATION_ID == 298 ~ 2010L,
                                 TRUE ~ START_YEAR),
          END_DAY = case_when(REGULATION_ID != 298 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 298 ~ END_DAY))
+         END_MONTH = case_when(REGULATION_ID != 298 ~ END_MONTH))
 
 # Bug ID 4954 - remove the 1,000 hook limit
 mh_cleaned <- mh_cleaned %>%
