@@ -105,7 +105,9 @@ mh_cleaned <- mh_cleaned %>%
   #Bug ID 6326
   filter(REGULATION_ID != 11363) %>%
   #Bug ID 6327
-  filter(REGULATION_ID != 11364)
+  filter(REGULATION_ID != 11364) %>%
+  #Bug ID 6606
+  filter(REGULATION_ID != 11866)
 
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
@@ -1563,6 +1565,18 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1320 ~ "CATCH LIMITS",
                                          TRUE ~ MANAGEMENT_CATEGORY))
+
+#Bug ID 6616 - Start Year removed for Fishing Year record
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_YEAR = case_when(REGULATION_ID != 11770 ~ START_YEAR))
+
+#Bug ID 6617 - Start Year removed for Fishing Year record
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_YEAR = case_when(REGULATION_ID != 11767 ~ START_YEAR))
+
+#Bug ID 6618 - Start Year removed for Fishing Year record
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_YEAR = case_when(REGULATION_ID != 786 ~ START_YEAR))
 
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
