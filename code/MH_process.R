@@ -212,7 +212,26 @@ mh_sort <- mh_detect %>%
 test = filter(mh_sort, CLUSTER == 1305)
 select(test, vol, page, CLUSTER, EFFECTIVE_DATE, ADJUSTMENT, VALUE, VALUE_RATE, START_DATE, diff ,diff_days, CHANGE_DATE,   END_DATE)
 
+test = filter(mh_sort, diff_days == -1, MULTI_REG_CLUSTER == 0)
+test$CLUSTER
 
+test2 = filter(mh_sort, CLUSTER %in% test$CLUSTER)
+table(mh_sort$START_DATE < mh_sort$EFFECTIVE_DATE) #21 times in whole database
+table(test2$START_DATE < test2$EFFECTIVE_DATE) #6 associated with -1
+
+
+# 14 - DEALT WITH 14 (BAG LIMIT NEEDS TO BE FOR GOLIATH ALONE 0)
+# 518 - 518 is a fishing year (new policy, fishing year does not get start year) 
+# 542, 543, 544, 545 - THERE ARE ONLY 21 TIMES WHEN START DATE IS BEFORE EFFECTIVE DATE
+  # POTENTIAL NEW RULE - IF START DATE IS BEFORE EFFECTIVE DATE; KEEP EFFECTIVE DATE 
+# 1751, 1812 - Keep thinking about how open and closed value affects the sorting
+
+
+# start day month, year, have their own meaning 
+  # (effective date should not be overwritten in this case)
+  # write check for start date happening before effective date (that should not be a thing)
+  # FOR "FISHING YEAR"(change to reoccurring?)
+  # COULD TREAT DATES LIKE VALUES FOR CERTAIN MANAGEMENT TYPES (EX ACL, AND FISHING YEAR)
 
 # CONSIDER ADDING DECIMAL YEAR SUMMARY
 # DECIMAL_START_YEAR = decimal_date(as.POSIXlt(START_DATE))
