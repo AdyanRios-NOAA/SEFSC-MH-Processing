@@ -242,7 +242,9 @@ mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID == 1460 ~ END_DAY,
                                TRUE ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID == 1460 ~ END_MONTH,
-                                 TRUE ~ START_MONTH))
+                                 TRUE ~ START_MONTH),
+         START_YEAR = case_when(REGULATION_ID == 1460 ~ END_YEAR, 
+                                TRUE ~ START_YEAR))
 
 #Bug ID 5506 - Update effective and start date information since it was incorrectly captured
 mh_cleaned <- mh_cleaned %>%
