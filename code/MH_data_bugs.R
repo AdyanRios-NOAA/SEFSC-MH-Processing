@@ -105,7 +105,9 @@ mh_cleaned <- mh_cleaned %>%
   #Bug ID 6326
   filter(REGULATION_ID != 11363) %>%
   #Bug ID 6327
-  filter(REGULATION_ID != 11364)
+  filter(REGULATION_ID != 11364) %>%
+  #Bug ID 6606
+  filter(REGULATION_ID != 11866)
 
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
@@ -242,7 +244,9 @@ mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID == 1460 ~ END_DAY,
                                TRUE ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID == 1460 ~ END_MONTH,
-                                 TRUE ~ START_MONTH))
+                                 TRUE ~ START_MONTH),
+         START_YEAR = case_when(REGULATION_ID == 1460 ~ END_YEAR, 
+                                TRUE ~ START_YEAR))
 
 #Bug ID 5506 - Update effective and start date information since it was incorrectly captured
 mh_cleaned <- mh_cleaned %>%
@@ -1563,6 +1567,43 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1320 ~ "CATCH LIMITS",
                                          TRUE ~ MANAGEMENT_CATEGORY))
+
+#Bug ID 6516 - Management Type should be updated to Trip Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 1435 ~ 'TRIP LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6517 - Management Type should be updated to Trip Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 1431 ~ 'TRIP LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6518 - Management Type should be updated to Trip Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 1434 ~ 'TRIP LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6519 - Management Type should be updated to Trip Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 1436 ~ 'TRIP LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6520 - Management Type should be updated to Trip Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 1437 ~ 'TRIP LIMIT ADJUSTMENT',
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID 6616 - Start Year removed for Fishing Year record
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_YEAR = case_when(REGULATION_ID != 11770 ~ START_YEAR))
+
+#Bug ID 6617 - Start Year removed for Fishing Year record
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_YEAR = case_when(REGULATION_ID != 11767 ~ START_YEAR))
+
+#Bug ID 6618 - Start Year removed for Fishing Year record
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_YEAR = case_when(REGULATION_ID != 786 ~ START_YEAR))
 
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
