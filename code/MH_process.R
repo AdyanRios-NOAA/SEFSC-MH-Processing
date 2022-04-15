@@ -184,6 +184,11 @@ mh_prep_use <- mh_prep %>%
 # SHORT CUT TO NAME USED IN NEXT STEP
 mh_detect <- mh_prep_use
 
+# TEMP FIX FOR TESTING ADJUSMENT IN CLUSTER 1733
+mh_detect <- mh_detect %>%
+  mutate(ADJUSTMENT = case_when(REGULATION_ID == 792 ~ 1,
+                                TRUE ~ ADJUSTMENT))
+
 # 6 ADD END DATE TO SORTED RECORDS ####
 mh_sort <- mh_detect %>%
   # filter(EFFECTIVE_DATE <= end_timeseries, REDUNDANT == 0) %>%
@@ -191,7 +196,7 @@ mh_sort <- mh_detect %>%
   filter(EFFECTIVE_DATE <= end_timeseries) %>%
   arrange(CLUSTER, desc(vol), desc(page), desc(EFFECTIVE_DATE), desc(START_DATE)) %>%
   #group_by(CLUSTER, ADJUSTMENT,) %>%
-  group_by(CLUSTER) %>%
+  group_by(CLUSTER, ADJUSTMENT) %>%
   mutate(diff = lag(START_DATE) - START_DATE,
          diff_days = as.numeric(diff, units = 'days') - 1,
          CHANGE_DATE = case_when(is.na(diff_days) ~ end_timeseries,
@@ -204,13 +209,23 @@ mh_sort <- mh_detect %>%
          ROUNDED_START_YEAR = format(round_date(START_DATE, "year"),"%Y"),
          ROUNDED_END_YEAR = case_when(as.numeric(format(END_DATE, "%m")) >= 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))-1,
                                       as.numeric(format(END_DATE, "%m")) < 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))),
-         NEVER_IMPLEMENTED = case_when(diff_days < -1 ~ 1,
+         NEVER_IMPLEMENTED = case_when(diff_days <= -1 ~ 1,
                                        TRUE ~ 0)) %>%
-  # bind_rows(., mh_redundant) %>%
+  #bind_rows(., mh_redundant) %>%
   data.frame()
 
+# RECREATIONAL MINIMUM SIZE LIMIT
+test = filter(mh_sort, CLUSTER == 1733)
+select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, VALUE, VALUE_RATE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED)
+
+# COMMERCIAL MINIMUM SIZE LIMIT
+test = filter(mh_sort, CLUSTER == 1304)
+select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, VALUE, VALUE_RATE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED)
+
+# RECREATION BAG LIMIT 1305
 test = filter(mh_sort, CLUSTER == 1305)
-select(test, vol, page, CLUSTER, EFFECTIVE_DATE, ADJUSTMENT, VALUE, VALUE_RATE, START_DATE, diff ,diff_days, CHANGE_DATE,   END_DATE)
+select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, VALUE, VALUE_RATE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED)
+
 
 test = filter(mh_sort, diff_days == -1, MULTI_REG_CLUSTER == 0)
 test$CLUSTER
