@@ -194,7 +194,7 @@ mh_sort <- mh_detect %>%
   # filter(EFFECTIVE_DATE <= end_timeseries, REDUNDANT == 0) %>%
   # ONLY PROCESS REGULATIONS THAT HAPPEN BEFORE THE TERMINAL DATE OF THE PROCESSING PERIOD
   filter(EFFECTIVE_DATE <= end_timeseries) %>%
-  arrange(CLUSTER, desc(vol), desc(page), desc(EFFECTIVE_DATE), desc(START_DATE)) %>%
+  arrange(CLUSTER, desc(START_DATE), desc(vol), desc(page)) %>%
   #group_by(CLUSTER, ADJUSTMENT,) %>%
   group_by(CLUSTER, ADJUSTMENT) %>%
   mutate(diff = lag(START_DATE) - START_DATE,
@@ -225,14 +225,6 @@ select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, VA
 # RECREATION BAG LIMIT 1305
 test = filter(mh_sort, CLUSTER == 1305)
 select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, VALUE, VALUE_RATE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED)
-
-
-test = filter(mh_sort, diff_days == -1, MULTI_REG_CLUSTER == 0)
-test$CLUSTER
-
-test2 = filter(mh_sort, CLUSTER %in% test$CLUSTER)
-table(mh_sort$START_DATE < mh_sort$EFFECTIVE_DATE) #21 times in whole database
-table(test2$START_DATE < test2$EFFECTIVE_DATE) #6 associated with -1
 
 
 # 14 - DEALT WITH 14 (BAG LIMIT NEEDS TO BE FOR GOLIATH ALONE 0)
