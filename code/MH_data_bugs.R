@@ -1607,60 +1607,45 @@ mh_cleaned <- mh_cleaned %>%
 
 #BUG ID -19 - start yr needs to be removed from seasonal quota
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_YEAR = case_when(REGULATION_ID == 1385 ~ ``,
-                                TRUE ~ START_YEAR))
+  mutate(START_YEAR = case_when(REGULATION_ID != 1385 ~ START_YEAR))
 
 #BUG ID -20 - start yr needs to be removed from seasonal quota
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_YEAR = case_when(REGULATION_ID == 1387 ~ ``,
-                                TRUE ~ START_YEAR))
+  mutate(START_YEAR = case_when(REGULATION_ID != 1387 ~ START_YEAR))
 
 #BUG ID -21 - start yr needs to be removed from seasonal quota
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_YEAR = case_when(REGULATION_ID == 1389 ~ ``,
-                                TRUE ~ START_YEAR))
+  mutate(START_YEAR = case_when(REGULATION_ID != 1389 ~ START_YEAR))
 
 #BUG ID -22 - start month and day needs to be removed from yearly quota FOR 2009
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_MONTH = case_when(REGULATION_ID == 2003 ~ ``,
-                                TRUE ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID == 2003 ~ ``,
-                               TRUE ~ START_DAY))
+  mutate(START_MONTH = case_when(REGULATION_ID != 2003 ~ START_MONTH),
+         START_DAY = case_when(REGULATION_ID != 2003 ~ START_DAY))
 
 #BUG ID -23 - start month and day needs to be removed from yearly quota FOR 1994
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_MONTH = case_when(REGULATION_ID == 2009 ~ ``,
-                                 TRUE ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID == 2009 ~ ``,
-                               TRUE ~ START_DAY))
+  mutate(START_MONTH = case_when(REGULATION_ID != 2009 ~ START_MONTH),
+         START_DAY = case_when(REGULATION_ID != 2009 ~ START_DAY))
 
 #BUG ID -24 - start month and day needs to be removed from yearly quota FOR 2006
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_MONTH = case_when(REGULATION_ID == 2017 ~ ``,
-                                 TRUE ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID == 2017 ~ ``,
-                               TRUE ~ START_DAY))
+  mutate(START_MONTH = case_when(REGULATION_ID != 2017 ~ START_MONTH),
+         START_DAY = case_when(REGULATION_ID != 2017 ~ START_DAY))
 
 #BUG ID -25 - start month and day needs to be removed from yearly quota
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_MONTH = case_when(REGULATION_ID == 2002 ~ ``,
-                                 TRUE ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID == 2002 ~ ``,
-                               TRUE ~ START_DAY))
+  mutate(START_MONTH = case_when(REGULATION_ID != 2002 ~ START_MONTH),
+         START_DAY = case_when(REGULATION_ID != 2002 ~ START_DAY))
 
 #BUG ID -26 - start month and day needs to be removed from yearly quota
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_MONTH = case_when(REGULATION_ID == 2012 ~ ``,
-                                 TRUE ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID == 2012 ~ ``,
-                               TRUE ~ START_DAY))
+  mutate(START_MONTH = case_when(REGULATION_ID != 2012 ~ START_MONTH),
+         START_DAY = case_when(REGULATION_ID != 2012 ~ START_DAY))
 
 #BUG ID -28 - start month and day needs to be removed from yearly quota
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_MONTH = case_when(REGULATION_ID == 2006 ~ ``,
-                                 TRUE ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID == 2006 ~ ``,
-                               TRUE ~ START_DAY))
+  mutate(START_MONTH = case_when(REGULATION_ID != 2006 ~ START_MONTH),
+         START_DAY = case_when(REGULATION_ID != 2006 ~ START_DAY))
 
 
 #Create empty data frame
