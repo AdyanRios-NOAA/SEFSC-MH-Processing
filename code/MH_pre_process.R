@@ -133,7 +133,9 @@ mh_preprocess <- mh_setup %>%
                                   !is.na(START_DAY) &
                                   !is.na(START_MONTH) &
                                   !is.na(START_YEAR) ~ as.Date(paste(START_MONTH, START_DAY, START_YEAR, sep = "/"), "%m/%d/%Y"),
-                                TRUE ~ EFFECTIVE_DATE))
+                                TRUE ~ EFFECTIVE_DATE),
+         START_DATE = case_when(START_DATE < EFFECTIVE_DATE ~ EFFECTIVE_DATE,
+                                TRUE ~ START_DATE)) 
 
 #### 5 ####
 # FIND SECTOR FORKS
