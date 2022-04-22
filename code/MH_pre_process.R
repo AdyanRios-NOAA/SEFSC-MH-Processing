@@ -144,10 +144,10 @@ mh_preprocess <- mh_setup %>%
 write.csv(mh_preprocess, here('data/preprocessed', paste0("MHpreprocess_", format(Sys.Date(), "%d%b%Y"), ".csv")), row.names = FALSE)
 
 #CREATE A WAY TO TRACK WHICH SECTORS HAVE MULTIPLE SUBSECTORS
-sector.match <- c("MANAGEMENT_TYPE_USE", "MANAGEMENT_STATUS_USE",
+sector.match <- c("MANAGEMENT_TYPE_USE",
                   "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
                   "SECTOR_USE",
-                  "REGION", "ZONE_USE",
+                  "REGION",
                   "SPP_NAME")
 
 
@@ -183,8 +183,7 @@ unique_sector_clusters <- rbind(existing_sector_clusters, new_sector_clusters)
 mh_sector_id <- mh_preprocess %>%
   left_join(unique_sector_clusters, 
             by = c("JURISDICTION", "REGION", "JURISDICTIONAL_WATERS", "FMP", 
-                   "SECTOR_USE", "SPP_NAME", "ZONE_USE", "MANAGEMENT_TYPE_USE", 
-                   "MANAGEMENT_STATUS_USE"))
+                   "SECTOR_USE", "SPP_NAME", "MANAGEMENT_TYPE_USE"))
 
 # FILTER TO SECTORS WITH MORE THAN 1 SUBSECTOR (ONLY FOR IMPORTANT REGULATION TYPES)
 multi_subsector <- mh_sector_id %>%
@@ -240,13 +239,18 @@ expand_sector_keys_recGOMRF <- multi_subsector_key %>%
          expand_temp = str_remove(SUBSECTOR_KEY, paste0(expand_from, ", ")),
          expand_to = case_when(str_count(expand_temp, ',') >= 1 ~ expand_temp,
                                TRUE ~ "MANUAL CHECK"))
-  
-expand_sector_keys_recGOMRF_use <- expand_sector_keys_recGOMRF %>%
-  mutate(expand_to = case_when(SECTOR_ID == 728 ~ "FOR-HIRE, PRIVATE",
-                               SECTOR_ID == 1417 ~ "FOR-HIRE, PRIVATE",
-                               TRUE ~ expand_to))
 
-expansions <- expand_sector_keys_recGOMRF_use
+# BY REMOVING VARIABLES (ZONE AND MANAGEMENT_STATU) FROM THE CLUSTER MATCH,
+# WE REDUCED MANAUL FORKS FOR GOM  (MIGHT NEED MANUAL CHECK FOR OTHER FMPS)
+# expand_sector_keys_recGOMRF_use <- expand_sector_keys_recGOMRF %>%
+#   mutate(expand_to = case_when(SECTOR_ID == 1110 ~ "FOR-HIRE, PRIVATE",
+#                                TRUE ~ expand_to))
+
+#THIS IS WHERE WE HAD BROKEN THE CODE
+# WE TURNED OFF THE CODE ABOVE 
+# BUT FORGOT THAT THE OBJECT ALREADY EISTED IN OUR ENVIRONMENT
+#expansions <- expand_sector_keys_recGOMRF_use
+expansions <- expand_sector_keys_recGOMRF
 
 # EXPANSION FUNCTION ####
 # CREATE mh_subsect_expanded ####
@@ -260,3 +264,4 @@ mh_subsect_expanded <- left_join(mh_sector_id, expansions, by = c("SECTOR_USE", 
 
 # CREATE M_READ& ####
 mh_ready <- mh_subsect_expanded
+
