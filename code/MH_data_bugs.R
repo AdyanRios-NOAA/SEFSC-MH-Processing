@@ -2059,7 +2059,7 @@ mh_added <- mh_added %>%
           COMMON_NAME	= "SNAPPER, RED",
           SPECIES_ITIS	= "168853",
           FMP	= "REEF FISH RESOURCES OF THE GULF OF MEXICO",
-          MANAGEMENT_STATUS	= "MONTHLY",
+          MANAGEMENT_STATUS	= "MONTHLY RECURRING",
           EFFECTIVE_DATE	= "01/01/2007",
           INEFFECTIVE_DATE	= "01/01/2007",
           START_DAY	= 10,
