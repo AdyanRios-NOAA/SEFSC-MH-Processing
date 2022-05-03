@@ -196,16 +196,23 @@ mh_sort <- mh_detect %>%
   filter(EFFECTIVE_DATE <= end_timeseries) %>%
   arrange(CLUSTER, desc(START_DATE), desc(vol), desc(page)) %>%
   #group_by(CLUSTER, ADJUSTMENT,) %>%
-  group_by(CLUSTER, ADJUSTMENT) %>%
+  group_by(CLUSTER, MANAGEMENT_STATUS_USE, ADJUSTMENT) %>%
   mutate(diff = lag(START_DATE) - START_DATE,
          diff_days = as.numeric(diff, units = 'days') - 1,
          CHANGE_DATE = case_when(is.na(diff_days) ~ end_timeseries,
                                  TRUE ~ START_DATE + diff_days),
          CHANGE_DATE = case_when(diff_days == -1 ~ lag(CHANGE_DATE),
                                  TRUE ~ CHANGE_DATE),
-         END_DATE = case_when(is.na(INEFFECTIVE_DATE) ~ CHANGE_DATE,
-                              CHANGE_DATE < INEFFECTIVE_DATE ~ CHANGE_DATE,
-                              TRUE ~ INEFFECTIVE_DATE),
+         END_DATE = case_when(MANAGEMENT_STATUS_USE == "ONCE" &
+                                !is.na(END_DAY) &
+                                !is.na(END_MONTH) &
+                                !is.na(END_YEAR) ~ as.Date(paste(END_MONTH, END_DAY, END_YEAR, sep = "/"), "%m/%d/%Y")),
+         END_DATE = case_when(!is.na(END_DATE) ~ END_DATE,
+                              is.na(END_YEAR) & !is.na(INEFFECTIVE_DATE) ~ INEFFECTIVE_DATE,
+                              TRUE ~ CHANGE_DATE),
+         END_DATE = case_when(CHANGE_DATE < INEFFECTIVE_DATE & !is.na(INEFFECTIVE_DATE) ~ CHANGE_DATE,
+                              CHANGE_DATE < END_DATE & !is.na(END_DATE) ~ CHANGE_DATE,
+                              TRUE ~ END_DATE),
          ROUNDED_START_YEAR = format(round_date(START_DATE, "year"),"%Y"),
          ROUNDED_END_YEAR = case_when(as.numeric(format(END_DATE, "%m")) >= 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))-1,
                                       as.numeric(format(END_DATE, "%m")) < 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))),
@@ -215,20 +222,30 @@ mh_sort <- mh_detect %>%
   data.frame()
 
 # INVESTIGATING RECREATIONAL CLOSURES FOR RED SNAPPER
-mh_sort %>% filter(MANAGEMENT_TYPE_USE == "CLOSURE",
-                   SPP_NAME == "SNAPPER, RED",
-                   SECTOR_USE == "RECREATIONAL",
-                   FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO") %>% 
-  select(CLUSTER, MANAGEMENT_STATUS_USE, SUBSECTOR_USE, ZONE, SECTOR_ID) %>%
-  distinct()
- 
-test = filter(mh_sort, CLUSTER %in% c(1466, 1467, 1468))
-select(test, SECTOR_ID, vol, page, CLUSTER, SECTOR_USE, SUBSECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, VALUE, VALUE_RATE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED)
+mh_sort %>% filter(SPP_NAME == "SNAPPER, RED",
+                   FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO",
+                   MANAGEMENT_TYPE_USE %in% c("CLOSURE", "FISHING SEASON", "ALLOWABLE SPECIES", "POSSESSION LIMIT")) %>% 
+  select(CLUSTER, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID) %>%
+  distinct(CLUSTER)
 
+test = filter(mh_sort, CLUSTER %in% c(20, 369, 410,482, 826, 827, 1330))
+select(test, SECTOR_ID, vol, page, CLUSTER, STATUS_TYPE, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE,
+       VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, SECTOR_USE) %>%
+arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
 
+write.csv(test, "redsnapper_closure_clusters.csv")
 
+test2 = filter(test, STATUS_TYPE == "RECURRING", SECTOR_USE == "RECREATIONAL")
+select(test2, vol, page, CLUSTER, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE,
+       VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE, END_DATE, SUBSECTOR_USE) %>%
+  arrange(SUBSECTOR_USE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
 
-
+test = filter(mh_sort, CLUSTER %in% c(20, 369, 410,482, 826, 827, 1330))
+test3 = filter(test, STATUS_TYPE == "RECURRING", SECTOR_USE == "COMMERCIAL")%>%
+  arrange(MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
+select(test3, vol, page, CLUSTER, MANAGEMENT_STATUS_USE,
+       diff ,diff_days, EFFECTIVE_DATE, INEFFECTIVE_DATE, START_DATE, 
+       CHANGE_DATE, END_DATE, START_MONTH, START_DAY, END_MONTH, END_DAY) 
 
 
 
@@ -239,7 +256,8 @@ select(test, SECTOR_ID, vol, page, CLUSTER, SECTOR_USE, SUBSECTOR_USE, ADJUSTMEN
 
 # RECREATIONAL MINIMUM SIZE LIMIT
 test = filter(mh_sort, CLUSTER == 1733)
-select(test, vol, page, CLUSTER, MANAGEMENT_STATUS_USE, SECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, VALUE, VALUE_RATE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED)
+select(test, ID,vol, page, MANAGEMENT_STATUS_USE, SECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, END_MONTH, VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED) %>%
+  arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
 
 # COMMERCIAL MINIMUM SIZE LIMIT
 test = filter(mh_sort, CLUSTER == 1304)
