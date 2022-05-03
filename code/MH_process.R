@@ -207,12 +207,16 @@ mh_sort <- mh_detect %>%
                                 !is.na(END_DAY) &
                                 !is.na(END_MONTH) &
                                 !is.na(END_YEAR) ~ as.Date(paste(END_MONTH, END_DAY, END_YEAR, sep = "/"), "%m/%d/%Y")),
+         END_DATE1 = case_when(MANAGEMENT_STATUS_USE == "ONCE" &
+                                !is.na(END_DAY) &
+                                !is.na(END_MONTH) &
+                                !is.na(END_YEAR) ~ as.Date(paste(END_MONTH, END_DAY, END_YEAR, sep = "/"), "%m/%d/%Y")),
          END_DATE = case_when(!is.na(END_DATE) ~ END_DATE,
                               is.na(END_YEAR) & !is.na(INEFFECTIVE_DATE) ~ INEFFECTIVE_DATE,
                               TRUE ~ CHANGE_DATE),
-         END_DATE = case_when(CHANGE_DATE < INEFFECTIVE_DATE & !is.na(INEFFECTIVE_DATE) ~ CHANGE_DATE,
-                              CHANGE_DATE < END_DATE & !is.na(END_DATE) ~ CHANGE_DATE,
-                              TRUE ~ END_DATE),
+         END_DATE = case_when(CHANGE_DATE > END_DATE & !is.na(END_DATE) ~ END_DATE,
+                              CHANGE_DATE > INEFFECTIVE_DATE & !is.na(INEFFECTIVE_DATE) ~ END_DATE,
+                              TRUE ~ CHANGE_DATE),
          ROUNDED_START_YEAR = format(round_date(START_DATE, "year"),"%Y"),
          ROUNDED_END_YEAR = case_when(as.numeric(format(END_DATE, "%m")) >= 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))-1,
                                       as.numeric(format(END_DATE, "%m")) < 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))),
@@ -247,7 +251,11 @@ select(test3, vol, page, CLUSTER, MANAGEMENT_STATUS_USE,
        diff ,diff_days, EFFECTIVE_DATE, INEFFECTIVE_DATE, START_DATE, 
        CHANGE_DATE, END_DATE, START_MONTH, START_DAY, END_MONTH, END_DAY) 
 
-
+test = filter(mh_sort, CLUSTER %in% c(20, 369, 410,482, 826, 827, 1330))
+test4 = filter(test, SECTOR_USE == "RECREATIONAL", MANAGEMENT_STATUS_USE  == "ONCE", MANAGEMENT_TYPE_USE == "CLOSURE") %>%
+  arrange(SUBSECTOR_USE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
+select(test4, vol, page, CLUSTER, MANAGEMENT_TYPE_USE,
+       VALUE, diff ,diff_days, EFFECTIVE_DATE, INEFFECTIVE_DATE, START_DATE, CHANGE_DATE, END_DATE1, END_DATE, SUBSECTOR_USE)[50:64,]
 
 
 
