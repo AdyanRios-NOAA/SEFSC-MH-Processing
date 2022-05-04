@@ -93,6 +93,7 @@ mh_preprocess <- mh_setup %>%
          # Add flag when mtype contains adjustment and remove "adjustment" from the mtype name
          # Adjustments are never redundant
          ADJUSTMENT = case_when(str_detect(MANAGEMENT_TYPE, "ADJUSTMENT") ~ 1,
+                                MANAGEMENT_TYPE == "REOPENING" ~ 1,
                                 TRUE ~ 0),
          MANAGEMENT_TYPE_USE = case_when(str_detect(MANAGEMENT_TYPE, "ADJUSTMENT") ~ str_replace(MANAGEMENT_TYPE, " ADJUSTMENT", ""),
                                          TRUE ~ MANAGEMENT_TYPE),
