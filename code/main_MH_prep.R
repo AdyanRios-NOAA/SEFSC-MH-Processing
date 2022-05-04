@@ -16,7 +16,7 @@ gs4_auth()
 1
 
 # ESTABLISH END OF TIMESERIES 
-end_timeseries =  as.Date("2020-12-31", "%Y-%m-%d")
+end_timeseries =  as.Date("2021-12-31", "%Y-%m-%d")
 
 # 0. Load workspace containing the species list dataframe to use in expansion (sp_info_use)
   # Because the data is coming directly from Oralce, the clean_spp_tables.R script does not need to run each time and will only work if you have an Oralce connection
