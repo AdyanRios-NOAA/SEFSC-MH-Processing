@@ -227,15 +227,15 @@ mh_sort <- mh_detect %>%
 
 # INVESTIGATING RECREATIONAL CLOSURES FOR RED Grouper
 
-mh_sort %>% filter(SPP_NAME == "GROUPER, RED",
+mh_sort %>% filter(SPP_NAME == c("GROUPER, RED", "CLOSURE/REOPENING: SHALLOW-WATER GROUPER (SWG)", "CLOSURE/REOPENING: GROUPERS"),
                    FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO",
                    MANAGEMENT_TYPE_USE %in% c("CLOSURE", "FISHING SEASON", "ALLOWABLE SPECIES", "POSSESSION LIMIT")) %>% 
   select(CLUSTER, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID) %>%
   distinct(CLUSTER)
 
-test = filter(mh_sort, CLUSTER %in% c(20, 369, 410,482, 826, 827, 1330))
+test = filter(mh_sort, CLUSTER %in% c(1419, 1424, 1012, 2102, 2103))
 select(test, SECTOR_ID, vol, page, CLUSTER, STATUS_TYPE, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE,
-       VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, SECTOR_USE) %>%
+       VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, SECTOR_USE, SPP_NAME) %>%
   arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
 
 write.csv(test, "redsnapper_closure_clusters.csv")
