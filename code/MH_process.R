@@ -196,7 +196,7 @@ mh_sort <- mh_detect %>%
   filter(EFFECTIVE_DATE <= end_timeseries) %>%
   arrange(CLUSTER, desc(START_DATE), desc(vol), desc(page)) %>%
   #group_by(CLUSTER, ADJUSTMENT,) %>%
-  group_by(CLUSTER, MANAGEMENT_STATUS_USE, ADJUSTMENT) %>%
+  group_by(CLUSTER, ZONE_USE, MANAGEMENT_STATUS_USE, ADJUSTMENT) %>%
   mutate(diff = lag(START_DATE) - START_DATE,
          diff_days = as.numeric(diff, units = 'days') - 1,
          CHANGE_DATE = case_when(is.na(diff_days) ~ end_timeseries,
@@ -221,101 +221,7 @@ mh_sort <- mh_detect %>%
          ROUNDED_END_YEAR = case_when(as.numeric(format(END_DATE, "%m")) >= 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))-1,
                                       as.numeric(format(END_DATE, "%m")) < 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))),
          NEVER_IMPLEMENTED = case_when(diff_days <= -1 ~ 1,
+                                       START_DATE > END_DATE ~ 1,
                                        TRUE ~ 0)) %>%
   #bind_rows(., mh_redundant) %>%
   data.frame()
-
-# INVESTIGATING RECREATIONAL CLOSURES FOR RED SNAPPER
-mh_sort %>% filter(SPP_NAME == "SNAPPER, RED",
-                   FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO",
-                   MANAGEMENT_TYPE_USE %in% c("CLOSURE", "FISHING SEASON", "ALLOWABLE SPECIES", "POSSESSION LIMIT")) %>% 
-  select(CLUSTER, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID) %>%
-  distinct(CLUSTER)
-
-test = filter(mh_sort, CLUSTER %in% c(20, 369, 410,482, 826, 827, 1330))
-select(test, SECTOR_ID, vol, page, CLUSTER, STATUS_TYPE, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE,
-       VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, SECTOR_USE) %>%
-arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
-
-write.csv(test, "redsnapper_closure_clusters.csv")
-
-test2 = filter(test, STATUS_TYPE == "RECURRING", SECTOR_USE == "RECREATIONAL")
-select(test2, vol, page, CLUSTER, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE,
-       VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE, END_DATE, SUBSECTOR_USE) %>%
-  arrange(SUBSECTOR_USE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
-
-test = filter(mh_sort, CLUSTER %in% c(20, 369, 410,482, 826, 827, 1330))
-test3 = filter(test, STATUS_TYPE == "RECURRING", SECTOR_USE == "COMMERCIAL")%>%
-  arrange(MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
-select(test3, vol, page, CLUSTER, MANAGEMENT_STATUS_USE,
-       diff ,diff_days, EFFECTIVE_DATE, INEFFECTIVE_DATE, START_DATE, 
-       CHANGE_DATE, END_DATE, START_MONTH, START_DAY, END_MONTH, END_DAY) 
-
-test = filter(mh_sort, CLUSTER %in% c(20, 369, 410,482, 826, 827, 1330))
-test4 = filter(test, SECTOR_USE == "RECREATIONAL", MANAGEMENT_STATUS_USE  == "ONCE", MANAGEMENT_TYPE_USE == "CLOSURE") %>%
-  arrange(SUBSECTOR_USE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
-select(test4, vol, page, CLUSTER, MANAGEMENT_TYPE_USE,
-       VALUE, diff ,diff_days, EFFECTIVE_DATE, INEFFECTIVE_DATE, START_DATE, CHANGE_DATE, END_DATE1, END_DATE, SUBSECTOR_USE)[50:64,]
-
-
-
-
-
-
-# RECREATIONAL MINIMUM SIZE LIMIT
-test = filter(mh_sort, CLUSTER == 1733)
-select(test, ID,vol, page, MANAGEMENT_STATUS_USE, SECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, END_MONTH, VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED) %>%
-  arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
-
-# COMMERCIAL MINIMUM SIZE LIMIT
-test = filter(mh_sort, CLUSTER == 1304)
-select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, VALUE, VALUE_RATE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED)
-
-# RECREATION BAG LIMIT 1305
-test = filter(mh_sort, CLUSTER == 1305)
-select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, VALUE, VALUE_RATE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED)
-
-
-# 14 - DEALT WITH 14 (BAG LIMIT NEEDS TO BE FOR GOLIATH ALONE 0)
-# 518 - 518 is a fishing year (new policy, fishing year does not get start year) 
-# 542, 543, 544, 545 - THERE ARE ONLY 21 TIMES WHEN START DATE IS BEFORE EFFECTIVE DATE
-  # POTENTIAL NEW RULE - IF START DATE IS BEFORE EFFECTIVE DATE; KEEP EFFECTIVE DATE 
-# 1751, 1812 - Keep thinking about how open and closed value affects the sorting
-
-
-# start day month, year, have their own meaning 
-  # (effective date should not be overwritten in this case)
-  # write check for start date happening before effective date (that should not be a thing)
-  # FOR "FISHING YEAR"(change to reoccurring?)
-  # COULD TREAT DATES LIKE VALUES FOR CERTAIN MANAGEMENT TYPES (EX ACL, AND FISHING YEAR)
-
-# CONSIDER ADDING DECIMAL YEAR SUMMARY
-# DECIMAL_START_YEAR = decimal_date(as.POSIXlt(START_DATE))
-# DECIMAL_END_YEAR = decimal_date(as.POSIXlt(END_DATE))
-
-
-
-# ## Export for reviewing results for Gulf Reef Fish (SFA)
-# mh_redundant_GOMRF <- mh_detect %>%
-#   filter(REDUNDANT == 1, FMP == 'REEF FISH RESOURCES OF THE GULF OF MEXICO')
-# mh_gulf_reef_review <- mh_sort2 %>% filter(FMP == 'REEF FISH RESOURCES OF THE GULF OF MEXICO') %>%
-#   bind_rows(., mh_redundant_GOMRF) %>%
-#   select(., REGION, REGULATION_ID, FR_CITATION, SECTOR_USE, SUBSECTOR, MANAGEMENT_CATEGORY, MANAGEMENT_TYPE, MANAGEMENT_STATUS, ZONE_USE,
-#          SPP_NAME, COMMON_NAME_USE, EFFECTIVE_DATE, INEFFECTIVE_DATE,
-#          START_DAY_RECURRING, START_MONTH_RECURRING, START_TIME_RECURRING, START_DAY_OF_WEEK_RECURRING,
-#          END_DAY_RECURRING, END_MONTH_RECURRING, END_TIME_RECURRING, END_DAY_OF_WEEK_RECURRING,
-#          MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, CLUSTER, COLLECTION, GENERAL, COMPLEX,
-#          VALUE, VALUE_UNITS, VALUE_TYPE, VALUE_RATE,
-#          REG_CHANGE, MULTI_REG, MULTI_REG_CLUSTER, REG_REMOVED, REDUNDANT, NEVER_IMPLEMENTED, diff, diff_days, CHANGE_DATE,
-#          vol, page, START_DATE, END_DATE, IMP_START_DATE, IMP_END_DATE) %>%
-#   arrange(., CLUSTER, START_DATE, vol, page)
-# 
-# write.csv(mh_sort2, paste0("./Output/MHprocessed_clean_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
-
-
-# FOLLOW UP: REG OFF, CHECK CLUSTERS
-# FOLLOW UP: MULTI REG, CHECK CLUSTERS
-
-
-
-
