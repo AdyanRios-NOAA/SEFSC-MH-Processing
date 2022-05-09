@@ -144,7 +144,7 @@ mh_preprocess <- mh_setup %>%
                               TRUE ~ INEFFECTIVE_DATE),
          START_DATE = case_when(START_TIME == "11:59:00 PM" ~ START_DATE + 1,
                                 TRUE ~ START_DATE),
-         END_DATE = case_when(END_TIME == "12:01:00 AM" ~ START_DATE - 1,
+         END_DATE = case_when(END_TIME == "12:01:00 AM" ~ END_DATE - 1,
                                 TRUE ~ END_DATE)) 
 
 #### 5 ####
