@@ -198,10 +198,6 @@ mh_sort <- mh_detect %>%
                                  TRUE ~ START_DATE + diff_days),
          CHANGE_DATE = case_when(diff_days == -1 ~ lag(CHANGE_DATE),
                                  TRUE ~ CHANGE_DATE),
-         END_DATE1 = case_when(MANAGEMENT_STATUS_USE == "ONCE" &
-                                !is.na(END_DAY) &
-                                !is.na(END_MONTH) &
-                                !is.na(END_YEAR) ~ as.Date(paste(END_MONTH, END_DAY, END_YEAR, sep = "/"), "%m/%d/%Y")),
          END_DATE = case_when(!is.na(END_DATE) ~ END_DATE,
                               # is.na(END_YEAR) & !is.na(INEFFECTIVE_DATE) ~ INEFFECTIVE_DATE,
                               TRUE ~ CHANGE_DATE),
