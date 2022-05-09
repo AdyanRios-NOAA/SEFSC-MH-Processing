@@ -184,11 +184,6 @@ mh_prep_use <- mh_prep %>%
 # SHORT CUT TO NAME USED IN NEXT STEP
 mh_detect <- mh_prep_use
 
-# TEMP FIX FOR TESTING ADJUSMENT IN CLUSTER 1733
-mh_detect <- mh_detect %>%
-  mutate(ADJUSTMENT = case_when(REGULATION_ID == 792 ~ 1,
-                                TRUE ~ ADJUSTMENT))
-
 # 6 ADD END DATE TO SORTED RECORDS ####
 mh_sort <- mh_detect %>%
   # filter(EFFECTIVE_DATE <= end_timeseries, REDUNDANT == 0) %>%
