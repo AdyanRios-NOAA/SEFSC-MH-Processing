@@ -136,7 +136,16 @@ mh_preprocess <- mh_setup %>%
                                   !is.na(START_YEAR) ~ as.Date(paste(START_MONTH, START_DAY, START_YEAR, sep = "/"), "%m/%d/%Y"),
                                 TRUE ~ EFFECTIVE_DATE),
          START_DATE = case_when(START_DATE < EFFECTIVE_DATE ~ EFFECTIVE_DATE,
-                                TRUE ~ START_DATE)) 
+                                TRUE ~ START_DATE),
+         END_DATE = case_when(MANAGEMENT_STATUS_USE == "ONCE" &
+                                !is.na(END_DAY) &
+                                !is.na(END_MONTH) &
+                                !is.na(END_YEAR) ~ as.Date(paste(END_MONTH, END_DAY, END_YEAR, sep = "/"), "%m/%d/%Y"),
+                              TRUE ~ INEFFECTIVE_DATE),
+         START_DATE = case_when(START_TIME == "11:59:00 PM" ~ START_DATE + 1,
+                                TRUE ~ START_DATE),
+         END_DATE = case_when(END_TIME == "12:01:00 AM" ~ START_DATE - 1,
+                                TRUE ~ END_DATE)) 
 
 #### 5 ####
 # FIND SECTOR FORKS
