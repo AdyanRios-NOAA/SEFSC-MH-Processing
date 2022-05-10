@@ -90,8 +90,8 @@ select(test4, ZONE_USE, vol, page,
 # TEST TO INVESTIGATE RED SNAPPER RECREATIONAL MINIMUM SIZE LIMIT RECORDS 
 # TO MAKE SURE THAT THE TIME SERIES IS COMPREHENSIVE AND ACCURATE.
 test = filter(mh_sort, CLUSTER == 1733)
-select(test, ID,vol, page, MANAGEMENT_STATUS_USE, SECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, END_MONTH, VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED) %>%
-  arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
+select(test, vol, page, MANAGEMENT_STATUS_USE, SECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, END_MONTH, VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE, END_DATE, NEVER_IMPLEMENTED) %>%
+  arrange(MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
 
 # TEMPORARY FIX TO CREATE AN ADJUSMENT IN CLUSTER 1733 SO THAT THE DATES 
 # IN THE TIME SERIES LINE UP CORRECTLY.
@@ -109,6 +109,11 @@ select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, MANAGEMENT_TYPE_USE, VA
 # TO MAKE SURE THAT THE TIME SERIES IS COMPREHENSIVE AND ACCURATE.
 test = filter(mh_sort, CLUSTER == 1305)
 select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, VALUE, VALUE_RATE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, NEVER_IMPLEMENTED)
+
+# TEST TO INVESTIGATE RED SNAPPER RECREATIONAL CREW BAG LIMIT RECORDS
+# TO MAKE SURE THAT THE TIME SERIES IS COMPREHENSIVE AND ACCURATE.
+test = filter(mh_sort, CLUSTER == 1306)
+select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, VALUE, VALUE_RATE, diff, diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE, END_DATE, NEVER_IMPLEMENTED)
 
 ## CLUSTER INVESTIGATION ----
 # CLUSTER 14 - DEALT WITH 14 (BAG LIMIT NEEDS TO BE FOR GOLIATH ALONE 0)
@@ -151,9 +156,24 @@ select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, VALUE, VALUE_RATE, diff
 # write.csv(mh_sort2, paste0("./Output/MHprocessed_clean_", format(Sys.Date(), "%d%b%Y"), ".csv"), row.names = FALSE)
 
 ## GITHUB ISSUES ------
+# TO DO: 
+# ISSUE #10 - QUOTA RELATED ISSUES
+# When only start year or end year is provided, diff days is not calculating correctly. 
+# ESPECIALLY IN CASES WHERE MULTIPLE YEARLY ALLOCATION
+# We may want to process dates differently for quotas because we are using the date fields differently 
+# for these management types. Example cluster 1611 (GOM Reef Fish ACL for red snapper)
+# May also need to factor to fishing year
 
-
-
+# ISSUE #11 - CLOSURE RELATED ISSUES
+# - WHEN THERE IS A REOPENING IN THE MIDDLE OF A CLOSURE WE DO NOT CAPTURE
+# THE SECOND PART OF THE CLOSURE AFTER THE REOPENING ENDS - NEED TO USE ADJUSTMENT LOGIC
+#   - Cluster 950 - Gulf Reef com red snapper has a couple examples of this. One closure was from 4/15/95 - 12/31/95 
+# but then a reopening from 11/1 - 11/2. Our process changes the end date of the closure to 10/31, but we are 
+# missing the remaining part of the closure from 11/3 - 12/31) When its all closures its ok, but when reopenings 
+# happen is when we need to be careful. Incorporate start and end dates into closure days
+#   - CLUSTER 1350 - A seasonal closure is split into 3 time periods of seasonal closures by 83 FR 13426. 
+# Of the three new seasonal closures, one is given an incorrect end date while the other two are correct. 
+# All three should be 12/31/2020.
 
 
 
