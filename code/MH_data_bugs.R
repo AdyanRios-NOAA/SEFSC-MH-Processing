@@ -107,7 +107,11 @@ mh_cleaned <- mh_cleaned %>%
   #Bug ID 6327
   filter(REGULATION_ID != 11364) %>%
   #Bug ID 6606
-  filter(REGULATION_ID != 11866)
+  filter(REGULATION_ID != 11866) %>%
+  #Bug ID -31
+  filter(REGULATION_ID != 360) %>%
+  #Bug ID -32
+  filter(REGULATION_ID != 359)
 
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
@@ -1650,13 +1654,6 @@ mh_cleaned <- mh_cleaned %>%
 #Bug ID -29 - Start time removed since it was incorrectly entered
 mh_cleaned <- mh_cleaned %>% 
   mutate(START_TIME = case_when(REGULATION_ID != 385 ~ START_TIME))
-
-#Bug ID -32 - Updates Management Status to Seasonal and Start and End Year are removed
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 359 ~ "SEASONAL",
-                                       TRUE ~ MANAGEMENT_STATUS),
-         START_YEAR = case_when(REGULATION_ID != 359 ~ START_YEAR),
-         END_YEAR = case_when(REGULATION_ID != 359 ~ END_YEAR))
 
 #Bug -33 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
 mh_cleaned <- mh_cleaned %>%
