@@ -1,14 +1,14 @@
 # Management History Processing Project
 
-The SEFSC - MH - Processing repository contains the data analysis and cleaning of the raw data from the Management Histroy Database. The data points are pulled from the federal fisheries managment regulations for the southeast region of the United States. This dataset is actively being mutated into a usable format for researchers' to use. Currently, the project is focused on the Gulf of Mexico Reef Fish Resources FMP data. 
+This SEFSC - MH - Processing repository provides a method for generating an analysis-ready version of the Management History Database. In their original format, the records in this database represent changes in management actions affecting federally managed species throughout the Gulf of Mexico, South Atlantic, and U.S. Caribbean regions. The data files and code contained in this repository define and execut logic for grouping and creating streamlined time series of related management events. This process is actively being updated. Currently, the project is focused on the Gulf of Mexico Reef Fish Resources FMP data. 
 
-### Date folder: All data used for analysis is stored within the data folder within the repository.
-For analysis, data is pulled from the raw and interim folders. The raw data folder contains the data downloaded straight from the Management History Database via a CSV file. The interim data folder contains data tables cleaned from the database. These include the following: 
+### Data folder: All data are stored within the data folder within the repository.
+For processing, data are pulled from the raw and interim folders. The raw data folder contains the data downloaded straight from the Management History Database via a CSV file. The interim data folder contains data tables cleaned from the database. These include the following: 
 * MH_clean_spp_tables.RData - the saved workspace of the MH_clean_spp_tables.R code 
 * MHpreprocess_expansions.csv - zone expansion data to clean zone names
 * Clusters folder - location of the unique pre-existing clusters created during data analysis
 
-### Code folder: All code used for the cleaning and analysis of the data is stored within the code folder
+### Code folder: All scripts used to process the data are stored within the code folder
 The code is divided into six subfolders, five  of which contain the analysis and cleaning and one which runs the entire code in the correct order (main_MH_prep.R). To run the code effectively, R and seven packages are required. More details can be found in the READMEcode.md file within the code file. 
 
 ### The code is still being edited and updated weekly. 

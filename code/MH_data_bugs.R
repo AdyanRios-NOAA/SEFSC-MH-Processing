@@ -107,7 +107,11 @@ mh_cleaned <- mh_cleaned %>%
   #Bug ID 6327
   filter(REGULATION_ID != 11364) %>%
   #Bug ID 6606
-  filter(REGULATION_ID != 11866)
+  filter(REGULATION_ID != 11866) %>%
+  #Bug ID -31
+  filter(REGULATION_ID != 360) %>%
+  #Bug ID -32
+  filter(REGULATION_ID != 359)
 
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
@@ -1642,11 +1646,89 @@ mh_cleaned <- mh_cleaned %>%
   mutate(START_MONTH = case_when(REGULATION_ID != 2012 ~ START_MONTH),
          START_DAY = case_when(REGULATION_ID != 2012 ~ START_DAY))
 
-#BUG ID -28 - start month and day needs to be removed from yearly quota
+#BUG ID -27 - start month and day needs to be removed from yearly quota
 mh_cleaned <- mh_cleaned %>%
   mutate(START_MONTH = case_when(REGULATION_ID != 2006 ~ START_MONTH),
          START_DAY = case_when(REGULATION_ID != 2006 ~ START_DAY))
 
+#Bug ID -29 - Start time removed since it was incorrectly entered
+mh_cleaned <- mh_cleaned %>% 
+  mutate(START_TIME = case_when(REGULATION_ID != 385 ~ START_TIME))
+
+#Bug -33 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 778 ~ "12/31/2010",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         MANAGEMENT_STATUS = case_when(REGULATION_ID == 778 ~ "ONCE",
+                                       TRUE ~ MANAGEMENT_STATUS))
+
+#Bug -34 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 753 ~ "12/31/2012",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         MANAGEMENT_STATUS = case_when(REGULATION_ID == 753 ~ "ONCE",
+                                       TRUE ~ MANAGEMENT_STATUS))
+
+#Bug -35 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 712 ~ "12/31/2013",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         END_DAY = case_when(REGULATION_ID != 712 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 712 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 712 ~ END_YEAR))
+
+#Bug -36 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 711 ~ "12/31/2013",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         END_DAY = case_when(REGULATION_ID != 711 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 711 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 711 ~ END_YEAR))
+
+#Bug -37 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 710 ~ "12/31/2013",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         END_DAY = case_when(REGULATION_ID != 710 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 710 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 710 ~ END_YEAR))
+
+#Bug -38 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 709 ~ "12/31/2013",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         END_DAY = case_when(REGULATION_ID != 709 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 709 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 709 ~ END_YEAR))
+
+#Bug -39 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 708 ~ "12/31/2013",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         END_DAY = case_when(REGULATION_ID != 708 ~ END_DAY),
+         END_MONTH = case_when(REGULATION_ID != 708 ~ END_MONTH),
+         END_YEAR = case_when(REGULATION_ID != 708 ~ END_YEAR))
+
+#Bug ID -40 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 773 ~ "12/31/2015",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         MANAGEMENT_STATUS = case_when(REGULATION_ID == 773 ~ "ONCE",
+                                       TRUE ~ MANAGEMENT_STATUS))
+
+#Bug ID -41 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 774 ~ "12/31/2015",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         MANAGEMENT_STATUS = case_when(REGULATION_ID == 774 ~ "ONCE",
+                                       TRUE ~ MANAGEMENT_STATUS))
+
+#Bug ID -42 - Update Ineffective Date to reflect the end of the fishing year 
+mh_cleaned <- mh_cleaned %>%
+  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 178 ~ "12/31/2020",
+                                      TRUE ~ INEFFECTIVE_DATE),
+         MANAGEMENT_STATUS = case_when(REGULATION_ID == 178 ~ "ONCE",
+                                       TRUE ~ MANAGEMENT_STATUS))
 
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
@@ -2037,7 +2119,7 @@ mh_added <- mh_added %>%
           START_YEAR = 2009,
           FLAG = "YES")
 
-#BUG ID 5996 - add removal of Jan 1 to Feb 1 closure and monthly closure of the 10th to 1st of Feb thru Nov,
+#BUG ID 5996 & -28 - add removal of Jan 1 to Feb 1 closure and monthly closure of the 10th to 1st of Feb thru Nov. Bug -29 corrected the Management Status from Monthly to Monthly Recurring for Reg ID -998. Bug ID -30 removed the start time for Reg ID -987
 mh_added <- mh_added %>%
   add_row(REGULATION_ID = -988,
           LAST_UPDATED	= "2/10/2022",
@@ -2096,12 +2178,10 @@ mh_added <- mh_added %>%
           INEFFECTIVE_DATE	= "01/01/2007",
           START_DAY	= 1,
           START_MONTH	= 1,
-          START_TIME = "12:00:00 PM",
           END_DAY	= 1,
           END_MONTH	= 2,
           END_TIME	= "12:00:00 PM",
           FLAG = "YES")
-
 
 mh_cleaned <- bind_rows(mh_added, mh_cleaned)
 
