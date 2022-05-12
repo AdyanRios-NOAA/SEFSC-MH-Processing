@@ -111,7 +111,31 @@ mh_cleaned <- mh_cleaned %>%
   #Bug ID -31
   filter(REGULATION_ID != 360) %>%
   #Bug ID -32
-  filter(REGULATION_ID != 359)
+  filter(REGULATION_ID != 359) %>%
+  #Bug ID -43
+  filter(REGULATION_ID != 644) %>%
+  #BUG ID -44
+  filter(REGULATION_ID != 645) %>%
+  #BUG ID -45
+  filter(REGULATION_ID != 646) %>%
+  #BUG ID -46
+  filter(REGULATION_ID != 647) %>%
+  #BUG ID -47
+  filter(REGULATION_ID != 247) %>%
+  #BUG ID -48
+  filter(REGULATION_ID != 248) %>%
+  #BUG ID -49
+  filter(REGULATION_ID != 249) %>%
+  #BUG ID -50
+  filter(REGULATION_ID != 250) %>%
+  #BUG ID -51
+  filter(REGULATION_ID != 970) %>%
+  #BUG ID -52
+  filter(REGULATION_ID != 971) %>%
+  #BUG ID -53
+  filter(REGULATION_ID != 972) %>%
+  #BUG ID -54
+  filter(REGULATION_ID != 973)
 
 # Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
 mh_cleaned <- mh_cleaned %>%
