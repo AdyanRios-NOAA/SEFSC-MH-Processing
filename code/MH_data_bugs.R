@@ -298,7 +298,7 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 5086 - Update effective and start date following correction guidance (updated by SFA 10/12/2021)
 mh_cleaned <- mh_cleaned %>%
-  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1106 ~ '10/01/2006',
+  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1106 ~ "10/01/2006",
                                     TRUE ~ EFFECTIVE_DATE),
          START_YEAR = case_when(REGULATION_ID == 1106 ~ 2006L,
                                 TRUE ~ START_YEAR),
@@ -596,7 +596,7 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 4486 - Update effective date, start date, and end date following correction guidance
 mh_cleaned <- mh_cleaned %>%
-  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1358 ~ '12/20/2010',
+  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1358 ~ "12/20/2010",
                                     TRUE ~ EFFECTIVE_DATE),
          START_YEAR = case_when(REGULATION_ID == 1358 ~ 2010L,
                                 TRUE ~ START_YEAR),
@@ -952,7 +952,7 @@ mh_cleaned <- mh_cleaned %>%
                                      TRUE ~ MANAGEMENT_TYPE),
          FR_SECTION = case_when(REGULATION_ID == 1085 ~ '50 CFR 641',
                                 TRUE ~ FR_SECTION),
-         EFFECTIVE_DATE = case_when(REGULATION_ID == 1085 ~ '08/19/1991',
+         EFFECTIVE_DATE = case_when(REGULATION_ID == 1085 ~ "08/19/1991",
                                     TRUE ~ EFFECTIVE_DATE),
          START_YEAR = case_when(REGULATION_ID == 1085 ~ 1991L,
                                 TRUE ~ START_YEAR),
@@ -1777,6 +1777,11 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 2181 ~ "POSSESSION LIMIT",
                                      TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID -64 - Amendment Number should be 4
+mh_cleaned <- mh_cleaned %>%
+  mutate(AMENDMENT_NUMBER = case_when(REGULATION_ID == 1592 ~ "4",
+                                      TRUE ~ AMENDMENT_NUMBER))
 
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
