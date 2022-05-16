@@ -298,7 +298,7 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 5086 - Update effective and start date following correction guidance (updated by SFA 10/12/2021)
 mh_cleaned <- mh_cleaned %>%
-  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1106 ~ '10/01/2006',
+  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1106 ~ "10/01/2006",
                                     TRUE ~ EFFECTIVE_DATE),
          START_YEAR = case_when(REGULATION_ID == 1106 ~ 2006L,
                                 TRUE ~ START_YEAR),
@@ -596,7 +596,7 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 4486 - Update effective date, start date, and end date following correction guidance
 mh_cleaned <- mh_cleaned %>%
-  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1358 ~ '12/20/2010',
+  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1358 ~ "12/20/2010",
                                     TRUE ~ EFFECTIVE_DATE),
          START_YEAR = case_when(REGULATION_ID == 1358 ~ 2010L,
                                 TRUE ~ START_YEAR),
@@ -952,7 +952,7 @@ mh_cleaned <- mh_cleaned %>%
                                      TRUE ~ MANAGEMENT_TYPE),
          FR_SECTION = case_when(REGULATION_ID == 1085 ~ '50 CFR 641',
                                 TRUE ~ FR_SECTION),
-         EFFECTIVE_DATE = case_when(REGULATION_ID == 1085 ~ '08/19/1991',
+         EFFECTIVE_DATE = case_when(REGULATION_ID == 1085 ~ "08/19/1991",
                                     TRUE ~ EFFECTIVE_DATE),
          START_YEAR = case_when(REGULATION_ID == 1085 ~ 1991L,
                                 TRUE ~ START_YEAR),
@@ -1769,6 +1769,20 @@ mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 11457 ~ "YES",
                           TRUE ~ FLAG))
 
+#Bug ID -62 - Management Type should be updated to Possession Limit
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 2180 ~ "POSSESSION LIMIT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+#Bug ID -63 - Management Type should be updated to Possession Limit
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 2181 ~ "POSSESSION LIMIT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
+#Bug ID -64 - Amendment Number should be 4
+mh_cleaned <- mh_cleaned %>%
+  mutate(AMENDMENT_NUMBER = case_when(REGULATION_ID == 1592 ~ "4",
+                                      TRUE ~ AMENDMENT_NUMBER))
+
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
 
@@ -2220,6 +2234,134 @@ mh_added <- mh_added %>%
           END_DAY	= 1,
           END_MONTH	= 2,
           END_TIME	= "12:00:00 PM",
+          FLAG = "YES")
+
+#Bug ID -58 - Implementation of bag limit that is later removed. Removal has been captured
+mh_added <- mh_added %>%
+  add_row(REGULATION_ID = -986,
+          LAST_UPDATED	= "5/16/2022",
+          JURISDICTION 	= "FEDERAL",
+          ACTION = "FINAL",
+          ACTION_TYPE = "FRAMEWORK AMENDMENT",
+          AMENDMENT_NUMBER = "4",
+          ACCOUNTABILITY_MEASURE	= "NO",
+          FR_CITATION	= "82 FR 36344",
+          FR_SECTION	= "50 CFR 622.382",
+          FR_URL	= "https://www.federalregister.gov/documents/2017/08/04/2017-16469/fisheries-of-the-caribbean-gulf-of-mexico-and-south-atlantic-coastal-migratory-pelagic-resources-in",
+          MANAGEMENT_CATEGORY	= "EFFORT LIMITS",
+          MANAGEMENT_TYPE	= "BAG LIMIT",
+          SECTOR	= "RECREATIONAL",
+          SUBSECTOR	= "ALL",
+          REGION	= "MID ATLANTIC",
+          ZONE	= "ATLANTIC MIGRATORY GROUP COBIA",
+          JURISDICTIONAL_WATERS	= "EEZ",
+          COMMON_NAME	= "COBIA",
+          SPECIES_ITIS	= "168566",
+          FMP	= "COASTAL MIGRATORY PELAGIC RESOURCES",
+          EFFECTIVE_DATE	= "09/05/2017",
+          START_DAY	= 5,
+          START_MONTH	= 9,
+          START_YEAR = 2017,
+          VALUE = "1",
+          VALUE_UNITS = "FISH",
+          VALUE_TYPE = "COUNT",
+          VALUE_RATE = "PER PERSON PER DAY",
+          FLAG = "YES")
+
+#Bug ID -59 - Implementation of bag limit that is later removed. Removal has been captured
+mh_added <- mh_added %>%
+  add_row(REGULATION_ID = -985,
+          LAST_UPDATED	= "5/16/2022",
+          JURISDICTION 	= "FEDERAL",
+          ACTION = "FINAL",
+          ACTION_TYPE = "FRAMEWORK AMENDMENT",
+          AMENDMENT_NUMBER = "4",
+          ACCOUNTABILITY_MEASURE	= "NO",
+          FR_CITATION	= "82 FR 36344",
+          FR_SECTION	= "50 CFR 622.382",
+          FR_URL	= "https://www.federalregister.gov/documents/2017/08/04/2017-16469/fisheries-of-the-caribbean-gulf-of-mexico-and-south-atlantic-coastal-migratory-pelagic-resources-in",
+          MANAGEMENT_CATEGORY	= "EFFORT LIMITS",
+          MANAGEMENT_TYPE	= "BAG LIMIT",
+          SECTOR	= "RECREATIONAL",
+          SUBSECTOR	= "ALL",
+          REGION	= "MID ATLANTIC",
+          ZONE	= "ATLANTIC MIGRATORY GROUP COBIA",
+          JURISDICTIONAL_WATERS	= "EEZ",
+          COMMON_NAME	= "COBIA",
+          SPECIES_ITIS	= "168566",
+          FMP	= "COASTAL MIGRATORY PELAGIC RESOURCES",
+          EFFECTIVE_DATE	= "09/05/2017",
+          START_DAY	= 5,
+          START_MONTH	= 9,
+          START_YEAR = 2017,
+          VALUE = "6",
+          VALUE_UNITS = "FISH",
+          VALUE_TYPE = "COUNT",
+          VALUE_RATE = "PER VESSEL PER DAY",
+          FLAG = "YES")
+
+#Bug ID -60 - Implementation of trip limit that is later removed. Removal has been captured
+mh_added <- mh_added %>%
+  add_row(REGULATION_ID = -984,
+          LAST_UPDATED	= "5/16/2022",
+          JURISDICTION 	= "FEDERAL",
+          ACTION = "FINAL",
+          ACTION_TYPE = "FRAMEWORK AMENDMENT",
+          AMENDMENT_NUMBER = "4",
+          ACCOUNTABILITY_MEASURE	= "NO",
+          FR_CITATION	= "82 FR 36344",
+          FR_SECTION	= "50 CFR 622.385",
+          FR_URL	= "https://www.federalregister.gov/documents/2017/08/04/2017-16469/fisheries-of-the-caribbean-gulf-of-mexico-and-south-atlantic-coastal-migratory-pelagic-resources-in",
+          MANAGEMENT_CATEGORY	= "EFFORT LIMITS",
+          MANAGEMENT_TYPE	= "TRIP LIMIT",
+          SECTOR	= "COMMERCIAL",
+          SUBSECTOR	= "ALL",
+          REGION	= "MID ATLANTIC",
+          ZONE	= "ATLANTIC MIGRATORY GROUP COBIA",
+          JURISDICTIONAL_WATERS	= "EEZ",
+          COMMON_NAME	= "COBIA",
+          SPECIES_ITIS	= "168566",
+          FMP	= "COASTAL MIGRATORY PELAGIC RESOURCES",
+          EFFECTIVE_DATE	= "09/05/2017",
+          START_DAY	= 5,
+          START_MONTH	= 9,
+          START_YEAR = 2017,
+          VALUE = "2",
+          VALUE_UNITS = "FISH",
+          VALUE_TYPE = "COUNT",
+          VALUE_RATE = "PER PERSON PER DAY",
+          FLAG = "YES")
+
+#Bug ID -61 - Implementation of trip limit that is later removed. Removal has been captured
+mh_added <- mh_added %>%
+  add_row(REGULATION_ID = -983,
+          LAST_UPDATED	= "5/16/2022",
+          JURISDICTION 	= "FEDERAL",
+          ACTION = "FINAL",
+          ACTION_TYPE = "FRAMEWORK AMENDMENT",
+          AMENDMENT_NUMBER = "4",
+          ACCOUNTABILITY_MEASURE	= "NO",
+          FR_CITATION	= "82 FR 36344",
+          FR_SECTION	= "50 CFR 622.385",
+          FR_URL	= "https://www.federalregister.gov/documents/2017/08/04/2017-16469/fisheries-of-the-caribbean-gulf-of-mexico-and-south-atlantic-coastal-migratory-pelagic-resources-in",
+          MANAGEMENT_CATEGORY	= "EFFORT LIMITS",
+          MANAGEMENT_TYPE	= "TRIP LIMIT",
+          SECTOR	= "COMMERCIAL",
+          SUBSECTOR	= "ALL",
+          REGION	= "MID ATLANTIC",
+          ZONE	= "ATLANTIC MIGRATORY GROUP COBIA",
+          JURISDICTIONAL_WATERS	= "EEZ",
+          COMMON_NAME	= "COBIA",
+          SPECIES_ITIS	= "168566",
+          FMP	= "COASTAL MIGRATORY PELAGIC RESOURCES",
+          EFFECTIVE_DATE	= "09/05/2017",
+          START_DAY	= 5,
+          START_MONTH	= 9,
+          START_YEAR = 2017,
+          VALUE = "6",
+          VALUE_UNITS = "FISH",
+          VALUE_TYPE = "COUNT",
+          VALUE_RATE = "PER VESSEL PER DAY",
           FLAG = "YES")
 
 mh_cleaned <- bind_rows(mh_added, mh_cleaned)
