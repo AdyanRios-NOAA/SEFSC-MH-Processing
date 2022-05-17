@@ -193,5 +193,53 @@ select(test, vol, page, CLUSTER, SECTOR_USE, ADJUSTMENT, VALUE, VALUE_RATE, diff
 # Of the three new seasonal closures, one is given an incorrect end date while the other two are correct. 
 # All three should be 12/31/2020.
 
+## MH_SPP_EXPANSION.R TESTS ------
+
+# GULF REEF FISH RED GROUPER (RG)
+test_rg <- mh_final %>%
+  filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO", COMMON_NAME_USE == 'GROUPER, RED')
+test_rg2 <- test_rg %>%
+  group_by(SECTOR_USE, MANAGEMENT_TYPE_USE) %>%
+  summarise(N = n())
+view(test_rg2)
+# RG Commercial Closures
+test_rg3 <- test_rg %>%
+  filter(SECTOR_USE == 'COMMERCIAL', MANAGEMENT_TYPE_USE == 'CLOSURE')
+# CLUSTER IDs 38  384  385  386  387  785  797  805  806 1012 1424
+# CLUSTERS 38-806 are for specific zone/subsector closures for all Gulf Reef fish species
+# CLUSTERS 1012 and 1424 are for red grouper and aggregate with RG
+test_rg3_clusters <- test_rg3 %>%
+  group_by(CLUSTER, SUBSECTOR_USE, SPP_TYPE, SPP_NAME, ZONE_USE) %>%
+  summarise(N = n())
+view(test_rg3_clusters)
+# WORKING FOR 1012 and 1424
+test_rg4 <- test_rg3 %>%
+  filter(CLUSTER %in% c(1012, 1424)) %>%
+  select(vol, page, MANAGEMENT_STATUS_USE, SECTOR_USE, MANAGEMENT_TYPE_USE, SPP_NAME, 
+         VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE, END_DATE, 
+         NEVER_IMPLEMENTED, START_DATE2, END_DATE2) %>%
+  arrange(MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
+view(test_rg4)
+
+# EXAMPLE WHERE START DATE ADJUSTED BECAUSE OF SPP AGGREGATE ADDED DATE
+mh_final %>%
+  filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO", MANAGEMENT_TYPE_USE == 'CLOSURE',
+         SPP_NAME == 'ALL', SECTOR_USE == 'COMMERCIAL', IMP_START_DATE == 1) %>%
+  select(CLUSTER) %>%
+  distinct()
+# CLUSTER 384
+# Adjusted start date working (adjusted for 2 species)
+# Added a condition where removed spp date == start date to flag those records to remove
+test_imps <- mh_final %>%
+  filter(CLUSTER == '384') %>%
+  #filter(IMP_START_DATE == 1) %>%
+  filter(ZONE_USE == 'REEF FISH LONGLINE AND BUOY GEAR RESTRICTED AREA') %>%
+  select(vol, page, SPP_NAME, COMMON_NAME_USE, 
+         VALUE, SUBSECTOR_USE, ZONE_USE, EFFECTIVE_DATE, START_DATE, END_DATE, 
+         ADDED_SP_DATE, REMOVED_SP_DATE, START_DATE2, END_DATE2, RM_SPP) %>%
+  arrange(desc(START_DATE2), desc(vol), desc(page)) 
+view(test_imps)
+
+
 
 
