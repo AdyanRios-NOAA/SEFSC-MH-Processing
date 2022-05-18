@@ -66,3 +66,11 @@ select(test, SECTOR_ID, vol, page, CLUSTER, STATUS_TYPE, MANAGEMENT_STATUS_USE, 
        VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, SECTOR_USE, SPP_NAME) %>%
   arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
 View(test)
+
+
+##investigate fishery year real fast
+test <- mh_sort %>% filter(MANAGEMENT_TYPE_USE == "FISHING YEAR")%>%
+  select(CLUSTER, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID) %>%
+  distinct(CLUSTER)
+
+view(test)
