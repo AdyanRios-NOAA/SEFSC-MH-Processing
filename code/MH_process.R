@@ -207,7 +207,8 @@ mh_sort <- mh_detect %>%
          ROUNDED_START_YEAR = format(round_date(START_DATE, "year"),"%Y"),
          ROUNDED_END_YEAR = case_when(as.numeric(format(END_DATE, "%m")) >= 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))-1,
                                       as.numeric(format(END_DATE, "%m")) < 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))),
-         NEVER_IMPLEMENTED = case_when(diff_days <= -1 ~ 1,
+         NEVER_IMPLEMENTED = case_when(MULTI_REG == 1 ~ 0,
+                                        diff_days <= -1 ~ 1,
                                        START_DATE > END_DATE ~ 1,
                                        TRUE ~ 0)) %>%
   #bind_rows(., mh_redundant) %>%
