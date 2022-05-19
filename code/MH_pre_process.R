@@ -120,14 +120,14 @@ mh_preprocess <- mh_setup %>%
          COMPLEX = case_when(STATUS_TYPE == "COMPLEX" ~ 1, TRUE ~ 0),
          # Create recurring start and end dates (this is to avoid the dual purpose of these fields)
          # REVISIT WHEN WORKING WITH RECURING REGULATIONS
-         START_DAY_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ START_DAY),
-         START_MONTH_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ START_MONTH),
-         START_TIME_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ START_TIME),
-         START_DAY_OF_WEEK_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ as.character(START_DAY_OF_WEEK)),
-         END_DAY_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_DAY),
-         END_MONTH_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_MONTH),
-         END_TIME_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_TIME),
-         END_DAY_OF_WEEK_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_DAY_OF_WEEK),
+         #START_DAY_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ START_DAY),
+         #START_MONTH_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ START_MONTH),
+         # START_TIME_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ START_TIME),
+         # START_DAY_OF_WEEK_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ as.character(START_DAY_OF_WEEK)),
+         # END_DAY_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_DAY),
+         # END_MONTH_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_MONTH),
+         # END_TIME_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_TIME),
+         # END_DAY_OF_WEEK_RECURRING = case_when(STATUS_TYPE == "RECURRING" ~ END_DAY_OF_WEEK),
          # Start date from start day, month, year fields
          # ONLY WHEN A START DATE IS PROVIDED AND DIFFERENT FROM EFFECTIVE DATE
          START_DATE = case_when(MANAGEMENT_STATUS_USE == "ONCE" &
@@ -142,6 +142,10 @@ mh_preprocess <- mh_setup %>%
                                 !is.na(END_MONTH) &
                                 !is.na(END_YEAR) ~ as.Date(paste(END_MONTH, END_DAY, END_YEAR, sep = "/"), "%m/%d/%Y"),
                               TRUE ~ INEFFECTIVE_DATE),
+         END_DAY = case_when(END_TIME == "12:01:00 AM" & STATUS_TYPE == "RECURRING" & END_DAY != 1 ~ END_DAY - 1,
+                             TRUE ~ END_DAY),
+         END_TIME = case_when(END_TIME == "12:01:00 AM" & STATUS_TYPE == "RECURRING" & END_DAY != 1 ~ "11:59:00 PM",
+                              TRUE ~ END_TIME),
          START_DATE = case_when(START_TIME == "11:59:00 PM" ~ START_DATE + 1,
                                 TRUE ~ START_DATE),
          END_DATE = case_when(END_TIME == "12:01:00 AM" ~ END_DATE - 1,
