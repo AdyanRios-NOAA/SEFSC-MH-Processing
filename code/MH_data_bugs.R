@@ -1783,6 +1783,11 @@ mh_cleaned <- mh_cleaned %>%
   mutate(AMENDMENT_NUMBER = case_when(REGULATION_ID == 1592 ~ "4",
                                       TRUE ~ AMENDMENT_NUMBER))
 
+#Bug ID -65 - Management Type should be updated to Minimum Size Limit Adjustment
+mh_cleaned <- mh_cleaned %>%
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 792 ~ "MINIMUM SIZE LIMIT ADJUSTMENT",
+                                     TRUE ~ MANAGEMENT_TYPE))
+
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
 
