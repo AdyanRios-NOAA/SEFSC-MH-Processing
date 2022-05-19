@@ -12,8 +12,11 @@ MH_CARsort %>% filter(SPP_TYPE %in% c("SPECIES_GROUP","SPECIES_AGGREGATE", "COMM
 ##NOW FOR JUST AGG closures
 MH_CARsort %>% filter(SPP_TYPE %in% c("SPECIES_GROUP","SPECIES_AGGREGATE"),
                       MANAGEMENT_TYPE_USE %in% c("CLOSURE", "FISHING SEASON", "ALLOWABLE SPECIES", "POSSESSION LIMIT"))%>%
-  select(CLUSTER, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID) %>%
-  distinct(ZONE)
+  select(CLUSTER, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID)
+#%>%
+ # distinct(ZONE)
+view(MH_CARsort)
+
 #agg closures only impact puerto rico managmenet area, St. tomas/St. john managment area, and S.t croix managment area
 
 ##AGG ALL MNG TYPES
@@ -70,7 +73,29 @@ View(test)
 
 ##investigate fishery year real fast
 test <- mh_sort %>% filter(MANAGEMENT_TYPE_USE == "FISHING YEAR")%>%
-  select(CLUSTER, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID) %>%
-  distinct(CLUSTER)
-
+  select(CLUSTER,REGULATION_ID, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, SECTOR, FMP, SUBSECTOR_USE, 
+         ZONE, EFFECTIVE_DATE, START_DATE, START_DAY, START_MONTH, START_YEAR, CHANGE_DATE, END_DAY, END_MONTH,
+         END_YEAR, END_DATE, SECTOR_USE, SPP_NAME, SECTOR_ID)
 view(test)
+#INVESTIGATE REG ID 2092 AND 2103 (CLUSTERS 678 AND 698)
+test = filter(mh_sort, CLUSTER == 698)
+select(test, SECTOR_ID, vol, page, CLUSTER, STATUS_TYPE, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE, 
+       VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, SECTOR_USE, SPP_NAME) %>%
+  arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
+View(test)
+#fishing year march 1 - march 1 because its for march 1 thru end of feb
+test = filter(mh_sort, CLUSTER == 678)
+select(test, SECTOR_ID, vol, page, CLUSTER, STATUS_TYPE, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE, 
+       VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, SECTOR_USE, SPP_NAME) %>%
+  arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
+View(test)
+
+#2103 = BLACK SEA BASS IN SASG - no closure component for adjustment to fishing year
+test2 = filter(mh_sort, MANAGEMENT_TYPE_USE == "CLOSURE", 
+              FMP == "SNAPPER-GROUPER FISHERY OF THE SOUTH ATLANTIC REGION",
+              SECTOR_USE == "COMMERCIAL",
+              SPP_NAME %in% c("ALL", "BASS, BLACK SEA"))
+select(test2, SECTOR_ID, vol, page, CLUSTER, STATUS_TYPE, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE, 
+       VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, SECTOR_USE, SPP_NAME) %>%
+  arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
+View(test2)
