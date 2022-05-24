@@ -204,12 +204,38 @@ mh_sort <- mh_detect %>%
          END_DATE = case_when(CHANGE_DATE > END_DATE & !is.na(END_DATE) ~ END_DATE,
                               CHANGE_DATE > INEFFECTIVE_DATE & !is.na(INEFFECTIVE_DATE) ~ END_DATE,
                               TRUE ~ CHANGE_DATE),
-         ROUNDED_START_YEAR = format(round_date(START_DATE, "year"),"%Y"),
-         ROUNDED_END_YEAR = case_when(as.numeric(format(END_DATE, "%m")) >= 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))-1,
-                                      as.numeric(format(END_DATE, "%m")) < 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))),
+         # ROUNDED_START_YEAR = format(round_date(START_DATE, "year"),"%Y"),
+         # ROUNDED_END_YEAR = case_when(as.numeric(format(END_DATE, "%m")) >= 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))-1,
+         #                              as.numeric(format(END_DATE, "%m")) < 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))),
          NEVER_IMPLEMENTED = case_when(MULTI_REG == 1 ~ 0,
                                         diff_days <= -1 ~ 1,
                                        START_DATE > END_DATE ~ 1,
                                        TRUE ~ 0)) %>%
   #bind_rows(., mh_redundant) %>%
+  data.frame()
+
+# 7 HANDLE OPEN/CLOSED ADJUSTMENTS ###
+mh_adjustc <- mh_sort %>%
+  fitler(MANAGEMENT_STATUS_USE == 'CLOSURE') %>%
+  arrange(CLUSTER, desc(START_DATE), desc(vol), desc(page)) %>%
+  group_by(CLUSTER, ZONE_USE) %>%
+  mutate(diff = lag(START_DATE) - START_DATE,
+         diff_days = as.numeric(diff, units = 'days') - 1,
+         CHANGE_DATE = case_when(is.na(diff_days) ~ end_timeseries,
+                                 TRUE ~ START_DATE + diff_days),
+         CHANGE_DATE = case_when(diff_days == -1 ~ lag(CHANGE_DATE),
+                                 TRUE ~ CHANGE_DATE),
+         END_DATE = case_when(!is.na(END_DATE) ~ END_DATE,
+                              # is.na(END_YEAR) & !is.na(INEFFECTIVE_DATE) ~ INEFFECTIVE_DATE,
+                              TRUE ~ CHANGE_DATE),
+         END_DATE = case_when(CHANGE_DATE > END_DATE & !is.na(END_DATE) ~ END_DATE,
+                              CHANGE_DATE > INEFFECTIVE_DATE & !is.na(INEFFECTIVE_DATE) ~ END_DATE,
+                              TRUE ~ CHANGE_DATE),
+         # ROUNDED_START_YEAR = format(round_date(START_DATE, "year"),"%Y"),
+         # ROUNDED_END_YEAR = case_when(as.numeric(format(END_DATE, "%m")) >= 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))-1,
+         #                              as.numeric(format(END_DATE, "%m")) < 7 ~ as.numeric(format(round_date(END_DATE, "year"),"%Y"))),
+         NEVER_IMPLEMENTED = case_when(MULTI_REG == 1 ~ 0,
+                                       diff_days <= -1 ~ 1,
+                                       START_DATE > END_DATE ~ 1,
+                                       TRUE ~ 0)) %>%
   data.frame()
