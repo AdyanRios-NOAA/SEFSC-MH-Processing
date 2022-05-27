@@ -29,6 +29,8 @@ test = filter(mh_sort, CLUSTER %in% c(713, 714, 1981, 1982, 1983, 1984, 1985, 19
 select(test, SECTOR_ID, vol, page, CLUSTER, STATUS_TYPE, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE, 
        VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, SECTOR_USE, ZONE, SPP_NAME) %>%
   arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
+write.csv(test, "CAR_closure_clusters.csv")
+
 View(test)
 
 ##NOW FOR JUST AGG closures

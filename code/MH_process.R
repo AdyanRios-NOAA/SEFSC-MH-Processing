@@ -3,8 +3,9 @@
   # MATCH CLUSTERS AND ORDER RECORDS
 
 # SUMMARY OF STEPS ####
+# 2, 3, 4, 5, are currently commented out
 
-# 1  GROUP DATA INTO PROCESSING CLUSTERS
+# 1  GROUP DATA INTO PROCESSING CLUSTERS 
 #   1A DEFINE MATCH VARIABLES
 #   1B COUNT HOW MANY CLUSTERS TO PROCESS
 #   1C NOTE WHEN THERE ARE MULTIPLE RECORDS PER CLUSTER PER FR ACTIVE AT THE SAME TIME
@@ -18,16 +19,16 @@
 # 7 EXPORT DATA
 
 
-# 1 GROUP DATA INTO PROCESSING CLUSTERS ####
+# 1 Group data into processing CLUSTERS ####
 
-# 1A DEFINE MATCH VARIABLES ####
+# 1A Define variables which must match for records to be considered part of a CLUSTER ####
 
 cluster.match <- c("MANAGEMENT_TYPE_USE",
                    "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
                    "SECTOR_USE", "SUBSECTOR_USE", "REGION",
                    "SPP_NAME")
 
-# READ IN EXISTING CLUSTERS
+# Read in existing CLUSTERS
 
 cluster_files <- dir(here('data/interim/clusters'), full.names = TRUE)
 
@@ -35,11 +36,11 @@ existing_clusters <- cluster_files %>%
   map(read_csv) %>% 
   reduce(rbind)
 
-# GET STARTING NUMBER OF CURRENT CLUSTERS FOR REFERENCE
+# Get starting number of current CLUSTERS for reference
 
 clusters_max = max(existing_clusters$CLUSTER)
 
-# ASSIGN NUMBERS TO NEW CLUSTERS
+# Assign numbers to new CLUSTERS
 
 new_clusters <- mh_ready %>%
   select(one_of(cluster.match)) %>%
@@ -47,13 +48,13 @@ new_clusters <- mh_ready %>%
   anti_join(existing_clusters) %>%
   mutate(CLUSTER = (1:n() + clusters_max)[seq_len(nrow(.))])
 
-# EXPORT NEW CLUSTERS
+# Export new CLUSTERS
 if(length(new_clusters$CLUSTER) > 0) {
   write_csv(new_clusters, 
             here("data/interim/clusters", paste0("mh_unique_clusters_", format(Sys.Date(), "%d%b%Y"),".csv")))
 }
 
-# MERGE OLD AND NEW CLUSTERS
+# Merge old and new CLUSTERS
 unique_clusters <- rbind(existing_clusters, new_clusters)
 
 # # GROUP DATA INTO PROCESSING COLLECTIONS ####
@@ -86,16 +87,17 @@ unique_clusters <- rbind(existing_clusters, new_clusters)
 # write.csv(new_collections, here("data/interim/collections", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
 
 
-# JOIN IN CLUSTERS AND COLLECTIONS
+# Join in CLUSTERS and COLLECTIONS
 
 mh_prep <- mh_ready %>%
   left_join(., unique_clusters, by = cluster.match) %>%
   # left_join(., unique_collections, by = collection.match) %>%
   mutate(REG_CHANGE = 1)
 
-# 1C NOTE WHEN THERE ARE MULTIPLE RECORDS PER CLUSTER PER FR ACTIVE AT THE SAME TIME####
+# 1C Note when there are multiple records per cluster per FR activeat the same time####
 
-# FIND CASES AND CREATE FLAG
+# CREATE: find cases when there multiple records per FR_CITATION within the same 
+# CLUSTER and create a FLAG to indicate such
 multi_reg <- mh_prep %>%
   group_by(CLUSTER, FR_CITATION) %>%
   summarize(MULTI_REG = as.numeric(duplicated(FR_CITATION))) %>%
@@ -104,16 +106,17 @@ multi_reg <- mh_prep %>%
   distinct()
 dim(multi_reg)
 
-# JOIN FLAGGED CASES INTO FULL DATA
+# Join flagged cases into full data 
+# Results in mh_prep_use
 mh_prep_use <- mh_prep %>%
-  # IDENTIFY REGULATIONS THAT ARE MULTI_REGS (SAME FR WITHIN A CLUSTER)
+  # Identify regulations that are MULTI_REGS (same FR within a CLUSTER)
   left_join(., multi_reg, by = c("FR_CITATION", "CLUSTER")) %>%
-  # REPLACE ALL NAs WITH 0
+  # Replace all NAs with 0
   mutate_at("MULTI_REG", ~replace(., is.na(.), 0)) %>%
-  # DOES THIS CLUSTER HAVE ANY INSTANCES OF A MULTI_REG
+  # CHECK: Does this CLUSTER have any instances of a MULTI_REG?
   mutate(MULTI_REG_CLUSTER = as.numeric(CLUSTER %in% multi_reg$CLUSTER)) 
 
-# INVESTIGATE WHICH MANAGEMENT TYPES AND FMPS TEND TO HAVE MULTI_REGS
+# NOTE: INVESTIGATE WHICH MANAGEMENT TYPES AND FMPS TEND TO HAVE MULTI_REGS
 
 # 2 DEFINE VARIABLES THAT DETECT REG CHANGES BASED ON STATUS TYPE ####
 # SFA added ineffective date to accommodate issue in cluster 657
@@ -181,13 +184,15 @@ mh_prep_use <- mh_prep %>%
 # mh_redundant <- mh_detect %>%
 #   filter(REDUNDANT == 1)
 
-# SHORT CUT TO NAME USED IN NEXT STEP
+# Short cut to name used in step 6
+# Results in mh_detect
 mh_detect <- mh_prep_use
 
-# 6 ADD END DATE TO SORTED RECORDS ####
+# 6 Add END_DATE to sorted records ####
+# Results in mh_sort
 mh_sort <- mh_detect %>%
   # filter(EFFECTIVE_DATE <= end_timeseries, REDUNDANT == 0) %>%
-  # ONLY PROCESS REGULATIONS THAT HAPPEN BEFORE THE TERMINAL DATE OF THE PROCESSING PERIOD
+  # Only process regulations that happen before the terminal date of the processing period
   filter(EFFECTIVE_DATE <= end_timeseries) %>%
   arrange(CLUSTER, desc(START_DATE), desc(vol), desc(page)) %>%
   #group_by(CLUSTER, ADJUSTMENT,) %>%
