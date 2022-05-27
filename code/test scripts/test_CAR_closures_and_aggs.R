@@ -1,4 +1,6 @@
 ##CAR CLOSURES AND AGGREGATES TESTS##
+#veiw all mng types
+mh_sort %>% distinct(MANAGEMENT_TYPE_USE)
 
 #ISOLATING CAR FMP
 MH_CARsort <- mh_sort %>%
@@ -10,12 +12,32 @@ MH_CARsort %>% filter(SPP_TYPE %in% c("SPECIES_GROUP","SPECIES_AGGREGATE", "COMM
   select(CLUSTER, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID) %>%
   distinct(ZONE)
 
+#sort closures by zone and species
+MH_CARsort %>% filter(MANAGEMENT_TYPE_USE %in% c("CLOSURE", "FISHING SEASON", "ALLOWABLE SPECIES", 
+                                                 "POSSESSION LIMIT", "PERMIT MORATORIUM", "LIMITED SPECIES"))%>%
+  select(SECTOR_ID, vol, page, CLUSTER, STATUS_TYPE, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE, 
+         VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE, END_DATE, SECTOR_USE, SPP_NAME, SPP_TYPE )%>%
+  arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))%>%
+  distinct(CLUSTER)
+    
+View(MH_CARsort)
+
+test = filter(mh_sort, CLUSTER %in% c(713, 714, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991,
+                                      1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,  2001, 2002, 2003, 2004, 1440, 1441, 
+                                      2046, 2049, 2050, 2051, 2052, 2053, 2054, 2048, 2055, 2047, 800, 801, 
+                                      802, 803, 1021, 1022, 796, 795, 39, 40, 100, 101, 165))
+select(test, SECTOR_ID, vol, page, CLUSTER, STATUS_TYPE, MANAGEMENT_STATUS_USE, MANAGEMENT_TYPE_USE, 
+       VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE,   END_DATE, SECTOR_USE, ZONE, SPP_NAME) %>%
+  arrange(STATUS_TYPE, MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
+View(test)
+
 ##NOW FOR JUST AGG closures
 MH_CARsort %>% filter(SPP_TYPE %in% c("SPECIES_GROUP","SPECIES_AGGREGATE"),
                       MANAGEMENT_TYPE_USE %in% c("CLOSURE", "FISHING SEASON", "ALLOWABLE SPECIES", "POSSESSION LIMIT"))%>%
   select(CLUSTER, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, 
-         SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID)#%>%
- distinct(ZONE)
+         SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID)%>%
+  distinct(ZONE)
+
 view(MH_CARsort)
 
 #agg closures only impact puerto rico managmenet area, 
@@ -34,6 +56,7 @@ MH_CARsort %>% filter(SPP_TYPE %in% c("SPECIES_GROUP","SPECIES_AGGREGATE", "COMM
   select(CLUSTER, STATUS_TYPE, MANAGEMENT_TYPE_USE, MANAGEMENT_STATUS_USE, SECTOR, SUBSECTOR_USE, ZONE, SECTOR_ID) %>%
   distinct(CLUSTER)
 #51 distinct clusters
+#INCORRECT, IT KEEPS INCLUDING DEFINITION RECORDS?? MAYBE NOT INCORRECT HOLD ON
 
 ##NOW JUST REC
 MH_CARsort %>% filter(SPP_TYPE %in% c("SPECIES_GROUP","SPECIES_AGGREGATE", "COMMON_NAME"),

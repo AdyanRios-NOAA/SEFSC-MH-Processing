@@ -93,7 +93,7 @@ mh_preprocess <- mh_setup %>%
          # Add flag when mtype contains adjustment and remove "adjustment" from the mtype name
          # Adjustments are never redundant
          ADJUSTMENT = case_when(str_detect(MANAGEMENT_TYPE, "ADJUSTMENT") ~ 1,
-                                MANAGEMENT_TYPE == "REOPENING" ~ 1,
+                                MANAGEMENT_TYPE == "REOPENING" & !is.na(INEFFECTIVE_DATE) ~ 1,
                                 TRUE ~ 0),
          MANAGEMENT_TYPE_USE = case_when(str_detect(MANAGEMENT_TYPE, "ADJUSTMENT") ~ str_replace(MANAGEMENT_TYPE, " ADJUSTMENT", ""),
                                          TRUE ~ MANAGEMENT_TYPE),
@@ -148,8 +148,10 @@ mh_preprocess <- mh_setup %>%
                               TRUE ~ END_TIME),
          START_DATE = case_when(START_TIME == "11:59:00 PM" ~ START_DATE + 1,
                                 TRUE ~ START_DATE),
+         START_TIME = case_when(START_TIME != "11:59:00 PM" ~ START_TIME),
          END_DATE = case_when(END_TIME == "12:01:00 AM" ~ END_DATE - 1,
-                                TRUE ~ END_DATE)) 
+                                TRUE ~ END_DATE),
+         END_TIME = case_when(END_TIME != "12:01:00 AM" ~ END_TIME)) 
 
 #### 5 ####
 # FIND SECTOR FORKS
