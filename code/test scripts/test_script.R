@@ -277,6 +277,7 @@ mh_final %>%
          SPP_NAME == 'ALL', SECTOR_USE == 'COMMERCIAL', IMP_START_DATE == 1) %>%
   select(CLUSTER) %>%
   distinct()
+
 # CLUSTER 384
 # Adjusted start date working (adjusted for 2 species)
 # Added a condition where removed spp date == start date to flag those records to remove
@@ -290,6 +291,93 @@ test_imps <- mh_final %>%
   arrange(desc(START_DATE2), desc(vol), desc(page)) 
 view(test_imps)
 
+#CLUSTER 785
+# Adjusted start date and end date working correctly as well as spp removal flag
+test_imps2 <- mh_final %>%
+  filter(CLUSTER == '785') %>%
+  #filter(IMP_START_DATE == 1) %>%
+  filter(ZONE_USE == 'REEF FISH LONGLINE AND BUOY GEAR RESTRICTED AREA') %>%
+  select(vol, page, SPP_NAME, COMMON_NAME_USE, 
+         VALUE, SUBSECTOR_USE, ZONE_USE, EFFECTIVE_DATE, START_DATE, END_DATE, 
+         ADDED_SP_DATE, REMOVED_SP_DATE, START_DATE2, END_DATE2, RM_SPP) %>%
+  arrange(desc(START_DATE2), desc(vol), desc(page)) 
+view(test_imps2)
 
+#CLUSTER 797
+# Adjusted start date and end date working correctly 
+test_imps3 <- mh_final %>%
+  filter(CLUSTER == '797') %>%
+  #filter(IMP_START_DATE == 1) %>%
+  filter(ZONE_USE == 'REEF FISH STRESSED AREA') %>%
+  select(vol, page, SPP_NAME, COMMON_NAME_USE, 
+         VALUE, SUBSECTOR_USE, ZONE_USE, EFFECTIVE_DATE, START_DATE, END_DATE, 
+         ADDED_SP_DATE, REMOVED_SP_DATE, START_DATE2, END_DATE2, RM_SPP) %>%
+  arrange(desc(START_DATE2), desc(vol), desc(page)) 
+view(test_imps3)
 
+#CLUSTER 805
+# Adjusted start date and end date working correctly 
+test_imps4 <- mh_final %>%
+  filter(CLUSTER == '805') %>%
+  #filter(IMP_START_DATE == 1) %>%
+  filter(ZONE_USE == 'REEF FISH STRESSED AREA') %>%
+  select(vol, page, SPP_NAME, COMMON_NAME_USE, 
+         VALUE, SUBSECTOR_USE, ZONE_USE, EFFECTIVE_DATE, START_DATE, END_DATE, 
+         ADDED_SP_DATE, REMOVED_SP_DATE, START_DATE2, END_DATE2, RM_SPP) %>%
+  arrange(desc(START_DATE2), desc(vol), desc(page)) 
+view(test_imps4)
 
+#CLUSTER 806
+# Adjusted start date and end date working correctly 
+test_imps5 <- mh_final %>%
+  filter(CLUSTER == '806') %>%
+  #filter(IMP_START_DATE == 1) %>%
+  filter(ZONE_USE == 'REEF FISH STRESSED AREA') %>%
+  select(vol, page, SPP_NAME, COMMON_NAME_USE, 
+         VALUE, SUBSECTOR_USE, ZONE_USE, EFFECTIVE_DATE, START_DATE, END_DATE, 
+         ADDED_SP_DATE, REMOVED_SP_DATE, START_DATE2, END_DATE2, RM_SPP) %>%
+  arrange(desc(START_DATE2), desc(vol), desc(page)) 
+view(test_imps5)
+
+# GULF REEF FISH MISTY GROUPER (MG)
+test_mg <- mh_final %>%
+  filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO", COMMON_NAME_USE == 'GROUPER, MISTY')
+test_mg2 <- test_mg %>%
+  group_by(SECTOR_USE, MANAGEMENT_TYPE_USE) %>%
+  summarise(N = n())
+view(test_mg2)
+# MG Commercial Closures
+test_mg3 <- test_mg %>%
+  filter(SECTOR_USE == 'COMMERCIAL', MANAGEMENT_TYPE_USE == 'CLOSURE')
+# CLUSTER IDs 38  384  385  386  387  785  797  805  806 1045
+# CLUSTERS 38-806 are for specific zone/subsector closures for all Gulf Reef fish species
+# CLUSTERS 1045 is Deepwater Grouper specific for GOM: ALL
+test_mg3_clusters <- test_mg3 %>%
+  group_by(CLUSTER, SUBSECTOR_USE, SPP_TYPE, SPP_NAME, ZONE_USE) %>%
+  summarise(N = n())
+view(test_mg3_clusters)
+# WORKING FOR 1045
+test_mg4 <- test_mg3 %>%
+  filter(CLUSTER %in% c(1045)) %>%
+  select(vol, page, MANAGEMENT_STATUS_USE, SECTOR_USE, MANAGEMENT_TYPE_USE, SPP_NAME, 
+         VALUE, diff ,diff_days, EFFECTIVE_DATE, START_DATE, CHANGE_DATE, END_DATE, 
+         NEVER_IMPLEMENTED, START_DATE2, END_DATE2) %>%
+  arrange(MANAGEMENT_STATUS_USE, desc(START_DATE), desc(vol), desc(page))
+view(test_mg4)
+
+# EXAMPLE WHERE START DATE ADJUSTED BECAUSE OF SPP AGGREGATE ADDED DATE
+mh_final %>%
+  filter(FMP == "REEF FISH RESOURCES OF THE GULF OF MEXICO", MANAGEMENT_TYPE_USE == 'BAG LIMIT',
+         SPP_NAME == 'ALL', SECTOR_USE == 'RECREATIONAL', IMP_START_DATE == 1) %>%
+  select(CLUSTER) %>%
+  distinct()
+
+# CLUSTER 999
+test_imps6 <- mh_final %>%
+  filter(CLUSTER == '999') %>%
+  #filter(IMP_START_DATE == 1) %>%
+  select(vol, page, SPP_NAME, COMMON_NAME_USE, 
+         VALUE, SUBSECTOR_USE, ZONE_USE, EFFECTIVE_DATE, START_DATE, END_DATE, 
+         ADDED_SP_DATE, REMOVED_SP_DATE, START_DATE2, END_DATE2, RM_SPP) %>%
+  arrange(desc(START_DATE2), desc(vol), desc(page)) 
+view(test_imps6)
