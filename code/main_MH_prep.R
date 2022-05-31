@@ -32,18 +32,18 @@ source(here('code', 'MH_data_bugs.R'))
 
 # 2: Pre-processing clean up (new zone names, renaming "adjusted" management types, creating various new variables)
   # Dataframe result = mh_preprocess
-source(here('code', 'MH_pre_process.R'))
+source(here('code', 'MH01_new_variables.R'))
 
 # 3: Create static IDs for sector and cluster 
   # Dataframe result = mh_prep_use
-source(here('code', 'MH_process.R'))
+source(here('code', 'MH02_static_ids.R'))
 
 # 4: Fill in dates
   # Dataframe result = mh_sort
-source(here('code', 'MH_finalized.R'))
+source(here('code', 'MH03_dates.R'))
 
 # 5: Species expansion and clean up dates
 # Dataframe result = mh_final 
-source(here('code', 'MH_spp_expansion.R'))
+source(here('code', 'MH04_spp_expansion.R'))
 
 # 5: Post-processing by collection - grouping related mtypes (mtype = cluster)
