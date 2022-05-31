@@ -30,15 +30,19 @@ load(here('data/interim', 'MH_clean_spp_tables.RData'))
   # Dataframe result = mh_cleaned
 source(here('code', 'MH_data_bugs.R'))
 
-# 2: Pre-processing clean up (sector expansion, new zone names, renaming "adjusted", creating various new variables)
-  # Dataframe result = mh_ready
+# 2: Pre-processing clean up (new zone names, renaming "adjusted", creating various new variables)
+  # Dataframe result = mh_preprocess
 source(here('code', 'MH_pre_process.R'))
 
-# 3: Sort by cluster and fill in dates
-  # Dataframe result = mh_sort 
+# 3: Sort by sector ID and cluster 
+  # Dataframe result = mh_prep_use
 source(here('code', 'MH_process.R'))
 
-# 4: Species expansion and clean up dates
+# 4: Fill in dates
+  # Dataframe result = mh_sort
+source(here('code', 'MH_finalized.R'))
+
+# 5: Species expansion and clean up dates
 # Dataframe result = mh_final 
 source(here('code', 'MH_spp_expansion.R'))
 
