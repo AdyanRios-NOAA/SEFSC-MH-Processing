@@ -14,7 +14,7 @@ gs4_auth()
 # ESTABLISH END OF TIMESERIES 
 end_timeseries =  as.Date("2021-12-31", "%Y-%m-%d")
 
-# 0. Load workspace containing the species list dataframe to use in expansion (sp_info_use)
+# 0A. Load workspace containing the species list dataframe to use in expansion (sp_info_use)
   # Because the data is coming directly from Oralce, the clean_spp_tables.R script does not need to run each time and will only work if you have an Oralce connection
   # Data saved as a workspace rather than a csv to avoid issues in the expansion merge to join to fields that contain NA or null values
   # To also better handle NA or null fields, the species data was transposed so that species_name_type indicates to oringal species field name
@@ -22,24 +22,24 @@ end_timeseries =  as.Date("2021-12-31", "%Y-%m-%d")
   # The MH dataset is also transposed to have a single common name field and no null values
 load(here('data/interim', 'MH_clean_spp_tables.RData'))
 
-# 1: Bug related cleaning (these changes will eventually be made in the database)
+# 0B: Bug related cleaning (these changes will eventually be made in the database)
   # Dataframe result = mh_cleaned
 source(here('code', 'MH_data_bugs.R'))
 
-# 2: Create new variables (new zone names, renaming "adjusted" management types, creating various new variables)
+# 1: Create new variables (new zone names, renaming "adjusted" management types, creating various new variables)
   # Dataframe result = mh_newvar
 source(here('code', 'MH01_new_variables.R'))
 
-# 3: Create sector and cluster ids
+# 2: Create sector and cluster ids
   # Dataframe result = mh_statid
 source(here('code', 'MH02_static_ids.R'))
 
-# 4: Fill in dates
+# 3: Fill in dates
   # Dataframe result = mh_dates
 source(here('code', 'MH03_dates.R'))
 
-# 5: Species expansion and clean up dates
+# 4: Species expansion and clean up dates
 # Dataframe result = mh_expanded 
 source(here('code', 'MH04_spp_expansion.R'))
 
-# 5: Post-processing by collection - grouping related mtypes (mtype = cluster)
+# 5: Process Adjustments
