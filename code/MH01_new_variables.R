@@ -1,5 +1,5 @@
 # Script 2
-# Pre-processing clean up
+# Create new variables
   # Overview:####
   # Expand sector ALL to COMMERCIAL and RECREATIONAL
   # Add "Detailed" YES/NO field (from Google Sheets) to indicate which MANAGEMENT_TYPEs are detailed. 
@@ -93,7 +93,7 @@ mh_setup <- mh_sect_expanded2 %>%
 # Results in the mh_preprocess data frame
 # CREATE: the variables of vol, page, MANAGEMENT_TYPE_USE, ADJUSTMENT, MANAGEMENT_STATUS_USE, REG_REMOVED
 # CREATE: the variable of STATUS TYPE which categorizes the MANAGEMENT_STATUS_USE as GENERAL or COMPLEX 
-mh_preprocess <- mh_setup %>%
+mh_newvar <- mh_setup %>%
   # CREATE: vol and page but pulling out the volume and page number as separate fields from the FR_CITATION 
   # (currently a warning appears because page is NA for "81 FR 33150 B", but once fixed as a bug the warning should go away)
   # Volume and page are essential pieces to include for sorting
@@ -179,8 +179,3 @@ mh_preprocess <- mh_setup %>%
          # For records meeting the requirement above, the END_TIME should be removed since the END_DATE has been reverted
          # to the day prior.
          END_TIME = case_when(END_TIME != "12:01:00 AM" ~ END_TIME)) 
-
-# WRITE: CSV file containing all fields created up until this point
-# Safe for pivot table tests in excel
-write.csv(mh_preprocess, here('data/preprocessed', paste0("MHpreprocess_", format(Sys.Date(), "%d%b%Y"), ".csv")), row.names = FALSE)
-
