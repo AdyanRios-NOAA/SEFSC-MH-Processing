@@ -156,15 +156,28 @@ mh_preprocess <- mh_setup %>%
                                 !is.na(END_MONTH) &
                                 !is.na(END_YEAR) ~ as.Date(paste(END_MONTH, END_DAY, END_YEAR, sep = "/"), "%m/%d/%Y"),
                               TRUE ~ INEFFECTIVE_DATE),
+         # When the END_TIME is listed as "12:01:00 AM", the STATUS_TYPE is RECURRING, and the END_DAY is not equal to 1, 
+         # the END_DAY should be reverted to one day prior. This will infer that the regulation remained in place through
+         # the end of that day and not one minute into the next day.
          END_DAY = case_when(END_TIME == "12:01:00 AM" & STATUS_TYPE == "RECURRING" & END_DAY != 1 ~ END_DAY - 1,
                              TRUE ~ END_DAY),
+         # For records meeting the same requirements as above, the END_TIME should be removed since the END_DATE has been
+         # reverted to the day prior.
          END_TIME = case_when(END_TIME == "12:01:00 AM" & STATUS_TYPE == "RECURRING" & END_DAY != 1 ~ "11:59:00 PM",
                               TRUE ~ END_TIME),
+         # When the START_TIME is equal to "11:59:00 PM", the START_DATE should be pushed ahead by one day since
+         # the regulation will be in effect for the entirety of that day.
          START_DATE = case_when(START_TIME == "11:59:00 PM" ~ START_DATE + 1,
                                 TRUE ~ START_DATE),
+         # For records meeting the requirement above, the START_TIME should be removed since the START_DATE has been pushed
+         # to the next day.
          START_TIME = case_when(START_TIME != "11:59:00 PM" ~ START_TIME),
+         # For records with an END_TIME of "12:01:00 AM", the END_DATE should be reverted to one day prior.
+         # This will infer that the regulation remained in place through the end of that day and not one minute into the next day.
          END_DATE = case_when(END_TIME == "12:01:00 AM" ~ END_DATE - 1,
                                 TRUE ~ END_DATE),
+         # For records meeting the requirement above, the END_TIME should be removed since the END_DATE has been reverted
+         # to the day prior.
          END_TIME = case_when(END_TIME != "12:01:00 AM" ~ END_TIME)) 
 
 #### 5 ####
