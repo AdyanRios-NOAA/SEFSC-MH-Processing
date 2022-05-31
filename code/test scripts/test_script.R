@@ -381,3 +381,39 @@ test_imps6 <- mh_final %>%
          ADDED_SP_DATE, REMOVED_SP_DATE, START_DATE2, END_DATE2, RM_SPP) %>%
   arrange(desc(START_DATE2), desc(vol), desc(page)) 
 view(test_imps6)
+
+chk_start <- mh_final %>%
+  filter(RM_SPP == 0) %>%
+  group_by(CLUSTER, MANAGEMENT_TYPE, START_DATE, COMMON_NAME_USE, START_YEAR, VALUE) %>%
+  summarise(N = n()) %>%
+  arrange(desc(N)) 
+
+# Check (cluster 37 - min size limit hogfish)
+chk <- mh_final %>%
+  filter(CLUSTER == 37) %>%
+  select(CLUSTER, SECTOR_ID, REGULATION_ID, FR_CITATION, SPP_NAME, COMMON_NAME_USE, SECTOR_USE,
+         EFFECTIVE_DATE, INEFFECTIVE_DATE, ADDED_SP_DATE, REMOVED_SP_DATE, START_DATE, END_DATE, VALUE,
+         RM_SPP, REG_CHANGE, REG_REMOVED, MULTI_REG, GENERAL, COMPLEX, ADJUSTMENT)
+
+# Check (cluster 38 - min size limit hogfish)
+chk2 <- mh_final %>%
+  filter(CLUSTER == 38) %>%
+  select(CLUSTER, SECTOR_ID, REGULATION_ID, FR_CITATION, SPP_NAME, COMMON_NAME_USE, SECTOR_USE,
+         EFFECTIVE_DATE, INEFFECTIVE_DATE, ADDED_SP_DATE, REMOVED_SP_DATE, START_DATE, END_DATE, VALUE,
+         RM_SPP, REG_CHANGE, REG_REMOVED, MULTI_REG, GENERAL, COMPLEX, ADJUSTMENT)
+
+# Check (cluster 2537)
+chk <- mh_final %>%
+  filter(CLUSTER == 2537)
+
+# Check (cluster 31 and 2724) 
+chk <- mh_final %>%
+  filter(COMMON_NAME_USE == 'GROUPER, GAG', MANAGEMENT_TYPE == 'BAG LIMIT', FMP == 'REEF FISH RESOURCES OF THE GULF OF MEXICO') %>%
+  select(CLUSTER, SECTOR_ID, REGULATION_ID, FR_CITATION, SPP_NAME, COMMON_NAME_USE, 
+         EFFECTIVE_DATE, INEFFECTIVE_DATE, ADDED_SP_DATE, REMOVED_SP_DATE, START_DATE, END_DATE, VALUE,
+         #IMP_START_DATE, IMP_END_DATE, NEVER_IMPLEMENTED, 
+         RM_SPP) %>%
+  arrange(CLUSTER, EFFECTIVE_DATE)
+
+# To do: check the comment below, look into this
+# REMOVE ONE OF THE RECORDS WHEN THERE ARE TWO WITH THE SAME START DATE AND VALUE IN A CLUSTER
