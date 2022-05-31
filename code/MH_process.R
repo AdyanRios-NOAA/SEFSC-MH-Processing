@@ -6,9 +6,9 @@
     # Create variables to outline how SUBSECTOR expands
     # Perform expansion by separating SUBSECTOR information into new variable of SUBSECTOR_USE
   # Group data into processing CLUSTERs
-    # Define matching variables for clusters
-    # Count how many clusters are included for processing
-    # Note when there are multiple records per cluster per FR_CITATION active at the same time
+    # Define matching variables for CLUSTERs
+    # Count how many CLUSTERs are included for processing
+    # Note when there are multiple records per cluster per FR_CITATION active at the same time (MULTI_REG)
 
 #### 1 ####
 # Address SECTOR forks ####
@@ -33,14 +33,14 @@ existing_sector_clusters <- sector_id_files %>%
 # CHECK: Get starting number of existing sector groupings for reference
 clusters_max = max(existing_sector_clusters$SECTOR_ID)
 
-# CREATE: Assign numbers to any new sectors (SECTOR_ID)
+# CREATE: Assign numbers to any new sectors (SECTOR_ID) ####
 new_sector_clusters <- mh_preprocess %>%
   select(one_of(sector.match)) %>%
   distinct() %>%
   anti_join(existing_sector_clusters) %>%
   mutate(SECTOR_ID = (1:n() + clusters_max)[seq_len(nrow(.))])
 
-# WRITE: export new sector groupings into mh_sector_clusters_ CSV ####
+# WRITE: export new sector groupings into mh_sector_clusters_ CSV 
 if(length(new_sector_clusters$SECTOR_ID) > 0) {
   write_csv(new_sector_clusters, 
             here('data/interim/sector_clusters', paste0("mh_sector_clusters_", format(Sys.Date(), "%d%b%Y"),".csv")))
@@ -132,62 +132,62 @@ mh_subsect_expanded <- left_join(mh_sector_id, expansions, by = c("SECTOR_USE", 
   # Expand SUBSECTOR_USE at the commas
   separate_rows(SUBSECTOR_USE, sep = ", ")
 
-
-# Results in the mh_ready data frame ####
+# Results in the mh_ready data frame 
 mh_ready <- mh_subsect_expanded
 
 #### 2 ####
-
-# 2A Define variables which must match for records to be considered part of a CLUSTER ####
+# CREATE: the variable of CLUSTER to assist in processing like MANAGEMENT_TYPEs for a species within the same FMP and REGION.
+# CLUSTERs assist in accurately creating a time series of regulation types for a species.
+# Define variables which must match for records to be considered part of a CLUSTER ####
 cluster.match <- c("MANAGEMENT_TYPE_USE",
                    "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
                    "SECTOR_USE", "SUBSECTOR_USE", "REGION",
                    "SPP_NAME")
 
-# Read in existing CLUSTERS
+# Read in existing CLUSTERs
 cluster_files <- dir(here('data/interim/clusters'), full.names = TRUE)
 
 existing_clusters <- cluster_files %>%
   map(read_csv) %>% 
   reduce(rbind)
 
-# Get starting number of current CLUSTERS for reference
+# CHECK: get starting number of current CLUSTERS for reference
 clusters_max = max(existing_clusters$CLUSTER)
 
-# Assign numbers to new CLUSTERS
+# CREATE: Assign numbers to any new CLUSTERs ####
 new_clusters <- mh_ready %>%
   select(one_of(cluster.match)) %>%
   distinct() %>%
   anti_join(existing_clusters) %>%
   mutate(CLUSTER = (1:n() + clusters_max)[seq_len(nrow(.))])
 
-# Export new CLUSTERS
+# Export new CLUSTERs
 if(length(new_clusters$CLUSTER) > 0) {
   write_csv(new_clusters, 
             here("data/interim/clusters", paste0("mh_unique_clusters_", format(Sys.Date(), "%d%b%Y"),".csv")))
 }
 
-# Merge old and new CLUSTERS
+# Merge old and new CLUSTERS into unique_clusters data frame ####
 unique_clusters <- rbind(existing_clusters, new_clusters)
 
-# # GROUP DATA INTO PROCESSING COLLECTIONS ####
+# # Group data into processing collections ####
 # 
 # collection.match <- c("MANAGEMENT_TYPE_USE",
 #                       "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
 #                       "SECTOR_USE", "SUBSECTOR", "REGION", "ZONE_USE",
 #                       "SPP_NAME", "COMMON_NAME_USE")
 # 
-# # READ IN EXISTING COLLECTIONS
+# # Read in existing collections
 # collection_files <- dir(here('data/interim/collections'), full.names = TRUE)
 #   
 # existing_collections <- collection_files %>%
 #   map(read_csv) %>% 
 #   reduce(rbind)
 # 
-# # GET STARTING NUMBER OF CURRENT COLLECTIONS FOR REFERENCE
+# # CHECK: get starting number of current collections for reference
 # collections_max = max(existing_collections$COLLECTION)
 #   
-# # ASSIGN NUMBERS TO NEW COLLECTIONS  ####
+# # CREATE: assign numbers to new collections
 # 
 # new_collections <- mh_ready %>%
 #   select(one_of(collection.match)) %>%
@@ -195,21 +195,20 @@ unique_clusters <- rbind(existing_clusters, new_clusters)
 #   anti_join(existing_collections) %>%
 #   mutate(COLLECTION = (1:n() + collections_max)[seq_len(nrow(.))])
 # 
-# # EXPORT NEW COLLECTIONS
+# # Export new collections
 # 
 # write.csv(new_collections, here("data/interim/collections", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
 
-
-# Join in CLUSTERS and COLLECTIONS ####
+# Join CLUSTERS and COLLECTIONS ####
+# Results in the mh_prep data frame
 mh_prep <- mh_ready %>%
   left_join(., unique_clusters, by = cluster.match) %>%
   # left_join(., unique_collections, by = collection.match) %>%
   mutate(REG_CHANGE = 1)
 
-# 2C Note when there are multiple records per cluster per FR active at the same time####
-
-# CREATE: find cases when there multiple records per FR_CITATION within the same 
-# CLUSTER and create a FLAG to indicate such
+# Address CLUSTERs with multiple records from the same FR Notice that are effective at the same time ####
+# CREATE: the variable of MULTI_REG to flag cases when there multiple records per FR_CITATION within the same 
+# CLUSTER that are effective at the same time
 multi_reg <- mh_prep %>%
   group_by(CLUSTER, FR_CITATION) %>%
   summarize(MULTI_REG = as.numeric(duplicated(FR_CITATION))) %>%
@@ -218,14 +217,12 @@ multi_reg <- mh_prep %>%
   distinct()
 dim(multi_reg)
 
-# Join flagged cases into full data set
-# Results in mh_prep_use
+# Join flagged MULTI_REG cases with the full data set ####
+# Results in mh_prep_use data frame 
 mh_prep_use <- mh_prep %>%
-  # Identify regulations that are MULTI_REGS (same FR within a CLUSTER)
+  # Identify regulations that are MULTI_REGs (same FR_NOTICE within a CLUSTER)
   left_join(., multi_reg, by = c("FR_CITATION", "CLUSTER")) %>%
   # Replace all NAs with 0
   mutate_at("MULTI_REG", ~replace(., is.na(.), 0)) %>%
   # CHECK: Does this CLUSTER have any instances of a MULTI_REG?
   mutate(MULTI_REG_CLUSTER = as.numeric(CLUSTER %in% multi_reg$CLUSTER)) 
-
-
