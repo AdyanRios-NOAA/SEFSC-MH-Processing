@@ -1,12 +1,14 @@
-# 3
-# Process clustering
-  # MATCH CLUSTERS AND ORDER RECORDS
-
-# SUMMARY OF STEPS ####
-# 1  GROUP DATA INTO PROCESSING CLUSTERS 
-#   1A DEFINE MATCH VARIABLES
-#   1B COUNT HOW MANY CLUSTERS TO PROCESS
-#   1C NOTE WHEN THERE ARE MULTIPLE RECORDS PER CLUSTER PER FR ACTIVE AT THE SAME TIME
+# Script 3
+# Processing Sector IDs and Clusters
+  # Overview:####
+  # Address SECTOR forks by expanding SUBSECTOR information
+    # Define matching variables for sectors
+    # Create variables to outline how SUBSECTOR expands
+    # Perform expansion by separating SUBSECTOR information into new variable of SUBSECTOR_USE
+  # Group data into processing CLUSTERs
+    # Define matching variables for clusters
+    # Count how many clusters are included for processing
+    # Note when there are multiple records per cluster per FR_CITATION active at the same time
 
 #### 1 ####
 # Address SECTOR forks ####
@@ -134,17 +136,15 @@ mh_subsect_expanded <- left_join(mh_sector_id, expansions, by = c("SECTOR_USE", 
 # Results in the mh_ready data frame ####
 mh_ready <- mh_subsect_expanded
 
-# 1 Group data into processing CLUSTERS ####
+#### 2 ####
 
-# 1A Define variables which must match for records to be considered part of a CLUSTER ####
-
+# 2A Define variables which must match for records to be considered part of a CLUSTER ####
 cluster.match <- c("MANAGEMENT_TYPE_USE",
                    "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
                    "SECTOR_USE", "SUBSECTOR_USE", "REGION",
                    "SPP_NAME")
 
 # Read in existing CLUSTERS
-
 cluster_files <- dir(here('data/interim/clusters'), full.names = TRUE)
 
 existing_clusters <- cluster_files %>%
@@ -152,11 +152,9 @@ existing_clusters <- cluster_files %>%
   reduce(rbind)
 
 # Get starting number of current CLUSTERS for reference
-
 clusters_max = max(existing_clusters$CLUSTER)
 
 # Assign numbers to new CLUSTERS
-
 new_clusters <- mh_ready %>%
   select(one_of(cluster.match)) %>%
   distinct() %>%
@@ -202,14 +200,13 @@ unique_clusters <- rbind(existing_clusters, new_clusters)
 # write.csv(new_collections, here("data/interim/collections", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
 
 
-# Join in CLUSTERS and COLLECTIONS
-
+# Join in CLUSTERS and COLLECTIONS ####
 mh_prep <- mh_ready %>%
   left_join(., unique_clusters, by = cluster.match) %>%
   # left_join(., unique_collections, by = collection.match) %>%
   mutate(REG_CHANGE = 1)
 
-# 1C Note when there are multiple records per cluster per FR active at the same time####
+# 2C Note when there are multiple records per cluster per FR active at the same time####
 
 # CREATE: find cases when there multiple records per FR_CITATION within the same 
 # CLUSTER and create a FLAG to indicate such
