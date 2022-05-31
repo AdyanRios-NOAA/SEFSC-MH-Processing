@@ -94,7 +94,7 @@ mh_prep <- mh_ready %>%
   # left_join(., unique_collections, by = collection.match) %>%
   mutate(REG_CHANGE = 1)
 
-# 1C Note when there are multiple records per cluster per FR activeat the same time####
+# 1C Note when there are multiple records per cluster per FR active at the same time####
 
 # CREATE: find cases when there multiple records per FR_CITATION within the same 
 # CLUSTER and create a FLAG to indicate such
@@ -190,6 +190,8 @@ mh_detect <- mh_prep_use
 
 # 6 Add END_DATE to sorted records ####
 # Results in mh_sort
+# CREATE: END_DATE variable dependent on INEFFECTIVE_DATE of current record, START_DATE of next record,
+# and CHANGE_DATE of current record
 mh_sort <- mh_detect %>%
   # filter(EFFECTIVE_DATE <= end_timeseries, REDUNDANT == 0) %>%
   # Only process regulations that happen before the terminal date of the processing period
