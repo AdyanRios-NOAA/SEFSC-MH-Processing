@@ -2,7 +2,7 @@
 
 # Load packages
 #install.packages("librarian")
-librarian::shelf(here, tidyverse, lubridate, googlesheets4, dotenv, keyring)
+librarian::shelf(here, tidyverse, lubridate, googlesheets4)
 
 # SET WD RELATIVE TO PROJECT LOCATION
 here::i_am('code/main_MH_prep.R')
