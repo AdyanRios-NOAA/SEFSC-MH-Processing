@@ -1,5 +1,5 @@
-# Script 3
-# Processing Sector IDs and Clusters
+# Script 2
+# Create Sector and Cluster IDs
   # Overview:####
   # Address SECTOR forks by expanding SUBSECTOR information
     # Define matching variables for sectors
@@ -34,7 +34,7 @@ existing_sector_clusters <- sector_id_files %>%
 clusters_max = max(existing_sector_clusters$SECTOR_ID)
 
 # CREATE: Assign numbers to any new sectors (SECTOR_ID) ####
-new_sector_clusters <- mh_preprocess %>%
+new_sector_clusters <- mh_newvar %>%
   select(one_of(sector.match)) %>%
   distinct() %>%
   anti_join(existing_sector_clusters) %>%
@@ -49,8 +49,8 @@ if(length(new_sector_clusters$SECTOR_ID) > 0) {
 # Merge old and new sector groupings into unique_sector_clusters data frame ####
 unique_sector_clusters <- rbind(existing_sector_clusters, new_sector_clusters)
 
-# Join the unique_sector_clusters data frame to the mh_preprocess data frame to incorporate sector information in the data set ####
-mh_sector_id <- mh_preprocess %>%
+# Join the unique_sector_clusters data frame to the mh_newvar data frame to incorporate sector information in the data set ####
+mh_sector_id <- mh_newvar %>%
   left_join(unique_sector_clusters, 
             by = c("JURISDICTION", "REGION", "JURISDICTIONAL_WATERS", "FMP", 
                    "SECTOR_USE", "SPP_NAME", "MANAGEMENT_TYPE_USE"))
@@ -170,40 +170,10 @@ if(length(new_clusters$CLUSTER) > 0) {
 # Merge old and new CLUSTERS into unique_clusters data frame ####
 unique_clusters <- rbind(existing_clusters, new_clusters)
 
-# # Group data into processing collections ####
-# 
-# collection.match <- c("MANAGEMENT_TYPE_USE",
-#                       "JURISDICTION", "JURISDICTIONAL_WATERS", "FMP",
-#                       "SECTOR_USE", "SUBSECTOR", "REGION", "ZONE_USE",
-#                       "SPP_NAME", "COMMON_NAME_USE")
-# 
-# # Read in existing collections
-# collection_files <- dir(here('data/interim/collections'), full.names = TRUE)
-#   
-# existing_collections <- collection_files %>%
-#   map(read_csv) %>% 
-#   reduce(rbind)
-# 
-# # CHECK: get starting number of current collections for reference
-# collections_max = max(existing_collections$COLLECTION)
-#   
-# # CREATE: assign numbers to new collections
-# 
-# new_collections <- mh_ready %>%
-#   select(one_of(collection.match)) %>%
-#   distinct() %>%
-#   anti_join(existing_collections) %>%
-#   mutate(COLLECTION = (1:n() + collections_max)[seq_len(nrow(.))])
-# 
-# # Export new collections
-# 
-# write.csv(new_collections, here("data/interim/collections", paste0("mh_unique_collections_", format(Sys.Date(), "%d%b%Y"),".csv")), row.names = FALSE)
-
-# Join CLUSTERS and COLLECTIONS ####
+# Join CLUSTERS ####
 # Results in the mh_prep data frame
 mh_prep <- mh_ready %>%
   left_join(., unique_clusters, by = cluster.match) %>%
-  # left_join(., unique_collections, by = collection.match) %>%
   mutate(REG_CHANGE = 1)
 
 # Address CLUSTERs with multiple records from the same FR Notice that are effective at the same time ####
@@ -218,8 +188,8 @@ multi_reg <- mh_prep %>%
 dim(multi_reg)
 
 # Join flagged MULTI_REG cases with the full data set ####
-# Results in mh_prep_use data frame 
-mh_prep_use <- mh_prep %>%
+# Results in mh_statid data frame 
+mh_statid <- mh_prep %>%
   # Identify regulations that are MULTI_REGs (same FR_NOTICE within a CLUSTER)
   left_join(., multi_reg, by = c("FR_CITATION", "CLUSTER")) %>%
   # Replace all NAs with 0
