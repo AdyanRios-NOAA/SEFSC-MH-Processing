@@ -1788,6 +1788,30 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 792 ~ "MINIMUM SIZE LIMIT ADJUSTMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
 
+#Bug ID -66 - Start time should be removed since FR Notice stated 2400 hours
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_TIME = case_when(REGULATION_ID != 405 ~ START_TIME))
+
+#Bug ID -67 - Start time should be removed since FR Notice stated 2400 hours
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_TIME = case_when(REGULATION_ID != 404 ~ START_TIME))
+
+#Bug ID -68 - Start time should be removed since FR Notice stated 2400 hours
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_TIME = case_when(REGULATION_ID != 2597 ~ START_TIME))
+
+#Bug ID -69 - Start time should be removed since FR Notice stated 2400 hours
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_TIME = case_when(REGULATION_ID != 2598 ~ START_TIME))
+
+#Bug ID -70 - Start time should be removed since FR Notice stated 2400 hours
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_TIME = case_when(REGULATION_ID != 407 ~ START_TIME))
+
+#Bug ID -71 - Start time should be removed since FR Notice stated 2400 hours
+mh_cleaned <- mh_cleaned %>%
+  mutate(START_TIME = case_when(REGULATION_ID != 165 ~ START_TIME))
+
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
 
@@ -1869,6 +1893,7 @@ mh_added <- mh_added %>%
                      ACTION = "FINAL",
                      ACTION_TYPE = "AMENDMENT",
                      AMENDMENT_NUMBER = "30B",
+                     ACCOUNTABILITY_MEASURE = "YES",
                      FR_CITATION = "74 FR 17603",
                      FR_SECTION = "50 CFR 622.4",
                      FR_URL = "https://www.federalregister.gov/documents/2009/04/16/E9-8764/fisheries-of-the-caribbean-gulf-of-mexico-and-south-atlantic-reef-fish-fishery-of-the-gulf-of-mexico",
