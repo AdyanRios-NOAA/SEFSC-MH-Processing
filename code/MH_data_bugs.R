@@ -74,12 +74,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 824) %>%
   #Bug ID 5326
   filter(REGULATION_ID != 872) %>%
-  #Bug ID 5336
-  filter(REGULATION_ID != 306) %>%
-  #Bug ID 5337
-  filter(REGULATION_ID != 305) %>%
-  #Bug ID 5338
-  filter(REGULATION_ID != 304) %>%
   #Bug ID 5346
   filter(REGULATION_ID != 421) %>%
   #Bug ID 5456
@@ -995,13 +989,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(ACTION_TYPE = case_when(REGULATION_ID == 1029 ~ 'AMENDMENT',
                                  TRUE ~ ACTION_TYPE))
 
-#Bug ID 4906 - Updated sector and subsector from R: All to R: For-hire
-mh_cleaned <- mh_cleaned %>%
-  mutate(SECTOR = case_when(REGULATION_ID == 1560 ~ 'RECREATIONAL',
-                            TRUE ~ SECTOR),
-         SUBSECTOR = case_when(REGULATION_ID == 1560 ~ 'FOR-HIRE',
-                               TRUE ~ SUBSECTOR))
-
 #Bug ID 5136 - Updates sector information from ALL: ALL to C: ALL
 mh_cleaned <- mh_cleaned %>%
   mutate(SECTOR = case_when(REGULATION_ID == 1109 ~ 'COMMERCIAL',
@@ -1087,26 +1074,6 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(FR_SECTION = case_when(REGULATION_ID == 1221 ~ '50 CFR 641',
                                 TRUE ~ FR_SECTION))
-
-#Bug ID 4490 - Update Value Type to Maximum for Bag Limit Multiplier
-mh_cleaned <- mh_cleaned %>%
-  mutate(VALUE_TYPE = case_when(REGULATION_ID == 1561 ~ 'MAXIMUM',
-                                TRUE ~ VALUE_TYPE))
-
-#Bug ID 4491 - Update Value Type to Maximum for Bag Limit Multiplier
-mh_cleaned <- mh_cleaned %>%
-  mutate(VALUE_TYPE = case_when(REGULATION_ID == 1558 ~ 'MAXIMUM',
-                                TRUE ~ VALUE_TYPE))
-
-#Bug ID 4492 - Update Value Type to Maximum for Bag Limit Multiplier
-mh_cleaned <- mh_cleaned %>%
-  mutate(VALUE_TYPE = case_when(REGULATION_ID == 1559 ~ 'MAXIMUM',
-                                TRUE ~ VALUE_TYPE))
-
-#Bug ID 4493 - Update Value Type to Maximum for Bag Limit Multiplier
-mh_cleaned <- mh_cleaned %>%
-  mutate(VALUE_TYPE = case_when(REGULATION_ID == 1560 ~ 'MAXIMUM',
-                                TRUE ~ VALUE_TYPE))
 
 #Bug ID 4494 - Update Value Type to Maximum for Bag Limit Multiplier
 mh_cleaned <- mh_cleaned %>%
