@@ -1029,22 +1029,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(ZONE = case_when(REGULATION_ID == 3653 ~ 'FLORIDA COUNTIES - MANATEE, SARASOTA, DESOTO, CHARLOTTE, LEE, COLLIER, MONROE, MIAMI-DADE, AND BROWARD',
                           TRUE ~ ZONE))
 
-#BUG ID 4596 - change mng cat:type from possession limit to Universal:Prohibited Species
-#change FR section to 50 CFR 641, update value fields to blank
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 1108 ~ 'PROHIBITED SPECIES',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         VALUE = case_when(REGULATION_ID == 1108 ~ '',
-                           TRUE ~ VALUE),
-         VALUE_UNITS = case_when(REGULATION_ID == 1108 ~ '',
-                                 TRUE ~ VALUE_UNITS),
-         VALUE_TYPE = case_when(REGULATION_ID == 1108 ~ '',
-                                TRUE ~ VALUE_TYPE),
-         VALUE_RATE = case_when(REGULATION_ID == 1108 ~ '',
-                                TRUE ~ VALUE_RATE),
-         FR_SECTION = case_when(REGULATION_ID == 1108 ~ '50 CFR 641',
-                                TRUE ~ FR_SECTION))
-
 #BUG ID 4592 - change flag to NO b/c flag is captured thru addition of incidental catch record addition in bug id 4588
 mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 1042 ~ 'NO',
