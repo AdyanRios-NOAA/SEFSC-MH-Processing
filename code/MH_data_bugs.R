@@ -84,8 +84,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 421) %>%
   #Bug ID 5456
   filter(REGULATION_ID != 692) %>%
-  #Bug ID 5896
-  filter(REGULATION_ID != 1402) %>%
   #Bug ID 5922
   filter(REGULATION_ID != 828) %>%
   #Bug ID 5923
@@ -936,13 +934,6 @@ mh_cleaned <- mh_cleaned %>%
          MANAGEMENT_TYPE = case_when(REGULATION_ID == 3423 ~ "OBSERVER REQUIREMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
 
-#Bug ID 5736 - Management Category and Type updated to Other: Permit Moratorium 
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 11435 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 11435 ~ "PERMIT MORATORIUM",
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 # Bug ID 4589 - Management Category and Type updated to Other: Ignorable, FR Section updated to general 50 CFR 622, start date changed, value fields left blank - Other record removed above with all removals
 # Updated by SFA 10/12/2021 start year, month day should not be character
 mh_cleaned <- mh_cleaned %>%
@@ -1589,11 +1580,6 @@ mh_cleaned <- mh_cleaned %>%
 #Bug ID 6447 - Management Category should be updated to Catch Limits
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1321 ~ "CATCH LIMITS",
-                                         TRUE ~ MANAGEMENT_CATEGORY))
-
-#Bug ID 6448 - Management Category should be updated to Catch Limits
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1320 ~ "CATCH LIMITS",
                                          TRUE ~ MANAGEMENT_CATEGORY))
 
 #Bug ID 6516 - Management Type should be updated to Trip Limit Adjustment
