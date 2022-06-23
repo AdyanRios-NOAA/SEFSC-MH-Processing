@@ -1029,21 +1029,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(ZONE = case_when(REGULATION_ID == 3653 ~ 'FLORIDA COUNTIES - MANATEE, SARASOTA, DESOTO, CHARLOTTE, LEE, COLLIER, MONROE, MIAMI-DADE, AND BROWARD',
                           TRUE ~ ZONE))
 
-#BUG ID 4597 - change mng cat:type from possession limit to gear requirements:prohibited gear, update values to be blank
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1130 ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1130 ~ 'PROHIBITED GEAR',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         VALUE = case_when(REGULATION_ID == 1130 ~ '',
-                           TRUE ~ VALUE),
-         VALUE_UNITS = case_when(REGULATION_ID == 1130 ~ '',
-                                 TRUE ~ VALUE_UNITS),
-         VALUE_TYPE = case_when(REGULATION_ID == 1130 ~ '',
-                                TRUE ~ VALUE_TYPE),
-         VALUE_RATE = case_when(REGULATION_ID == 1130 ~ '',
-                                TRUE ~ VALUE_RATE))
-
 #BUG ID 4596 - change mng cat:type from possession limit to Universal:Prohibited Species
 #change FR section to 50 CFR 641, update value fields to blank
 mh_cleaned <- mh_cleaned %>%
