@@ -387,11 +387,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 2271 ~'',
                                        TRUE ~ MANAGEMENT_STATUS))
 
-#Bug ID 4552 - remove end time following guidance to not capture end time of 2400 hours
-mh_cleaned <- mh_cleaned %>%
-  mutate(END_TIME = case_when(REGULATION_ID == 165 ~ '',
-                              TRUE ~ END_TIME))
-
 #Bug ID 4551 - remove end time following guidance to not capture end time of 2400 hours
 mh_cleaned <- mh_cleaned %>%
   mutate(END_TIME = case_when(REGULATION_ID == 3228 ~ '',
