@@ -56,8 +56,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 1226) %>%
   # BUG ID 4464
   filter(REGULATION_ID != 1227) %>%
-  # Bug ID 4590
-  filter(REGULATION_ID != 511)%>%
   #Bug ID 4591
   filter(REGULATION_ID != 1341) %>%
   #BUG ID -9 - REMOVING DUPLICATE ERRONEOUS FR (85 FR 50333)
@@ -927,32 +925,6 @@ mh_cleaned <- mh_cleaned %>%
                                          TRUE ~ MANAGEMENT_CATEGORY),
          MANAGEMENT_TYPE = case_when(REGULATION_ID == 3423 ~ "OBSERVER REQUIREMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
-
-# Bug ID 4589 - Management Category and Type updated to Other: Ignorable, FR Section updated to general 50 CFR 622, start date changed, value fields left blank - Other record removed above with all removals
-# Updated by SFA 10/12/2021 start year, month day should not be character
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1085 ~ 'OTHER',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1085 ~ 'IGNORABLE',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         FR_SECTION = case_when(REGULATION_ID == 1085 ~ '50 CFR 641',
-                                TRUE ~ FR_SECTION),
-         EFFECTIVE_DATE = case_when(REGULATION_ID == 1085 ~ "08/19/1991",
-                                    TRUE ~ EFFECTIVE_DATE),
-         START_YEAR = case_when(REGULATION_ID == 1085 ~ 1991L,
-                                TRUE ~ START_YEAR),
-         START_MONTH = case_when(REGULATION_ID == 1085 ~ 08L,
-                                 TRUE ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID == 1085 ~ 19L,
-                               TRUE ~ START_DAY),
-         VALUE = case_when(REGULATION_ID == 1085 ~'',
-                           TRUE ~ VALUE),
-         VALUE_UNITS = case_when(REGULATION_ID == 1085 ~ '',
-                                 TRUE ~ VALUE_UNITS),
-         VALUE_TYPE = case_when(REGULATION_ID == 1085 ~ '',
-                                TRUE ~ VALUE_TYPE),
-         VALUE_RATE = case_when(REGULATION_ID == 1085 ~ '',
-                                TRUE ~ VALUE_RATE))
 
 #Bug ID 5956 - Management Category and Type should be updated to Gear Requirements: Permitted and Authorized Gear and sector:subsector should be commercial: surface trawling
 mh_cleaned <- mh_cleaned %>%
