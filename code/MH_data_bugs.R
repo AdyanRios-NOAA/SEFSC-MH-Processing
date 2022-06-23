@@ -397,13 +397,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(END_TIME = case_when(REGULATION_ID == 3357 ~ '',
                               TRUE ~ END_TIME))
 
-#Bug ID 4547 - Updated End Day and End Time following guidance not to capture end time of 2400 hours
-mh_cleaned <- mh_cleaned %>%
-  mutate(END_DAY = case_when(REGULATION_ID == 4293 ~ 30L,
-                             TRUE ~ END_DAY),
-         END_TIME = case_when(REGULATION_ID == 4293 ~ '',
-                              TRUE ~ END_TIME))
-
 #Bug ID 4538 - update End Day, End Month, and End Time following guidance not to capture end time of 2400 hours
 mh_cleaned <- mh_cleaned %>%
   mutate(END_DAY = case_when(REGULATION_ID == 4324 ~ 1L,
