@@ -1022,8 +1022,8 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug IDs 6086, 6096 - Removing Start month and day information for Catch Limit records
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(1104, 11430, 1086, 1083, 1392, 1344, 616, 512, 515, 268, 848, 429, 430, 432, 462, 228, 662, 233, 591, 587, 466, 666, 229, 234, 470, 240, 237, 667, 595, 592, 476, 473, 670, 837, 964, 461, 431, 1343, 814) ~ START_MONTH),
-         START_DAY = case_when(!REGULATION_ID %in% c(1104, 11430, 1086, 1083, 1392, 1344, 616, 512, 515, 268, 848, 429, 430, 432, 462, 228, 662, 233, 591, 587, 466, 666, 229, 234, 470, 240, 237, 667, 59, 592, 476, 473, 670, 837, 964, 461, 431, 1343, 814) ~ START_DAY))
+  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(1104, 11430, 1086, 1083, 1392, 1344, 616, 512, 515, 268, 848, 429, 430, 432, 462, 228, 662, 233, 591, 587, 466, 666, 229, 234, 470, 240, 237, 667, 595, 592, 476, 473, 670, 964, 461, 431, 1343, 814) ~ START_MONTH),
+         START_DAY = case_when(!REGULATION_ID %in% c(1104, 11430, 1086, 1083, 1392, 1344, 616, 512, 515, 268, 848, 429, 430, 432, 462, 228, 662, 233, 591, 587, 466, 666, 229, 234, 470, 240, 237, 667, 59, 592, 476, 473, 670, 964, 461, 431, 1343, 814) ~ START_DAY))
 
 #Bug ID 6087 - Removing start month, start day, and end date for Catch Limit records
 mh_cleaned <- mh_cleaned %>%
