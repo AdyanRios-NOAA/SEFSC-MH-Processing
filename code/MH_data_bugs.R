@@ -404,12 +404,6 @@ mh_cleaned <- mh_cleaned %>%
          END_TIME = case_when(FR_CITATION == '51 FR 23551' ~ '',
                               TRUE ~ END_TIME))
 
-#Bug ID 4496 - update Start Year, Month, and Day to blank following guidance to not capture Start Date for withdrawn regulations
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_YEAR = case_when(REGULATION_ID != 1463 ~ START_YEAR),
-         START_MONTH = case_when(REGULATION_ID != 1463 ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID != 1463 ~ START_DAY))
-
 #Bug ID 4487 - update Start Year, Month, and Day to blank following guidance to not capture Start Date for withdrawn regulations
 mh_cleaned <- mh_cleaned %>%
   mutate(START_YEAR = case_when(REGULATION_ID != 1355 ~ START_YEAR),
