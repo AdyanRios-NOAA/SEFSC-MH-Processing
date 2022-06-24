@@ -402,26 +402,6 @@ mh_cleaned <- mh_cleaned %>%
          END_TIME = case_when(FR_CITATION == '51 FR 23551' ~ '',
                               TRUE ~ END_TIME))
 
-#Bug ID 4487 - update Start Year, Month, and Day to blank following guidance to not capture Start Date for withdrawn regulations
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_YEAR = case_when(REGULATION_ID != 1355 ~ START_YEAR),
-         START_MONTH = case_when(REGULATION_ID != 1355 ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID != 1355 ~ START_DAY))
-
-#Bug ID 4486 - Update effective date, start date, and end date following correction guidance
-mh_cleaned <- mh_cleaned %>%
-  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1358 ~ "12/20/2010",
-                                    TRUE ~ EFFECTIVE_DATE),
-         START_YEAR = case_when(REGULATION_ID == 1358 ~ 2010L,
-                                TRUE ~ START_YEAR),
-         START_MONTH = case_when(REGULATION_ID == 1358 ~ 12L,
-                                 TRUE ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID == 1358 ~ 20L,
-                               TRUE ~ START_DAY),
-         END_YEAR = case_when(REGULATION_ID != 1358 ~ END_YEAR),
-         END_MONTH = case_when(REGULATION_ID != 1358 ~ END_MONTH),
-         END_DAY = case_when(REGULATION_ID != 1358 ~ END_DAY))
-
 #Bug ID 5696 - Update Ineffective and end date information based on correction in 80 FR 77588
 mh_cleaned <- mh_cleaned %>%
   mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 392 ~ "10/01/2016",
