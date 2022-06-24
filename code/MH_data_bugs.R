@@ -838,19 +838,9 @@ mh_cleaned <- mh_cleaned %>%
   mutate(VALUE_TYPE = case_when(REGULATION_ID == 1416 ~ 'MAXIMUM',
                                 TRUE ~ VALUE_TYPE))
 
-#BUG ID 4727 - update region from ALL to GULF OF MEXICO
-mh_cleaned <- mh_cleaned %>%
-  mutate(REGION = case_when(REGULATION_ID == 1340 ~ 'GULF OF MEXICO',
-                            TRUE ~ REGION))
-
 #BUG ID 4726 - update region from ALL to GULF OF MEXICO
 mh_cleaned <- mh_cleaned %>%
   mutate(REGION = case_when(REGULATION_ID == 1341 ~ 'GULF OF MEXICO',
-                            TRUE ~ REGION))
-
-#Bug ID 4495 - Update Region to GOM from ALL for Ignorable record
-mh_cleaned <- mh_cleaned %>%
-  mutate(REGION = case_when(REGULATION_ID == 1340 ~ 'GULF OF MEXICO',
                             TRUE ~ REGION))
 
 #BUG ID -1 - Correct missing mng. type/sector/region for reg id 5474
