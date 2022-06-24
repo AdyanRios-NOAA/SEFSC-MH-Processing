@@ -34,8 +34,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 648) %>%
   # Bug ID 4951
   filter(REGULATION_ID != 577) %>%
-  # Bug ID 4489
-  filter(REGULATION_ID != 1480) %>%
   # Bug ID 4457
   filter(REGULATION_ID != 418) %>%
   # Bug ID 5080
@@ -798,10 +796,6 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(ACCOUNTABILITY_MEASURE = case_when(FR_CITATION == '74 FR 17603' ~ 'NO',
                                             TRUE ~ ACCOUNTABILITY_MEASURE))
-
-#Bug ID 4488 - change flag to NO
-mh_cleaned <- mh_cleaned %>%
-  mutate(FLAG = case_when(REGULATION_ID == 1479 ~ 'NO', TRUE ~ FLAG))
 
 #Bug ID 5986 - change flag to YES for Deepwater Horizon closure
 mh_cleaned <- mh_cleaned %>%
