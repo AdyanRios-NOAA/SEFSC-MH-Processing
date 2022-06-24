@@ -833,11 +833,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(FR_SECTION = case_when(REGULATION_ID == 1221 ~ '50 CFR 641',
                                 TRUE ~ FR_SECTION))
 
-#Bug ID 4494 - Update Value Type to Maximum for Bag Limit Multiplier
-mh_cleaned <- mh_cleaned %>%
-  mutate(VALUE_TYPE = case_when(REGULATION_ID == 1416 ~ 'MAXIMUM',
-                                TRUE ~ VALUE_TYPE))
-
 #BUG ID 4726 - update region from ALL to GULF OF MEXICO
 mh_cleaned <- mh_cleaned %>%
   mutate(REGION = case_when(REGULATION_ID == 1341 ~ 'GULF OF MEXICO',
