@@ -813,15 +813,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 11427 ~ 'YES',
                           TRUE ~ FLAG))
 
-#BUG ID 4487 - mng status changed to withdrawn and updated to temporal controls: closure
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 1355 ~ 'WITHDRAWN',
-                                       TRUE ~ MANAGEMENT_STATUS),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1355 ~ 'TEMPORAL CONTROLS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1355 ~ 'CLOSURE',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 # Bug ID 4446 - change zone for more accuracy to specific to counties
 mh_cleaned <- mh_cleaned %>%
   mutate(ZONE = case_when(REGULATION_ID == 3653 ~ 'FLORIDA COUNTIES - MANATEE, SARASOTA, DESOTO, CHARLOTTE, LEE, COLLIER, MONROE, MIAMI-DADE, AND BROWARD',
