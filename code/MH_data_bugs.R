@@ -235,13 +235,6 @@ mh_cleaned <- mh_cleaned %>%
          END_YEAR = case_when(REGULATION_ID == 911 ~ START_YEAR,
                              TRUE ~ END_YEAR))
 
-# Bug ID 5048 - mng. status updated to seasonal
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 1025 ~ 'SEASONAL',
-                                       TRUE ~ MANAGEMENT_STATUS),
-         END_YEAR = case_when(REGULATION_ID != 1025 ~ END_YEAR),
-         START_YEAR = case_when(REGULATION_ID !=1025 ~ START_YEAR))
-
 #Bug ID 5049 - mng. status updated to seasonal
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 752 ~ 'SEASONAL',
