@@ -526,11 +526,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 931 ~ 'YES',
                           TRUE ~ FLAG))
 
-#Bug ID 5538 - Start Month and Day should be removed for Catch Limit record since start information is not explicitly stated
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_DAY = case_when(REGULATION_ID != 437 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 437 ~ START_MONTH))
-
 #Bug ID 5539 - Start Month and Day should be removed for Catch Limit record since start information is not explicitly stated
 mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID != 516 ~ START_DAY),
@@ -540,11 +535,6 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID != 444 ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID != 444 ~ START_MONTH))
-
-#Bug ID 5908 - Start Month and Day information should be removed for Catch Limit records since it is not explicitly stated
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_DAY = case_when(REGULATION_ID != 810 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 810 ~ START_MONTH))
 
 #Bug ID 5910 - Start Month and Day information should be removed for Catch Limit records since it is not explicitly stated 
 mh_cleaned <- mh_cleaned %>%
