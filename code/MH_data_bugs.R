@@ -28,12 +28,6 @@ mh_cleaned <- mh %>%
 mh_cleaned <- mh_cleaned %>%
   # Bug ID 4955
   filter(REGULATION_ID != 438) %>%
-  # Bug ID 4953
-  filter(REGULATION_ID != 924) %>%
-  # Bug ID 4952
-  filter(REGULATION_ID != 648) %>%
-  # Bug ID 4951
-  filter(REGULATION_ID != 577) %>%
   # Bug ID 5080
   filter(REGULATION_ID != 1160) %>%
   # Bug ID 5081
