@@ -288,13 +288,6 @@ mh_cleaned <- mh_cleaned %>%
          FLAG = case_when(REGULATION_ID == 5472 ~ 'NO',
                           TRUE ~ FLAG))
 
-#Bug ID 5876 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment
-mh_cleaned <- mh_cleaned %>% 
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 916  ~ 'EFFORT LIMITS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 916 ~ 'BAG LIMIT ADJUSTMENT',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 #Bug ID 5886 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment 
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 11378 ~ 'EFFORT LIMITS',
