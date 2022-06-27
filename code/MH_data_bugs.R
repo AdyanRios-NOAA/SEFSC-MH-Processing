@@ -52,10 +52,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 207) %>%
   #BUG ID -10 - REMOVING DUPLICATE ERRONEOUS FR (85 FR 50334)
   filter(REGULATION_ID != 206) %>%
-  #Bug ID 5286 
-  filter(REGULATION_ID != 640) %>%
-  #Bug ID 5287
-  filter(REGULATION_ID != 573) %>%
   #Bug ID 5296
   filter(REGULATION_ID != 457) %>%
   #Bug ID 5297
@@ -146,21 +142,6 @@ mh_cleaned <- mh_cleaned %>%
          VALUE_UNITS = case_when(REGULATION_ID != 671 ~ VALUE_UNITS),
          VALUE_TYPE = case_when(REGULATION_ID != 671 ~ VALUE_TYPE),
          VALUE_RATE = case_when(REGULATION_ID != 671 ~ VALUE_RATE))
-
-#Bug ID 5288 - Update MCat:MType to Other: Ignorable for record related to correction
-mh_cleaned <- mh_cleaned %>%
-  mutate(FR_SECTION = case_when(REGULATION_ID == 223 ~ '50 CFR 622',
-                                TRUE ~ FR_SECTION),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 223 ~ 'OTHER',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 223 ~ 'IGNORABLE',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         SECTOR = case_when(REGULATION_ID == 223 ~ 'ALL',
-                            TRUE ~ SECTOR),
-         VALUE = case_when(REGULATION_ID != 223 ~ VALUE),
-         VALUE_UNITS = case_when(REGULATION_ID != 223 ~ VALUE_UNITS),
-         VALUE_TYPE = case_when(REGULATION_ID != 223 ~ VALUE_TYPE),
-         VALUE_RATE = case_when(REGULATION_ID != 223 ~ VALUE_RATE))
 
 #Bug ID 5306 - Update MCat:MType to Other: Ignorable for record related to correction
 mh_cleaned <- mh_cleaned %>%
