@@ -249,19 +249,6 @@ mh_cleaned <- mh_cleaned %>%
          END_TIME = case_when(REGULATION_ID == 392 ~ "12:01:00 AM",
                               TRUE ~ END_TIME))
 
-#Bug ID 5958 - Update Effective and start date information based on removal guidance
-mh_cleaned <- mh_cleaned %>%
-  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1112 ~ "09/03/2013",
-                                    TRUE ~ EFFECTIVE_DATE),
-         START_YEAR = case_when(REGULATION_ID == 1112 ~ 2013L,
-                                TRUE ~ START_YEAR),
-         START_DAY = case_when(REGULATION_ID == 1112 ~ 3L,
-                               TRUE ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID == 1112 ~ 9L,
-                                 TRUE ~ START_MONTH),
-         END_MONTH = case_when(REGULATION_ID == 1112 ~ 9L,
-                               TRUE ~ END_MONTH))
-
 #Bug ID 4824 - Management Category and Management Type updated from Universal: Fishing Season to Temporal Controls: Reopening
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1573 ~ 'TEMPORAL CONTROLS',
