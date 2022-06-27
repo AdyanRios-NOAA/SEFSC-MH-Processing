@@ -554,15 +554,6 @@ mh_cleaned <- mh_cleaned %>%
          MANAGEMENT_TYPE = case_when(REGULATION_ID == 1242 ~ 'CLOSURE',
                                      TRUE ~ MANAGEMENT_TYPE))
 
-#Bug ID 4560 - Management Category and Management Type updated from Other: Electronic Reporting to Other: Permit Requirements and Endorsements, FR section changed to 50 CFR 622.20
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2421 ~ 'OTHER',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 2421 ~ 'PERMIT REQUIREMENTS AND ENDORSEMENTS',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         FR_SECTION = case_when(REGULATION_ID == 2421 ~ '50 CFR 622.20',
-                                TRUE ~ FR_SECTION))
-
 #Bug ID 5726 - Management Category and Type updated to Other: Observer Requirement
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3468 ~ "OTHER",
