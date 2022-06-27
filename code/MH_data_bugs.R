@@ -626,19 +626,9 @@ mh_cleaned <- mh_cleaned %>%
          REGION = case_when(REGULATION_ID == 2440 ~ 'GULF OF MEXICO',
                             TRUE ~ REGION))
 
-#Bug ID 5356 - Update flag to YES to indicate that the exemptions from the bag limit have changed
-mh_cleaned <- mh_cleaned %>%
-  mutate(FLAG = case_when(REGULATION_ID == 942 ~ 'YES',
-                          TRUE ~ FLAG))
-
 #Bug ID 5426 - Update flag to YES to indicate the change to the species included in the grouper aggregate
 mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 931 ~ 'YES',
-                          TRUE ~ FLAG))
-
-#Bug ID 5447 - Update flag to YES to indicate the change to the species included in the gulf reef fish aggregate
-mh_cleaned <- mh_cleaned %>%
-  mutate(FLAG = case_when(REGULATION_ID == 943 ~ 'YES',
                           TRUE ~ FLAG))
 
 #Bug ID 5436 - Update Sector to Recreational since Bag Limits apply to the Recreational sector
