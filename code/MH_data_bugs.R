@@ -370,13 +370,6 @@ mh_cleaned <- mh_cleaned %>%
          MANAGEMENT_TYPE = case_when(REGULATION_ID == 1697 ~ 'REOPENING',
                                      TRUE ~ MANAGEMENT_TYPE))
 
-#Bug ID 5076 - Management Category and Management Type updated from Effort Limits: Trip Limit to Effort Limits: Trip Limit Adjustment
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1148 ~ 'EFFORT LIMITS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1148 ~ 'TRIP LIMIT ADJUSTMENT',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 #Bug ID 5077 - Management Category and Management Type updated from Effort Limits: Trip Limit to Effort Limits: Trip Limit Adjustment
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1146 ~ 'EFFORT LIMITS',
