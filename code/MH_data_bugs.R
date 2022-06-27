@@ -52,10 +52,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 207) %>%
   #BUG ID -10 - REMOVING DUPLICATE ERRONEOUS FR (85 FR 50334)
   filter(REGULATION_ID != 206) %>%
-  #Bug ID 5296
-  filter(REGULATION_ID != 457) %>%
-  #Bug ID 5297
-  filter(REGULATION_ID != 824) %>%
   #Bug ID 5326
   filter(REGULATION_ID != 872) %>%
   #Bug ID 5346
