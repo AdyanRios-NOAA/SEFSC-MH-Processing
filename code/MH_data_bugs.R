@@ -125,11 +125,6 @@ mh_cleaned <- mh_cleaned %>%
   #BUG ID -54
   filter(REGULATION_ID != 973)
 
-# Bug ID 4460 - Change FR citation from 78 FR 22949 to 78 FR 22950
-mh_cleaned <- mh_cleaned %>%
-  mutate(FR_CITATION = case_when(REGULATION_ID == 2126 ~ '78 FR 22950',
-                                 TRUE ~ FR_CITATION))
-
 # Bug ID 4459 - Change FR citation from 78 FR 22949 to 78 FR 22950 and change mtype to IGNORABLE
 mh_cleaned <- mh_cleaned %>%
   mutate(FR_CITATION = case_when(REGULATION_ID == 2398 ~ '78 FR 22950',
