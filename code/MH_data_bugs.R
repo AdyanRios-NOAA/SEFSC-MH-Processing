@@ -355,34 +355,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID != 1105 ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID != 1105 ~ START_MONTH))
 
-#Bug ID 5726 - Management Category and Type updated to Other: Observer Requirement
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3468 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 3468 ~ "OBSERVER REQUIREMENT",
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 5727 - Management Category and Type updated to Other: Observer Requirement
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3469 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 3469 ~ "OBSERVER REQUIREMENT",
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 5728 - Management Category and Type updated to Other: Observer Requirement
-mh_cleaned <- mh_cleaned %>% 
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3422 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 3422 ~ "OBSERVER REQUIREMENT",
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 5729 - Management Category and Type updated to Other: Observer Requirement
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3423 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 3423 ~ "OBSERVER REQUIREMENT",
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 #Bug ID 5136 - Updates sector information from ALL: ALL to C: ALL
 mh_cleaned <- mh_cleaned %>%
   mutate(SECTOR = case_when(REGULATION_ID == 1109 ~ 'COMMERCIAL',
