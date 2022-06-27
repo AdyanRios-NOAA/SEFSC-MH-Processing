@@ -408,13 +408,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID != 1105 ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID != 1105 ~ START_MONTH))
 
-#Bug ID 4947 - Management Category and Management Type updated from Effort Limits: Prohibited Species to Temporal Controls: Closure
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1242 ~ 'TEMPORAL CONTROLS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1242 ~ 'CLOSURE',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 #Bug ID 5726 - Management Category and Type updated to Other: Observer Requirement
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3468 ~ "OTHER",
@@ -442,41 +435,6 @@ mh_cleaned <- mh_cleaned %>%
                                          TRUE ~ MANAGEMENT_CATEGORY),
          MANAGEMENT_TYPE = case_when(REGULATION_ID == 3423 ~ "OBSERVER REQUIREMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 5956 - Management Category and Type should be updated to Gear Requirements: Permitted and Authorized Gear and sector:subsector should be commercial: surface trawling
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1029 ~ 'GEAR REQUIREMENTS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1029 ~ 'PERMITTED AND AUTHORIZED GEAR',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         SECTOR = case_when(REGULATION_ID == 1029 ~ 'COMMERCIAL',
-                            TRUE ~ SECTOR),
-         SUBSECTOR = case_when(REGULATION_ID == 1029 ~ 'SURFACE TRAWLING',
-                               TRUE ~ SUBSECTOR),
-         FLAG = case_when(REGULATION_ID == 1029 ~ 'NO',
-                          TRUE ~ FLAG))
-
-#Bug ID 5957 - Management Category and Type should be updated to Temporal Controls: Closure
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1243 ~ 'TEMPORAL CONTROLS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1243 ~ 'CLOSURE',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 4948 - Updated Action Type from blank to Amendment
-mh_cleaned <- mh_cleaned %>%
-  mutate(ACTION_TYPE = case_when(REGULATION_ID == 1243 ~ 'AMENDMENT',
-                                 TRUE ~ ACTION_TYPE))
-
-#Bug ID 4947 - Updated Action Type from blank to Amendment
-mh_cleaned <- mh_cleaned %>%
-  mutate(ACTION_TYPE = case_when(REGULATION_ID == 1242 ~ 'AMENDMENT',
-                                 TRUE ~ ACTION_TYPE))
-
-#Bug ID 4946 - Updated Action Type from blank to Amendment
-mh_cleaned <- mh_cleaned %>%
-  mutate(ACTION_TYPE = case_when(REGULATION_ID == 1029 ~ 'AMENDMENT',
-                                 TRUE ~ ACTION_TYPE))
 
 #Bug ID 5136 - Updates sector information from ALL: ALL to C: ALL
 mh_cleaned <- mh_cleaned %>%
