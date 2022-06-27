@@ -223,19 +223,6 @@ mh_cleaned <- mh_cleaned %>%
          END_TIME = case_when(FR_CITATION == '51 FR 23551' ~ '',
                               TRUE ~ END_TIME))
 
-#Bug ID 5696 - Update Ineffective and end date information based on correction in 80 FR 77588
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 392 ~ "10/01/2016",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_YEAR = case_when(REGULATION_ID == 392 ~ 2016L,
-                              TRUE ~ END_YEAR),
-         END_MONTH = case_when(REGULATION_ID == 392 ~ 10L,
-                               TRUE ~ END_MONTH),
-         END_DAY = case_when(REGULATION_ID == 392 ~ 1L,
-                             TRUE ~ END_DAY),
-         END_TIME = case_when(REGULATION_ID == 392 ~ "12:01:00 AM",
-                              TRUE ~ END_TIME))
-
 #Bug ID 4824 - Management Category and Management Type updated from Universal: Fishing Season to Temporal Controls: Reopening
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1573 ~ 'TEMPORAL CONTROLS',
