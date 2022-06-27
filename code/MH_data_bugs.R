@@ -554,16 +554,6 @@ mh_cleaned <- mh_cleaned %>%
          END_MONTH = case_when(REGULATION_ID != 436 ~ END_MONTH),
          END_YEAR = case_when(REGULATION_ID != 436 ~ END_YEAR))
 
-#Bug ID 5616 - Update Value due to correction published in 52 FR 33594
-mh_cleaned <- mh_cleaned %>%
-  mutate(VALUE = case_when(REGULATION_ID == 526 ~ '480000',
-                           TRUE ~ VALUE))
-
-#Bug ID 5617 - Update Value due to correction published in 52 FR 35594
-mh_cleaned <- mh_cleaned %>% 
-  mutate(VALUE = case_when(REGULATION_ID == 527 ~ "220000",
-                           TRUE ~ VALUE))
-
 #Bug ID 6026 - update DWH part 1 - zone should be GOM:Area closure related to Deepwater Horizon oil spill, remove amendment and amendment number
 mh_cleaned <- mh_cleaned %>%
   mutate(ZONE = case_when(REGULATION_ID == 3068 ~ "AREA CLOSURE RELATED TO DEEPWATER HORIZON OIL SPILL",
