@@ -179,15 +179,6 @@ mh_cleaned <- mh_cleaned %>%
          START_YEAR = case_when(REGULATION_ID == 1317 ~ 1996L,
                                 TRUE ~ START_YEAR))
 
-#Bug ID 4949 - update mng. status to once and added start and end year since it is not a seasonal reg
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 748 ~ 'ONCE',
-                                       TRUE ~ MANAGEMENT_STATUS),
-         START_YEAR = case_when(REGULATION_ID == 748 ~ 2005L,
-                                TRUE ~ START_YEAR),
-         END_YEAR = case_when(REGULATION_ID == 748 ~ 2005L,
-                              TRUE ~ END_YEAR))
-
 #Bug ID 4694 - updated mng. status to blank for fishing season regulation
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 1687 ~'',
@@ -311,20 +302,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1146 ~ 'EFFORT LIMITS',
                                          TRUE ~ MANAGEMENT_CATEGORY),
          MANAGEMENT_TYPE = case_when(REGULATION_ID == 1146 ~ 'TRIP LIMIT ADJUSTMENT',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 5386 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 925 ~ 'EFFORT LIMITS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 925 ~ 'BAG LIMIT ADJUSTMENT',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 5406 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 926 ~ 'EFFORT LIMITS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 926 ~ 'BAG LIMIT ADJUSTMENT',
                                      TRUE ~ MANAGEMENT_TYPE))
 
 #Bug ID 5416 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment
