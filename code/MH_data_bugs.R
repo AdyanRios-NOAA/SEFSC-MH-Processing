@@ -228,17 +228,6 @@ mh_cleaned <- mh_cleaned %>%
          END_YEAR = case_when(REGULATION_ID == 748 ~ 2005L,
                               TRUE ~ END_YEAR))
 
-#Bug ID 5086 - Update effective and start date following correction guidance (updated by SFA 10/12/2021)
-mh_cleaned <- mh_cleaned %>%
-  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1106 ~ "10/01/2006",
-                                    TRUE ~ EFFECTIVE_DATE),
-         START_YEAR = case_when(REGULATION_ID == 1106 ~ 2006L,
-                                TRUE ~ START_YEAR),
-         START_MONTH = case_when(REGULATION_ID == 1106 ~ 10L,
-                                 TRUE ~ START_MONTH),
-         START_DAY = case_when(REGULATION_ID == 1106 ~ 1L,
-                               TRUE ~ START_DAY))
-
 #Bug ID 4694 - updated mng. status to blank for fishing season regulation
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 1687 ~'',
@@ -321,13 +310,6 @@ mh_cleaned <- mh_cleaned %>%
                                  TRUE ~ START_MONTH),
          END_MONTH = case_when(REGULATION_ID == 1112 ~ 9L,
                                TRUE ~ END_MONTH))
-
-#Bug ID 4950 -  Management Category and Management Type updated from Other: Regulatory Reporting to Other: VMS Related
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1109 ~ 'OTHER',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1109 ~ 'VMS RELATED',
-                                     TRUE ~ MANAGEMENT_TYPE))
 
 #Bug ID 4824 - Management Category and Management Type updated from Universal: Fishing Season to Temporal Controls: Reopening
 mh_cleaned <- mh_cleaned %>%
@@ -1291,33 +1273,6 @@ mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
 #                      VALUE_TYPE	= "",
 #                      VALUE_RATE	= "",
 #                      FLAG = "")
-
-#Bug ID 5136 - Add record for Other VMS Related for the For-Hire sector
-mh_added <- mh_added %>%
-  add_row(REGULATION_ID = -1000,
-                     LAST_UPDATED = "9/30/2021",
-                     JURISDICTION = "FEDERAL",
-                     ACTION = "FINAL",
-                     ACTION_TYPE = "AMENDMENT",
-                     AMENDMENT_NUMBER = "18A",
-                     ACCOUNTABILITY_MEASURE = "NO",
-                     FR_CITATION = "71 FR 45428",
-                     FR_SECTION = "50 CFR 622.9",
-                     FR_URL = "https://www.federalregister.gov/documents/2006/08/09/E6-12984/fisheries-of-the-caribbean-gulf-of-mexico-and-south-atlantic-reef-fish-fishery-of-the-gulf-of-mexico",
-                     MANAGEMENT_CATEGORY = "OTHER",
-                     MANAGEMENT_TYPE = "VMS RELATED",
-                     SECTOR = "RECREATIONAL",
-                     SUBSECTOR = "FOR-HIRE",
-                     REGION = "GULF OF MEXICO",
-                     ZONE = "ALL",
-                     JURISDICTIONAL_WATERS = "EEZ",
-                     COMMON_NAME = "ALL",
-                     FMP = "REEF FISH RESOURCES OF THE GULF OF MEXICO",
-                     EFFECTIVE_DATE = "12/07/2006",
-                     START_DAY = 7,
-                     START_MONTH = 12,
-                     START_YEAR = 2006,
-                     FLAG = "YES")
 
 
 #Bug ID 4966 - Add record for Other: State Related
