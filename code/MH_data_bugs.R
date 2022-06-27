@@ -214,19 +214,6 @@ mh_cleaned <- mh_cleaned %>%
          END_YEAR = case_when(REGULATION_ID == 911 ~ START_YEAR,
                              TRUE ~ END_YEAR))
 
-#Bug ID 5049 - mng. status updated to seasonal
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 752 ~ 'SEASONAL',
-                                       TRUE ~ MANAGEMENT_STATUS),
-         END_YEAR = case_when(REGULATION_ID != 752 ~ END_YEAR),
-         START_YEAR = case_when(REGULATION_ID !=752 ~ START_YEAR))
-
-#Bug ID 5047  - update end year and mng status
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 1322 ~ 'SEASONAL',
-                                       TRUE ~ MANAGEMENT_STATUS),
-         START_YEAR = case_when(REGULATION_ID !=1322 ~ START_YEAR))
-
 #Bug ID 5506 - Update effective and start date information since it was incorrectly captured
 mh_cleaned <- mh_cleaned %>%
   mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1317 ~ "04/01/1996",
@@ -757,16 +744,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID != 444 ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID != 444 ~ START_MONTH))
 
-#Bug ID 5541 - Start Month and Day should be removed for Catch Limit record since start information is not explicitly stated
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_DAY = case_when(REGULATION_ID != 455 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 455 ~ START_MONTH))
-
-#Bug ID 5542 - Start Month and Day should be removed for Catch Limit record since start information is not explicitly stated
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_DAY = case_when(REGULATION_ID != 454 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 454 ~ START_MONTH))
-
 #Bug ID 5908 - Start Month and Day information should be removed for Catch Limit records since it is not explicitly stated
 mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID != 810 ~ START_DAY),
@@ -776,16 +753,6 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID != 849 ~ START_DAY),
          START_MONTH = case_when(REGULATION_ID != 849 ~ START_MONTH))
-
-#Bug ID 5917 - Start Month and Day information should be removed for Catch Limit records since it is not explicitly stated 
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_DAY = case_when(REGULATION_ID != 821 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 821 ~ START_MONTH))
-
-#Bug ID 5918 - Start Month and Day information should be removed for Catch Limit records since it is not explicitly stated 
-mh_cleaned <- mh_cleaned %>% 
-  mutate(START_DAY = case_when(REGULATION_ID != 822 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 822 ~ START_MONTH))
 
 #Bug ID 5920 - Start Month, Day, and End Date information should be removed for Catch Limit records since it is not explicitly stated
 mh_cleaned <- mh_cleaned %>%
@@ -814,10 +781,6 @@ mh_cleaned <- mh_cleaned %>%
          END_DAY = case_when(REGULATION_ID != 436 ~ END_DAY),
          END_MONTH = case_when(REGULATION_ID != 436 ~ END_MONTH),
          END_YEAR = case_when(REGULATION_ID != 436 ~ END_YEAR))
-
-#Bug ID 5546 - Management status changed to blank for fishing season record since it is implied that it is a seasonal regulation using the Managment Type
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID != 1322 ~ MANAGEMENT_STATUS))
 
 #Bug ID 5616 - Update Value due to correction published in 52 FR 33594
 mh_cleaned <- mh_cleaned %>%
