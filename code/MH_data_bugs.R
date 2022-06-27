@@ -54,8 +54,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 206) %>%
   #Bug ID 5326
   filter(REGULATION_ID != 872) %>%
-  #Bug ID 5346
-  filter(REGULATION_ID != 421) %>%
   #Bug ID 5456
   filter(REGULATION_ID != 692) %>%
   #Bug ID 5922
