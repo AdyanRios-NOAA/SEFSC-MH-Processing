@@ -139,21 +139,6 @@ mh_cleaned <- mh_cleaned %>%
          VALUE_TYPE = case_when(REGULATION_ID != 671 ~ VALUE_TYPE),
          VALUE_RATE = case_when(REGULATION_ID != 671 ~ VALUE_RATE))
 
-#Bug ID 5306 - Update MCat:MType to Other: Ignorable for record related to correction
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 412 ~ 'OTHER',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 412 ~ 'IGNORABLE',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         SECTOR = case_when(REGULATION_ID == 412 ~ 'ALL',
-                            TRUE ~ SECTOR),
-         VALUE = case_when(REGULATION_ID != 412 ~ VALUE),
-         VALUE_UNITS = case_when(REGULATION_ID != 412 ~ VALUE_UNITS),
-         VALUE_TYPE = case_when(REGULATION_ID != 412 ~ VALUE_TYPE),
-         VALUE_RATE = case_when(REGULATION_ID != 412 ~ VALUE_RATE),
-         FLAG = case_when(REGULATION_ID == 412 ~ 'NO',
-                          TRUE ~ FLAG))
-
 #Bug ID 5316 - Update MCat:MType to Other:Ignorable for record related to correction
 mh_cleaned <- mh_cleaned %>%
   mutate(FR_SECTION = case_when(REGULATION_ID == 298 ~ '50 CFR 622',
