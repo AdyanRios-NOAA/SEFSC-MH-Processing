@@ -539,16 +539,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 931 ~ 'YES',
                           TRUE ~ FLAG))
 
-#Bug ID 5436 - Update Sector to Recreational since Bag Limits apply to the Recreational sector
-mh_cleaned <- mh_cleaned %>%
-  mutate(SECTOR = case_when(REGULATION_ID == 1011 ~ 'RECREATIONAL',
-                            TRUE ~ SECTOR))
-
-#Bug ID 5437 - Update Sector to Recreational since Bag Limits apply to the Recreational sector
-mh_cleaned <- mh_cleaned %>%
-  mutate(SECTOR = case_when(REGULATION_ID == 1010 ~ 'RECREATIONAL',
-                            TRUE ~ SECTOR))
-
 #Bug ID 5538 - Start Month and Day should be removed for Catch Limit record since start information is not explicitly stated
 mh_cleaned <- mh_cleaned %>%
   mutate(START_DAY = case_when(REGULATION_ID != 437 ~ START_DAY),
