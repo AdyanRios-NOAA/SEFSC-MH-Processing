@@ -623,11 +623,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 11427 ~ 'YES',
                           TRUE ~ FLAG))
 
-# Bug ID 4446 - change zone for more accuracy to specific to counties
-mh_cleaned <- mh_cleaned %>%
-  mutate(ZONE = case_when(REGULATION_ID == 3653 ~ 'FLORIDA COUNTIES - MANATEE, SARASOTA, DESOTO, CHARLOTTE, LEE, COLLIER, MONROE, MIAMI-DADE, AND BROWARD',
-                          TRUE ~ ZONE))
-
 #BUG ID 4592 - change flag to NO b/c flag is captured thru addition of incidental catch record addition in bug id 4588
 mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 1042 ~ 'NO',
