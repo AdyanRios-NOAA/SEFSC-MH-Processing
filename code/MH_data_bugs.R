@@ -54,8 +54,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 206) %>%
   #Bug ID 5326
   filter(REGULATION_ID != 872) %>%
-  #Bug ID 5456
-  filter(REGULATION_ID != 692) %>%
   #Bug ID 5922
   filter(REGULATION_ID != 828) %>%
   #Bug ID 5923
@@ -167,17 +165,6 @@ mh_cleaned <- mh_cleaned %>%
                              TRUE ~ END_MONTH),
          END_YEAR = case_when(REGULATION_ID == 911 ~ START_YEAR,
                              TRUE ~ END_YEAR))
-
-#Bug ID 5506 - Update effective and start date information since it was incorrectly captured
-mh_cleaned <- mh_cleaned %>%
-  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1317 ~ "04/01/1996",
-                                    TRUE ~ EFFECTIVE_DATE),
-         START_DAY = case_when(REGULATION_ID == 1317 ~ 1L,
-                               TRUE ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID == 1317 ~ 4L,
-                                 TRUE ~ START_MONTH),
-         START_YEAR = case_when(REGULATION_ID == 1317 ~ 1996L,
-                                TRUE ~ START_YEAR))
 
 #Bug ID 4694 - updated mng. status to blank for fishing season regulation
 mh_cleaned <- mh_cleaned %>%
