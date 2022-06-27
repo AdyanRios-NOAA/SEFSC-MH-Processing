@@ -125,15 +125,6 @@ mh_cleaned <- mh_cleaned %>%
   #BUG ID -54
   filter(REGULATION_ID != 973)
 
-# Bug ID 4459 - Change FR citation from 78 FR 22949 to 78 FR 22950 and change mtype to IGNORABLE
-mh_cleaned <- mh_cleaned %>%
-  mutate(FR_CITATION = case_when(REGULATION_ID == 2398 ~ '78 FR 22950',
-                                 TRUE ~ FR_CITATION),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 2398 ~ 'IGNORABLE',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         FLAG = case_when(REGULATION_ID == 2398 ~ 'NO',
-                          TRUE ~ FLAG))
-
 # Bug ID 4461 - Change all effective dates to 1/3/17
 mh_cleaned <- mh_cleaned %>%
   mutate(EFFECTIVE_DATE = case_when(FR_CITATION == '81 FR 86971' ~ "01/03/2017",
