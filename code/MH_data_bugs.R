@@ -685,13 +685,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID %in% c(11432, 11390, 11409, 11381, 11384, 633, 635, 634, 624, 626, 625, 574, 222, 572, 221, 571, 225) ~ "ACL ADJUSTMENT",
                                          TRUE ~ MANAGEMENT_TYPE))
 
-#Bug ID 6316 - Effective and Start date updated based on correction
-mh_cleaned <- mh_cleaned %>%
-  mutate(EFFECTIVE_DATE = case_when(REGULATION_ID == 1133 ~ "03/09/1994",
-                                    TRUE ~ EFFECTIVE_DATE),
-         START_DAY = case_when(REGULATION_ID == 1133 ~ 9L,
-                               TRUE ~ START_DAY))
-
 #Bug ID 6336 - Management Type should be Bag Limit Adjustment
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 941 ~ "BAG LIMIT ADJUSTMENT",
