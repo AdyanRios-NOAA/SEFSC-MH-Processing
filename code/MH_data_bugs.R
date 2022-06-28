@@ -736,10 +736,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 1437 ~ 'TRIP LIMIT ADJUSTMENT',
                                      TRUE ~ MANAGEMENT_TYPE))
 
-#Bug ID 6617 - Start Year removed for Fishing Year record
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_YEAR = case_when(REGULATION_ID != 11767 ~ START_YEAR))
-
 #Bug ID 6618 - Start Year removed for Fishing Year record
 mh_cleaned <- mh_cleaned %>%
   mutate(START_YEAR = case_when(REGULATION_ID != 786 ~ START_YEAR))
