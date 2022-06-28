@@ -710,19 +710,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 451 ~ "QUOTA ADJUSTMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
 
-#Bug ID 6317 - Management Type should be Ignorable
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 11373 ~ "IGNORABLE",
-                                     TRUE ~ MANAGEMENT_TYPE),
-         FR_SECTION = case_when(REGULATION_ID == 11373 ~ "50 CFR 641",
-                                TRUE ~ FR_SECTION),
-         EFFECTIVE_DATE = case_when(REGULATION_ID == 11373 ~ "03/07/1994",
-                                    TRUE ~ EFFECTIVE_DATE),
-         START_DAY = case_when(REGULATION_ID == 11373 ~ 7L,
-                               TRUE ~ START_DAY),
-         FLAG = case_when(REGULATION_ID == 11373 ~ "NO",
-                          TRUE ~ FLAG))
-
 #Bug ID 6328 - Management Type should be Ignorable
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 11365 ~ "IGNORABLE",
