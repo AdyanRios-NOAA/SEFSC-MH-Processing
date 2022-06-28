@@ -351,11 +351,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(ACCOUNTABILITY_MEASURE = case_when(FR_CITATION == '74 FR 17603' ~ 'NO',
                                             TRUE ~ ACCOUNTABILITY_MEASURE))
 
-#Bug ID 5986 - change flag to YES for Deepwater Horizon closure
-mh_cleaned <- mh_cleaned %>%
-  mutate(FLAG = case_when(REGULATION_ID == 11345 ~ 'YES', 
-                          TRUE ~ FLAG))
-
 #Bug ID 5987 - change flag to YES for Deepwater Horizon closure
 mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 11427 ~ 'YES',
