@@ -66,10 +66,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 809) %>%
   #Bug ID 6276
   filter(REGULATION_ID != 435) %>%
-  #Bug ID 6326
-  filter(REGULATION_ID != 11363) %>%
-  #Bug ID 6327
-  filter(REGULATION_ID != 11364) %>%
   #Bug ID 6606
   filter(REGULATION_ID != 11866) %>%
   #Bug ID -31
@@ -709,15 +705,6 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 451 ~ "QUOTA ADJUSTMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 6328 - Management Type should be Ignorable
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 11365 ~ "IGNORABLE",
-                                     TRUE ~ MANAGEMENT_TYPE),
-         FR_SECTION = case_when(REGULATION_ID == 11365 ~ "50 CFR 641",
-                                TRUE ~ FR_SECTION),
-         FLAG = case_when(REGULATION_ID == 11365 ~ "NO",
-                          TRUE ~ FLAG))
 
 #Bug ID 6447 - Management Category should be updated to Catch Limits
 mh_cleaned <- mh_cleaned %>%
