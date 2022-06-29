@@ -7,9 +7,10 @@ For processing, data are pulled from the raw and interim folders. The raw data f
 * MH_clean_spp_tables.RData - the saved workspace of the MH_clean_spp_tables.R code 
 * MHpreprocess_expansions.csv - zone expansion data to clean zone names
 * Clusters folder - location of the unique pre-existing clusters created during data analysis
+* Sector_clusters folder - location of sector grouping clusters
 
 ### Code folder: All scripts used to process the data are stored within the code folder
-The code is divided into six subfolders, five  of which contain the analysis and cleaning and one which runs the entire code in the correct order (main_MH_prep.R). To run the code effectively, R and seven packages are required. More details can be found in the READMEcode.md file within the code file. 
+The code is divided into seven subscripts and one subfolder. Four of the subscripts contain the cleaning and analysis of the raw data, one contains data corrections, one contains the clean species tables for the FMPs, and one runs the entire code in the correct order (main_MH_prep.R). To run the code effectively, R and seven packages are required. More details can be found in the READMEcode.md file within the code file. The subfolder contains test scripts used to run example data pulls from the database. 
 
 ### The code is still being edited and updated weekly. 
 Bugs have been identified and discussed within the issues tab. Known permanent bugs are included in the [appendix](https://docs.google.com/document/d/1Sby7u3XKtg06HAFJmS8x0fvtaX0yqydQeOYfy-uNeyM/edit#heading=h.49x2ik5) of the meta data documents provided for [data entry](https://docs.google.com/document/d/18k_0_Y9DFTp7fFEo8yivoMowbqdCAddfEcWtdNDM8eA/edit), [processing](https://docs.google.com/document/d/1l1DqJUVhFwBkokm5tZOpsls_coAoSaCG/edit?rtpof=true), and [analysis ready data](https://docs.google.com/document/d/1od-zSiffovacy5wCg9pOdd1xTcywzAUYDyJeaJmCC_o/edit). For training on how to use the database and materials provided, please refer [here](https://docs.google.com/presentation/d/1CktN_RLleF2uOPvBziiSvaoyuzJzQ-dT/edit#slide=id.g12083173c8e_0_0). 
