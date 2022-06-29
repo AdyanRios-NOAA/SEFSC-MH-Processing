@@ -186,27 +186,6 @@ mh_cleaned <- mh_cleaned %>%
          END_TIME = case_when(FR_CITATION == '51 FR 23551' ~ '',
                               TRUE ~ END_TIME))
 
-#Bug ID 4824 - Management Category and Management Type updated from Universal: Fishing Season to Temporal Controls: Reopening
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1573 ~ 'TEMPORAL CONTROLS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1573 ~ 'REOPENING',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 4823 - Management Category and Management Type updated from Universal: Fishing Season to Temporal Controls: Reopening
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1574 ~ 'TEMPORAL CONTROLS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1574 ~ 'REOPENING',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 4822 - Management Category and Management Type updated from Universal: Fishing Season to Temporal Controls: Reopening
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1689 ~ 'TEMPORAL CONTROLS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1689 ~ 'REOPENING',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 #Bug ID 4807 - Management Category and Management Type updated from Universal: Fishing Season to Temporal Controls: Reopening
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1579 ~ 'TEMPORAL CONTROLS',
