@@ -158,18 +158,6 @@ mh_cleaned <- mh_cleaned %>%
                                      TRUE ~ MANAGEMENT_TYPE),
          FLAG = case_when(REGULATION_ID == 5472 ~ 'NO',
                           TRUE ~ FLAG))
- 
-#Bug 5912 - Management Category and Management Type updated to Catch Limits: Quota Adjustment, start month, start day, and end date information removed following Catch Limit guidance
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 811 ~ 'CATCH LIMITS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 811 ~ 'QUOTA ADJUSTMENT',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         START_DAY = case_when(REGULATION_ID != 811 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 811 ~ START_MONTH),
-         END_DAY = case_when(REGULATION_ID != 811 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 811 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 811 ~ END_YEAR))
        
 #Bug ID 6046 - Start Month and Start Day should be removed following guidance related to Catch Limit Management Types
 mh_cleaned <- mh_cleaned %>%
