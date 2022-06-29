@@ -143,19 +143,6 @@ mh_cleaned <- mh_cleaned %>%
          END_DAY = case_when(REGULATION_ID != 298 ~ END_DAY),
          END_MONTH = case_when(REGULATION_ID != 298 ~ END_MONTH))
 
-# Bug ID 4954 - remove the 1,000 hook limit
-mh_cleaned <- mh_cleaned %>%
-  mutate(VALUE = case_when(REGULATION_ID == 911 ~ '1000',
-                           TRUE ~ VALUE),
-         INEFFECTIVE_DATE = case_when(REGULATION_ID == 911 ~ EFFECTIVE_DATE,
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID == 911 ~ START_DAY,
-                          TRUE ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID == 911 ~ START_MONTH,
-                             TRUE ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID == 911 ~ START_YEAR,
-                             TRUE ~ END_YEAR))
-
 #Bug ID 4694 - updated mng. status to blank for fishing season regulation
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 1687 ~'',
