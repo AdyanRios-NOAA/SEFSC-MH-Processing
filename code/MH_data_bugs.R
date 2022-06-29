@@ -443,11 +443,11 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 6087 - Removing start month, start day, and end date for Catch Limit records
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(451, 574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_MONTH),
-         START_DAY = case_when(!REGULATION_ID %in% c(451, 574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_DAY),
-         END_DAY = case_when(!REGULATION_ID %in% c(451, 574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_DAY),
-         END_MONTH = case_when(!REGULATION_ID %in% c(451, 574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_MONTH),
-         END_YEAR = case_when(!REGULATION_ID %in% c(451, 574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_YEAR))
+  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_MONTH),
+         START_DAY = case_when(!REGULATION_ID %in% c(574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_DAY),
+         END_DAY = case_when(!REGULATION_ID %in% c(574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_DAY),
+         END_MONTH = case_when(!REGULATION_ID %in% c(574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_MONTH),
+         END_YEAR = case_when(!REGULATION_ID %in% c(574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_YEAR))
 
 #Bug ID 6186  - Update Management Type to Quota Adjustment and remove start month, start day, and end date information for Catch Limit records
 mh_cleaned <- mh_cleaned %>%
@@ -492,11 +492,6 @@ mh_cleaned <- mh_cleaned %>%
 #Bug ID 6356 - Management Type should be Quota Adjustment
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 494 ~ "QUOTA ADJUSTMENT",
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 6366 - Management Type should be Quota Adjustment
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 451 ~ "QUOTA ADJUSTMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
 
 #Bug ID 6447 - Management Category should be updated to Catch Limits
