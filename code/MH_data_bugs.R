@@ -284,26 +284,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 931 ~ 'YES',
                           TRUE ~ FLAG))
 
-#Bug ID 5920 - Start Month, Day, and End Date information should be removed for Catch Limit records since it is not explicitly stated
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 807 ~ "QUOTA ADJUSTMENT",
-                                     TRUE ~ MANAGEMENT_TYPE), 
-         START_DAY = case_when(REGULATION_ID != 807 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 807 ~ START_MONTH),
-         END_DAY = case_when(REGULATION_ID != 807 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 807 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 807 ~ END_YEAR))
-
-#Bug ID 5921 - Start Month, Day, and End Date information should be removed for Catch Limit records since it is not explicitly stated 
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 434 ~ "QUOTA ADJUSTMENT",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         START_DAY = case_when(REGULATION_ID != 434 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 434 ~ START_MONTH),
-         END_DAY = case_when(REGULATION_ID != 434 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 434 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 434 ~ END_YEAR))
-
 #Bug ID 6026 - update DWH part 1 - zone should be GOM:Area closure related to Deepwater Horizon oil spill, remove amendment and amendment number
 mh_cleaned <- mh_cleaned %>%
   mutate(ZONE = case_when(REGULATION_ID == 3068 ~ "AREA CLOSURE RELATED TO DEEPWATER HORIZON OIL SPILL",
