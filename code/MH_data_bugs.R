@@ -129,26 +129,6 @@ mh_cleaned <- mh_cleaned %>%
          END_DAY = case_when(REGULATION_ID != 298 ~ END_DAY),
          END_MONTH = case_when(REGULATION_ID != 298 ~ END_MONTH))
 
-#Bug ID 4679 - updated mng. status to blank for fishing season regulation
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 2269 ~'',
-                                       TRUE ~ MANAGEMENT_STATUS))
-
-#Bug ID 4678 - updated mng. status to blank for fishing season regulation
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 2270 ~'',
-                                       TRUE ~ MANAGEMENT_STATUS))
-
-#Bug ID 4677 - updated mng. status to blank for fishing season regulation
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 2272 ~'',
-                                       TRUE ~ MANAGEMENT_STATUS))
-
-#Bug ID 4676 - updated mng. status to blank for fishing season regulation
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 2271 ~'',
-                                       TRUE ~ MANAGEMENT_STATUS))
-
 #Bug ID 4546 - update End day and End time for 51 FR 23551 following guidance not to capture end time of 2400 hours
 mh_cleaned <- mh_cleaned %>%
   mutate(END_DAY = case_when(FR_CITATION == '51 FR 23551' ~ 23L,
