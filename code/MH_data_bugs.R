@@ -150,20 +150,6 @@ mh_cleaned <- mh_cleaned %>%
          MANAGEMENT_TYPE = case_when(REGULATION_ID == 1697 ~ 'REOPENING',
                                      TRUE ~ MANAGEMENT_TYPE))
 
-#Bug ID 5946 - Management Category and Management Type updated from Effort Limits: Bag Limit to Effort Limits: Bag Limit Adjustment
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 918 ~ 'EFFORT LIMITS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 918 ~ 'BAG LIMIT ADJUSTMENT',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 5536 - Management Category and Management Type updated from Catch Limits: Quota to Catch Limits: Quota Adjustment 
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 436 ~ 'CATCH LIMITS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 436 ~ 'QUOTA ADJUSTMENT',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 #Bug ID 5537 - Management Category and Management Type updated from Catch Limits: Quota to Catch Limits: Quota Adjustment and adds NO for the flag since the field is blank
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 5472 ~ 'CATCH LIMITS',
@@ -208,18 +194,6 @@ mh_cleaned <- mh_cleaned %>%
          END_DAY = case_when(REGULATION_ID != 811 ~ END_DAY),
          END_MONTH = case_when(REGULATION_ID != 811 ~ END_MONTH),
          END_YEAR = case_when(REGULATION_ID != 811 ~ END_YEAR))
-
-#Bug ID -17 - Management Category and Management Type updated to Catch Limits: Quota Adjustment, start month, start day, and end date information removed following Catch Limit guidance
-mh_cleaned <- mh_cleaned %>% 
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 808 ~ 'CATCH LIMITS',
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 808 ~ 'QUOTA ADJUSTMENT',
-                                     TRUE ~ MANAGEMENT_TYPE),
-         START_DAY = case_when(REGULATION_ID != 808 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 808 ~ START_MONTH),
-         END_DAY = case_when(REGULATION_ID != 808 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 808 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 808 ~ END_YEAR))
        
 #Bug ID 6046 - Start Month and Start Day should be removed following guidance related to Catch Limit Management Types
 mh_cleaned <- mh_cleaned %>%
@@ -365,14 +339,6 @@ mh_cleaned <- mh_cleaned %>%
          END_DAY = case_when(REGULATION_ID != 434 ~ END_DAY),
          END_MONTH = case_when(REGULATION_ID != 434 ~ END_MONTH),
          END_YEAR = case_when(REGULATION_ID != 434 ~ END_YEAR))
-
-#Bug ID 5936 - Start Month, Day, and End Date information should be removed for Catch Limit records since it is not explicitly stated 
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_DAY = case_when(REGULATION_ID != 436 ~ START_DAY),
-         START_MONTH = case_when(REGULATION_ID != 436 ~ START_MONTH),
-         END_DAY = case_when(REGULATION_ID != 436 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 436 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 436 ~ END_YEAR))
 
 #Bug ID 6026 - update DWH part 1 - zone should be GOM:Area closure related to Deepwater Horizon oil spill, remove amendment and amendment number
 mh_cleaned <- mh_cleaned %>%
