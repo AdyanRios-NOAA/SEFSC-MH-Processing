@@ -26,10 +26,6 @@ mh_cleaned <- mh %>%
 
 # Remove Records
 mh_cleaned <- mh_cleaned %>%
-  # Bug ID 5080
-  filter(REGULATION_ID != 1160) %>%
-  # Bug ID 5081
-  filter(REGULATION_ID != 1161) %>%
   # Bug ID 5082
   filter(REGULATION_ID != 1170) %>%
   # Bug ID 4464
