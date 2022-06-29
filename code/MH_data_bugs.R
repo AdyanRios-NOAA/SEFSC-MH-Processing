@@ -129,11 +129,6 @@ mh_cleaned <- mh_cleaned %>%
          END_DAY = case_when(REGULATION_ID != 298 ~ END_DAY),
          END_MONTH = case_when(REGULATION_ID != 298 ~ END_MONTH))
 
-#Bug ID 4694 - updated mng. status to blank for fishing season regulation
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 1687 ~'',
-                                       TRUE ~ MANAGEMENT_STATUS))
-
 #Bug ID 4693 - updated mng. status to blank for fishing season regulation
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_STATUS = case_when(REGULATION_ID == 1575 ~'',
