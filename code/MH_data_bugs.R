@@ -26,8 +26,6 @@ mh_cleaned <- mh %>%
 
 # Remove Records
 mh_cleaned <- mh_cleaned %>%
-  # Bug ID 5082
-  filter(REGULATION_ID != 1170) %>%
   # Bug ID 4464
   filter(REGULATION_ID != 1222) %>%
   # Bug ID 4464
@@ -48,14 +46,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 206) %>%
   #Bug ID 5326
   filter(REGULATION_ID != 872) %>%
-  #Bug ID 5922
-  filter(REGULATION_ID != 828) %>%
-  #Bug ID 5923
-  filter(REGULATION_ID != 829) %>%
-  #Bug ID 5924
-  filter(REGULATION_ID != 830) %>%
-  #Bug ID 5925
-  filter(REGULATION_ID != 831) %>%
   #Bug ID 6237
   filter(REGULATION_ID != 809) %>%
   #Bug ID 6276
