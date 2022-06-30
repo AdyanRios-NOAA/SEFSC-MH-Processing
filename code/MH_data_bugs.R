@@ -333,9 +333,7 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 6076 - update Management Category to Other for Definition records that did not reclassify correctly
 mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2242 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1241 ~ "OTHER",
+  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1241 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY),
          MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 2325 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY),
