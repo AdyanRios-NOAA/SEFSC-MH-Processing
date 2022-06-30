@@ -46,8 +46,6 @@ mh_cleaned <- mh_cleaned %>%
   filter(REGULATION_ID != 206) %>%
   #Bug ID 5326
   filter(REGULATION_ID != 872) %>%
-  #Bug ID 6237
-  filter(REGULATION_ID != 809) %>%
   #Bug ID 6276
   filter(REGULATION_ID != 435) %>%
   #Bug ID 6606
@@ -443,11 +441,11 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 6087 - Removing start month, start day, and end date for Catch Limit records
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_MONTH),
-         START_DAY = case_when(!REGULATION_ID %in% c(574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_DAY),
-         END_DAY = case_when(!REGULATION_ID %in% c(574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_DAY),
-         END_MONTH = case_when(!REGULATION_ID %in% c(574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_MONTH),
-         END_YEAR = case_when(!REGULATION_ID %in% c(574, 641, 649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_YEAR))
+  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_MONTH),
+         START_DAY = case_when(!REGULATION_ID %in% c(649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_DAY),
+         END_DAY = case_when(!REGULATION_ID %in% c(649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_DAY),
+         END_MONTH = case_when(!REGULATION_ID %in% c(649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_MONTH),
+         END_YEAR = case_when(!REGULATION_ID %in% c(649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_YEAR))
 
 #Bug ID 6186  - Update Management Type to Quota Adjustment and remove start month, start day, and end date information for Catch Limit records
 mh_cleaned <- mh_cleaned %>%
@@ -471,7 +469,7 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 6306 - Management Type should be updated to ACL Adjustment
 mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID %in% c(11432, 11390, 11409, 11381, 11384, 633, 635, 634, 624, 626, 625, 574, 222, 572, 221, 571, 225) ~ "ACL ADJUSTMENT",
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID %in% c(11432, 11390, 11409, 11381, 11384, 633, 635, 634, 624, 626, 625, 222, 572, 221, 571, 225) ~ "ACL ADJUSTMENT",
                                          TRUE ~ MANAGEMENT_TYPE))
 
 #Bug ID 6336 - Management Type should be Bag Limit Adjustment
