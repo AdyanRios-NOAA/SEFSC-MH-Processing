@@ -441,11 +441,11 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 6087 - Removing start month, start day, and end date for Catch Limit records
 mh_cleaned <- mh_cleaned %>%
-  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_MONTH),
-         START_DAY = case_when(!REGULATION_ID %in% c(649, 639, 281, 222, 572, 221, 638, 571, 280) ~ START_DAY),
-         END_DAY = case_when(!REGULATION_ID %in% c(649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_DAY),
-         END_MONTH = case_when(!REGULATION_ID %in% c(649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_MONTH),
-         END_YEAR = case_when(!REGULATION_ID %in% c(649, 639, 281, 222, 572, 221, 638, 571, 280) ~ END_YEAR))
+  mutate(START_MONTH = case_when(!REGULATION_ID %in% c(639, 281, 222, 572, 221, 638, 571, 280) ~ START_MONTH),
+         START_DAY = case_when(!REGULATION_ID %in% c(639, 281, 222, 572, 221, 638, 571, 280) ~ START_DAY),
+         END_DAY = case_when(!REGULATION_ID %in% c(639, 281, 222, 572, 221, 638, 571, 280) ~ END_DAY),
+         END_MONTH = case_when(!REGULATION_ID %in% c(639, 281, 222, 572, 221, 638, 571, 280) ~ END_MONTH),
+         END_YEAR = case_when(!REGULATION_ID %in% c(639, 281, 222, 572, 221, 638, 571, 280) ~ END_YEAR))
 
 #Bug ID 6186  - Update Management Type to Quota Adjustment and remove start month, start day, and end date information for Catch Limit records
 mh_cleaned <- mh_cleaned %>%
