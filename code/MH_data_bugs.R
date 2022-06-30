@@ -465,10 +465,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1321 ~ "CATCH LIMITS",
                                          TRUE ~ MANAGEMENT_CATEGORY))
 
-#Bug ID 6618 - Start Year removed for Fishing Year record
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_YEAR = case_when(REGULATION_ID != 786 ~ START_YEAR))
-
 #BUG ID -19 - start yr needs to be removed from seasonal quota
 mh_cleaned <- mh_cleaned %>%
   mutate(START_YEAR = case_when(REGULATION_ID != 1385 ~ START_YEAR))
