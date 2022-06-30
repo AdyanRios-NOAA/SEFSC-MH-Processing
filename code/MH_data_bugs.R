@@ -335,8 +335,6 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1241 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4663 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
          MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4612 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY),
          MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4126 ~ "OTHER",
