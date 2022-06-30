@@ -467,11 +467,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1321 ~ "CATCH LIMITS",
                                          TRUE ~ MANAGEMENT_CATEGORY))
 
-#Bug ID 6516 - Management Type should be updated to Trip Limit Adjustment
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 1435 ~ 'TRIP LIMIT ADJUSTMENT',
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 #Bug ID 6517 - Management Type should be updated to Trip Limit Adjustment
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 1431 ~ 'TRIP LIMIT ADJUSTMENT',
