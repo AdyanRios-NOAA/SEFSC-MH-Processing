@@ -459,7 +459,7 @@ mh_cleaned <- mh_cleaned %>%
 
 #Bug ID 6306 - Management Type should be updated to ACL Adjustment
 mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID %in% c(633, 635, 634, 624, 626, 625, 225) ~ "ACL ADJUSTMENT",
+  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID %in% c(624, 626, 625, 225) ~ "ACL ADJUSTMENT",
                                          TRUE ~ MANAGEMENT_TYPE))
 
 #Bug ID 6447 - Management Category should be updated to Catch Limits
