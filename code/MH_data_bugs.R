@@ -462,11 +462,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID %in% c(633, 635, 634, 624, 626, 625, 225) ~ "ACL ADJUSTMENT",
                                          TRUE ~ MANAGEMENT_TYPE))
 
-#Bug ID 6336 - Management Type should be Bag Limit Adjustment
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 941 ~ "BAG LIMIT ADJUSTMENT",
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 #Bug ID 6346 - Management Type should be Quota Adjustment
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 447 ~ "QUOTA ADJUSTMENT",
@@ -475,11 +470,6 @@ mh_cleaned <- mh_cleaned %>%
 #Bug ID 6347 - Management Type should be Quota Adjustment
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 448 ~ "QUOTA ADJUSTMENT",
-                                     TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID 6356 - Management Type should be Quota Adjustment
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 494 ~ "QUOTA ADJUSTMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
 
 #Bug ID 6447 - Management Category should be updated to Catch Limits
