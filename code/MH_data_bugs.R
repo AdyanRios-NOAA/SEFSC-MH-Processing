@@ -314,13 +314,6 @@ mh_cleaned <- mh_cleaned %>%
          FLAG = case_when(REGULATION_ID == 11346 ~ "YES",
                           TRUE ~ FLAG))
 
-#Bug ID 6057 - update Management Category and Management Type due to error during reclassification process
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1356 ~ "TEMPORAL CONTROLS",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_TYPE = case_when(REGULATION_ID == 1356 ~ "CLOSURE",
-                                     TRUE ~ MANAGEMENT_TYPE))
-
 #Bug ID 6058 - update Management Category due to error during the reclassification process
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 3383 ~ "UNIVERSAL",
