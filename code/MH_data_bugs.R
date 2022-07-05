@@ -123,13 +123,6 @@ mh_cleaned <- mh_cleaned %>%
          END_DAY = case_when(REGULATION_ID != 298 ~ END_DAY),
          END_MONTH = case_when(REGULATION_ID != 298 ~ END_MONTH))
 
-#Bug ID 4546 - update End day and End time for 51 FR 23551 following guidance not to capture end time of 2400 hours
-mh_cleaned <- mh_cleaned %>%
-  mutate(END_DAY = case_when(FR_CITATION == '51 FR 23551' ~ 23L,
-                             TRUE ~ END_DAY),
-         END_TIME = case_when(FR_CITATION == '51 FR 23551' ~ '',
-                              TRUE ~ END_TIME))
-
 #Bug ID 4807 - Management Category and Management Type updated from Universal: Fishing Season to Temporal Controls: Reopening
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1579 ~ 'TEMPORAL CONTROLS',
@@ -352,8 +345,6 @@ mh_cleaned <- mh_cleaned %>%
          MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1211 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY),
          MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1072 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4319 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY))
 
 #Bug IDs 6086, 6096 - Removing Start month and day information for Catch Limit records
