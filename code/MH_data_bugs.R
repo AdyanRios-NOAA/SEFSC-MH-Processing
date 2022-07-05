@@ -503,16 +503,6 @@ mh_cleaned <- mh_cleaned %>%
          MANAGEMENT_STATUS = case_when(REGULATION_ID == 178 ~ "ONCE",
                                        TRUE ~ MANAGEMENT_STATUS))
 
-#Bug ID -56 - Flag should be YES for VMS Related records
-mh_cleaned <- mh_cleaned %>%
-  mutate(FLAG = case_when(REGULATION_ID == 11456 ~ "YES",
-                          TRUE ~ FLAG))
-
-#Bug ID -57 - Flag should be YES for VMS Related records
-mh_cleaned <- mh_cleaned %>%
-  mutate(FLAG = case_when(REGULATION_ID == 11457 ~ "YES",
-                          TRUE ~ FLAG))
-
 #Bug ID -62 - Management Type should be updated to Possession Limit
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 2180 ~ "POSSESSION LIMIT",
