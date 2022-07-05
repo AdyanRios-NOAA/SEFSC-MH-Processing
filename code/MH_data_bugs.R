@@ -522,14 +522,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 792 ~ "MINIMUM SIZE LIMIT ADJUSTMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
 
-#Bug ID -68 - Start time should be removed since FR Notice stated 2400 hours
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_TIME = case_when(REGULATION_ID != 2597 ~ START_TIME))
-
-#Bug ID -69 - Start time should be removed since FR Notice stated 2400 hours
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_TIME = case_when(REGULATION_ID != 2598 ~ START_TIME))
-
 #Bug ID -70 - Start time should be removed since FR Notice stated 2400 hours
 mh_cleaned <- mh_cleaned %>%
   mutate(START_TIME = case_when(REGULATION_ID != 407 ~ START_TIME))
