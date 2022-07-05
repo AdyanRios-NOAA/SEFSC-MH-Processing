@@ -503,11 +503,6 @@ mh_cleaned <- mh_cleaned %>%
          MANAGEMENT_STATUS = case_when(REGULATION_ID == 178 ~ "ONCE",
                                        TRUE ~ MANAGEMENT_STATUS))
 
-#Bug ID -55 - Flag should be YES for Permit Moratorium records
-mh_cleaned <- mh_cleaned %>%
-  mutate(FLAG = case_when(REGULATION_ID == 423 ~ "YES",
-                          TRUE ~ FLAG))
-
 #Bug ID -56 - Flag should be YES for VMS Related records
 mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 11456 ~ "YES",
