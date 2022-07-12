@@ -3,8 +3,113 @@
 
 # Start to work with mh_dates
 
+# Create a flag for when an adjustment is the first record in a cluster
+# First create a new variable for each cluster that has the first date associated with the beginning of that cluster
+
+mh_dates2 <- mh_dates %>%
+  group_by(CLUSTER) %>%
+  mutate(CLUSTER_START = min(EFFECTIVE_DATE)) %>%
+  ungroup() %>%
+  mutate(FIRST_REG = CLUSTER_START == START_DATE)
+
+mh_dates3 <- mh_dates2 %>%
+  arrange(CLUSTER, desc(START_DATE), desc(vol), desc(page)) %>%
+  group_by(CLUSTER, ZONE_USE, MANAGEMENT_STATUS_USE) %>%
+  mutate(diff_days2 = as.numeric(lag(START_DATE) - START_DATE, units = 'days'),
+         # When diff_days2 is not calculated due to there being no subsequent regulation, 
+         # the end of the time series should be used as the CHANGE_DATE
+         CHANGE_DATE2 = case_when(is.na(diff_days2) ~ end_timeseries,
+                                 TRUE ~ START_DATE + diff_days2),
+         # When diff_days is calculated as -1, the CHANGE_DATE should be lagged by one day
+         CHANGE_DATE2 = case_when(diff_days == -1 ~ lag(CHANGE_DATE2),
+                                 TRUE ~ CHANGE_DATE2),
+         # When an END_DATE is provided it should be used to signify the END_DATE
+         END_DATE2 = case_when(!is.na(END_DATE) ~ END_DATE,
+                              # is.na(END_YEAR) & !is.na(INEFFECTIVE_DATE) ~ INEFFECTIVE_DATE,
+                              TRUE ~ CHANGE_DATE2),
+         # If the CHANGE_DATE is after the END_DATE and there is an END_DATE provided, then the END_DATE should be used
+         # If the CHANGE_DATE is after the INEFFECTIVE_DATE and an INEFFECTIVE_DATE is provided, then the END_DATE should be used
+         # Otherwise, the CHANGE_DATE should be used as the END_DATE
+         END_DATE2 = case_when(CHANGE_DATE2 > END_DATE2 & !is.na(END_DATE2) ~ END_DATE2,
+                              CHANGE_DATE2 > INEFFECTIVE_DATE & !is.na(INEFFECTIVE_DATE) ~ END_DATE2,
+                              TRUE ~ CHANGE_DATE2),
+         # CREATE: the variable of NEVER_IMPLEMENTED to signify regulations that were created but never went into effect
+         # When the MULT_REG variable is flagged (1), NEVER_IMPLEMENTED should not be flagged (0) meaning the regulation did go into effect
+         # When the diff_days variable is less than or equal to -1, NEVER_IMPLEMENTED should be flagged (1) meaning the regulation did not go into effect
+         # When the START_DATE is after the END_DATE, NEVER_IMPLEMENTED should be flagged (1) meaning the regulation did not go into effect
+         NEVER_IMPLEMENTED = case_when(MULTI_REG == 1 ~ 0,
+                                       diff_days <= -1 ~ 1,
+                                       START_DATE > END_DATE2 ~ 1,
+                                       TRUE ~ 0))
+
+check1708 = mh_dates3 %>% filter(CLUSTER == "1708")
+#resort order of variables to make checks easier
+
+# we need to resort
+# only for when it is not at the start: phantom record
+# we need to "skip" over (116) consecutive adjustments  and never implemented (0)
+
+
+# Are there consecutive adjustments
+# 116 ARE CONSECUTIVE ADJUMENTS
+mh_dates4 <- mh_dates3 %>%
+  mutate(new = lead(ADJUSTMENT == 1) & ADJUSTMENT == 1,
+         NeverI = lead(NEVER_IMPLEMENTED == 1)  & ADJUSTMENT == 1)
+table(mh_dates4$new)
+table(mh_dates4$NeverI) # NEVER (can code for it just in case)
+
+check1708 = mh_dates2 %>% filter(CLUSTER == "1708")
+
+# 13 ADJUMENTS HAPPEN AT THE VERY START OF THE CLUSTER
+# THESE SEEM LIKE THEY WILL EXECUTE/SORT CORRECTLY BECAUSE OF THEIR 
+# ASSOCIATED END DATES GOING BACK TO NO REGULATION OR BEING OVERWRITTEN
+mh_dates2 %>%
+  filter(FIRST_REG == TRUE,
+         ADJUSTMENT == TRUE) %>%
+  select(CLUSTER) %>%
+  n_distinct()
+
+# 61 ADJUSMENTS NEED TO BE REVERTED TO A EALIER REGULATION
+mh_dates2 %>%
+  filter(FIRST_REG == FALSE,
+         ADJUSTMENT == TRUE) %>%
+  select(CLUSTER) %>%
+  n_distinct()
+
+# 227 ADJSTMENTS HAVE ADJUSMENTS NOT AT THE START
+# 116 ARE CONSECUTIVE ADJUMENTS
+mh_dates2 %>%
+  filter(FIRST_REG == FALSE,
+         ADJUSTMENT == TRUE) %>%
+  n_distinct()
+
+# THEY EXIST AMONG 7 MANAGMENT TYPES
+mh_dates2 %>%
+  filter(FIRST_REG == FALSE,
+         ADJUSTMENT == TRUE) %>%
+  group_by(MANAGEMENT_TYPE) %>%
+  summarize(n = n())
+
+# BAG LIMIT ADJUSTMENT             25  -- value, value type, value rate, value units
+# TRIP LIMIT ADJUSTMENT            80  -- value, value type, value rate, value units
+# MINIMUM SIZE LIMIT ADJUSTMENT     1  -- value, value type,           , value units
+
+# ACL ADJUSTMENT                   19  -- value, value type, value rate, value units
+# QUOTA ADJUSTMENT                 40  -- value, value type, value rate, value units
+# TAC ADJUSTMENT                    4  -- value, value type, value rate, value units
+
+# REOPENING                        58  -- value
+
+# Have to make sure that the record before an adjustment is actually active at the time the adjustment goes in
+# figure this out with duration calculated someway 
+  # (regulation before must not be never implemented, or another adjustment etc)
+  # If there is a odd previous we might have to lag, and lag again if there are a few until we 
+  # find the regular record which to revert to after the adjustment
+# How to trigger copying a row and putting it after the adjustment
+# Make sure there are not two subsequent adjustment
+
 # Check to know how many adjustments are currently in MH
-table(mh_dates$ADJUSTMENT) #242 Adjustments
+table(mh_dates$ADJUSTMENT) #242 Adjustment Records
 
 # Check how many clusters have adjustments
 mh_dates %>% 
@@ -35,28 +140,32 @@ mh_dates %>%
   # REEF FISH RESOURCES OF THE GULF OF MEXICO               23
   # SNAPPER-GROUPER FISHERY OF THE SOUTH ATLANTIC REGION     4
 
-# Create a flag for when an adjustment is the first record in a cluster
-# First create a new variable for each cluster that has the first date associated with the begining of that cluster
 
-mh_dates2 <- mh_dates %>%
-  group_by(CLUSTER) %>%
-  mutate(CLUSTER_START = min(EFFECTIVE_DATE)) %>%
-  ungroup() %>%
-  mutate(FIRST_REG = CLUSTER_START == START_DATE)
 
 # NOW WE HAVE A WAY TO KNOW IF AN ADJUSTMENT IS AT THE START OF THE CLUSTER
+check1708 = mh_dates2 %>% filter(CLUSTER == "1708")
+
+# Multiple starting adjustments within cluster 1708 are ok because they have different zones
+# THEY DO REVERT BACK TO NO QUOTA (technically infinite quota)
 
 mh_dates2 %>%
   filter(FIRST_REG == TRUE,
          ADJUSTMENT == TRUE) %>%
   select(CLUSTER) %>%
   n_distinct()
-#13 Cluster
+#13 Clusters go back to default (lack of regulation)
+
+mh_dates2 %>%
+  filter(FIRST_REG == TRUE,
+         ADJUSTMENT == TRUE) %>%
+  select(CLUSTER) %>%
+  mutate(dup = duplicated(CLUSTER))
+
 
 table(mh_dates2$FIRST_REG == TRUE, mh_dates2$ADJUSTMENT == TRUE)
 # 15 ADJUSTMENTS AT START OF CLUSTER
 
-# consecutive adjustments might have been given the original start date (?)
+
 
 mh_dates2 %>%
   filter(FIRST_REG == TRUE,

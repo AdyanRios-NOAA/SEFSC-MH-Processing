@@ -24,7 +24,8 @@ load(here('data/interim', 'MH_clean_spp_tables.RData'))
 
 # 0B: Bug related cleaning (these changes will eventually be made in the database)
   # Dataframe result = mh_cleaned
-source(here('code', 'MH_data_bugs.R'))
+# source(here('code', 'MH_data_bugs.R'))
+  source(here('Old_MH_data_bugs.R'))
 
 # 1: Create new variables (new zone names, renaming "adjusted" management types, creating various new variables)
   # Dataframe result = mh_newvar
