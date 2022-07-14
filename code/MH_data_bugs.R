@@ -522,10 +522,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 792 ~ "MINIMUM SIZE LIMIT ADJUSTMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
 
-#Bug ID -71 - Start time should be removed since FR Notice stated 2400 hours
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_TIME = case_when(REGULATION_ID != 165 ~ START_TIME))
-
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
 
