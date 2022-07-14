@@ -45,11 +45,7 @@ mh_cleaned <- mh_cleaned %>%
   #BUG ID -10 - REMOVING DUPLICATE ERRONEOUS FR (85 FR 50334)
   filter(REGULATION_ID != 206) %>%
   #Bug ID 5326
-  filter(REGULATION_ID != 872) %>%
-  #Bug ID -31
-  filter(REGULATION_ID != 360) %>%
-  #Bug ID -32
-  filter(REGULATION_ID != 359) 
+  filter(REGULATION_ID != 872)
 
 # Bug ID 4461 - Change all effective dates to 1/3/17
 mh_cleaned <- mh_cleaned %>%
