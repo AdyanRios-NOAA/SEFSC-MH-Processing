@@ -49,23 +49,7 @@ mh_cleaned <- mh_cleaned %>%
   #Bug ID -31
   filter(REGULATION_ID != 360) %>%
   #Bug ID -32
-  filter(REGULATION_ID != 359) %>%
-  #BUG ID -47
-  filter(REGULATION_ID != 247) %>%
-  #BUG ID -48
-  filter(REGULATION_ID != 248) %>%
-  #BUG ID -49
-  filter(REGULATION_ID != 249) %>%
-  #BUG ID -50
-  filter(REGULATION_ID != 250) %>%
-  #BUG ID -51
-  filter(REGULATION_ID != 970) %>%
-  #BUG ID -52
-  filter(REGULATION_ID != 971) %>%
-  #BUG ID -53
-  filter(REGULATION_ID != 972) %>%
-  #BUG ID -54
-  filter(REGULATION_ID != 973)
+  filter(REGULATION_ID != 359) 
 
 # Bug ID 4461 - Change all effective dates to 1/3/17
 mh_cleaned <- mh_cleaned %>%
