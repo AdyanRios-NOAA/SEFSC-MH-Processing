@@ -398,13 +398,6 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>% 
   mutate(START_TIME = case_when(REGULATION_ID != 385 ~ START_TIME))
 
-#Bug -34 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 753 ~ "12/31/2012",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         MANAGEMENT_STATUS = case_when(REGULATION_ID == 753 ~ "ONCE",
-                                       TRUE ~ MANAGEMENT_STATUS))
-
 #Bug -35 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
 mh_cleaned <- mh_cleaned %>%
   mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 712 ~ "12/31/2013",
