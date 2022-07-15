@@ -398,46 +398,6 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>% 
   mutate(START_TIME = case_when(REGULATION_ID != 385 ~ START_TIME))
 
-#Bug -35 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 712 ~ "12/31/2013",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID != 712 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 712 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 712 ~ END_YEAR))
-
-#Bug -36 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 711 ~ "12/31/2013",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID != 711 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 711 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 711 ~ END_YEAR))
-
-#Bug -37 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 710 ~ "12/31/2013",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID != 710 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 710 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 710 ~ END_YEAR))
-
-#Bug -38 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 709 ~ "12/31/2013",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID != 709 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 709 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 709 ~ END_YEAR))
-
-#Bug -39 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 708 ~ "12/31/2013",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID != 708 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 708 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 708 ~ END_YEAR))
-
 #Bug ID -40 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
 mh_cleaned <- mh_cleaned %>%
   mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 773 ~ "12/31/2015",
