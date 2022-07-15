@@ -322,16 +322,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(START_MONTH = case_when(!REGULATION_ID %in% c(1104, 1344, 234, 470, 240, 237, 667, 595, 592, 476, 473, 670, 1343) ~ START_MONTH),
          START_DAY = case_when(!REGULATION_ID %in% c(1104, 1344, 234, 470, 240, 237, 667, 59, 592, 476, 473, 670, 1343) ~ START_DAY))
 
-#Bug ID 6186  - Update Management Type to Quota Adjustment and remove start month, start day, and end date information for Catch Limit records
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID %in% c(439) ~ "QUOTA ADJUSTMENT",
-                                     TRUE ~ MANAGEMENT_TYPE),
-         START_MONTH = case_when(!REGULATION_ID %in% c(439) ~ START_MONTH),
-         START_DAY = case_when(!REGULATION_ID %in% c(439) ~ START_DAY),
-         END_DAY = case_when(!REGULATION_ID %in% c(439) ~ END_DAY),
-         END_MONTH = case_when(!REGULATION_ID %in% c(439) ~ END_MONTH),
-         END_YEAR = case_when(!REGULATION_ID %in% c(439) ~ END_YEAR))
-
 #Bug ID -18 - Remove start month, start day, and end date information for Catch Limit records and update flag to YES
 mh_cleaned <- mh_cleaned %>%
   mutate(FLAG = case_when(REGULATION_ID == 458 ~ "YES",
