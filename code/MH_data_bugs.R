@@ -394,20 +394,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(START_MONTH = case_when(REGULATION_ID != 2006 ~ START_MONTH),
          START_DAY = case_when(REGULATION_ID != 2006 ~ START_DAY))
 
-#Bug ID -40 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 773 ~ "12/31/2015",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         MANAGEMENT_STATUS = case_when(REGULATION_ID == 773 ~ "ONCE",
-                                       TRUE ~ MANAGEMENT_STATUS))
-
-#Bug ID -41 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 774 ~ "12/31/2015",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         MANAGEMENT_STATUS = case_when(REGULATION_ID == 774 ~ "ONCE",
-                                       TRUE ~ MANAGEMENT_STATUS))
-
 #Bug ID -42 - Update Ineffective Date to reflect the end of the fishing year 
 mh_cleaned <- mh_cleaned %>%
   mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 178 ~ "12/31/2020",
