@@ -3,25 +3,23 @@
 
 # Start to work with mh_dates
 
-# Create a flag for when an adjustment is the first record in a cluster
-# First create a new variable for each cluster that has the first date associated with the beginning of that cluster
+# STARTED OUR SECOND LEVEL SORTING
+# Basically the same sorting without adjustment
 
 mh_dates2 <- mh_dates %>%
-  group_by(CLUSTER) %>%
-  mutate(CLUSTER_START = min(EFFECTIVE_DATE)) %>%
-  ungroup() %>%
-  mutate(FIRST_REG = CLUSTER_START == START_DATE)
-
-mh_dates3 <- mh_dates2 %>%
+  # Sort using same variables
+  # Group using same variables except adjustment
   arrange(CLUSTER, desc(START_DATE), desc(vol), desc(page)) %>%
   group_by(CLUSTER, ZONE_USE, MANAGEMENT_STATUS_USE) %>%
-  mutate(diff_days2 = as.numeric(lag(START_DATE) - START_DATE, units = 'days'),
+  #
+  mutate(# No longer need diff, because everything has a "true" start day
+         diff_days2 = as.numeric((lag(START_DATE) - START_DATE) -1, units = 'days'),
          # When diff_days2 is not calculated due to there being no subsequent regulation, 
          # the end of the time series should be used as the CHANGE_DATE
          CHANGE_DATE2 = case_when(is.na(diff_days2) ~ end_timeseries,
                                  TRUE ~ START_DATE + diff_days2),
-         # When diff_days is calculated as -1, the CHANGE_DATE should be lagged by one day
-         CHANGE_DATE2 = case_when(diff_days == -1 ~ lag(CHANGE_DATE2),
+         # When diff_days2 is calculated as -1, the CHANGE_DATE should be lagged by one day
+         CHANGE_DATE2 = case_when(diff_days2 == -1 ~ lag(CHANGE_DATE2),
                                  TRUE ~ CHANGE_DATE2),
          # When an END_DATE is provided it should be used to signify the END_DATE
          END_DATE2 = case_when(!is.na(END_DATE) ~ END_DATE,
@@ -42,6 +40,12 @@ mh_dates3 <- mh_dates2 %>%
                                        START_DATE > END_DATE2 ~ 1,
                                        TRUE ~ 0))
 
+check1708_a = mh_dates %>% 
+  filter(CLUSTER == "1708") %>% 
+  select(NEVER_IMPLEMENTED, vol, page, ZONE_USE, 
+         MANAGEMENT_STATUS_USE, ADJUSTMENT, MULTI_REG, 
+         CLUSTER, diff, diff_days, START_DATE, CHANGE_DATE, 
+         END_DATE, INEFFECTIVE_DATE)
 check1708 = mh_dates3 %>% filter(CLUSTER == "1708")
 #resort order of variables to make checks easier
 

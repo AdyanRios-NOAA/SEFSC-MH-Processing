@@ -19,17 +19,18 @@ mh_dates <- mh_statid %>%
   # When START_TIME is "12:01:00 AM" or "12:02:00 AM", diff should days should be lagged by one day.
   # This will infer that the regulation began at the start of the day, not one or two minutes into the 
   # day to properly calculate diff_days.
+  # The first regulation in our groupings gets NA for diff because no regulation happens after it (it is the most recent and at the top of the list)
   mutate(diff = as.numeric(lag(START_DATE) - START_DATE, units = 'days'),
-         diff_days = case_when(is.na(lag(START_TIME)) ~ diff - 1,
-                               lag(START_TIME) == "12:01:00 AM" ~ diff - 1,
-                               lag(START_TIME) == "12:02:00 AM" ~ diff - 1,
+         diff_days = case_when(is.na(lag(START_TIME)) ~ diff - 1, # if you don't have a start time you need to adjust days by -1, reg started at start of day then ended at start of new reg (the new reg day does not count)
+                               lag(START_TIME) == "12:01:00 AM" ~ diff - 1, # same logic as above
+                               lag(START_TIME) == "12:02:00 AM" ~ diff - 1, # same logic as above
                                TRUE ~ diff),
          # When diff_days is not calculated due to there being no subsequent regulation, 
          # the end of the time series should be used as the CHANGE_DATE
          CHANGE_DATE = case_when(is.na(diff_days) ~ end_timeseries,
-                                 TRUE ~ START_DATE + diff_days),
-         # When diff_days is calculated as -1, the CHANGE_DATE should be lagged by one day
-         CHANGE_DATE = case_when(diff_days == -1 ~ lag(CHANGE_DATE),
+                                 TRUE ~ START_DATE + diff_days), #this just gets at time of subsequent regulation (not if a reg ended then or not)
+         # When diff_days is calculated as -1, the CHANGE_DATE should be lagged by one day (this allows us to skip to information from an earlier reg, in a game of telephone across our regs)
+         CHANGE_DATE = case_when(diff_days == -1 ~ lag(CHANGE_DATE), # this is different from subtracting one day (this is a resulting difference of -1 day)
                                  TRUE ~ CHANGE_DATE),
          # When an END_DATE is provided it should be used to signify the END_DATE
          END_DATE = case_when(!is.na(END_DATE) ~ END_DATE,
@@ -48,4 +49,9 @@ mh_dates <- mh_statid %>%
          NEVER_IMPLEMENTED = case_when(MULTI_REG == 1 ~ 0,
                                        diff_days <= -1 ~ 1,
                                        START_DATE > END_DATE ~ 1,
-                                       TRUE ~ 0))
+                                       TRUE ~ 0)) %>%
+        # IDENTIFY AND FLAG START OF EACH CLUSTER
+        group_by(CLUSTER) %>%
+        mutate(CLUSTER_START = min(EFFECTIVE_DATE)) %>%
+        ungroup() %>%
+        mutate(FIRST_REG = CLUSTER_START == START_DATE)
