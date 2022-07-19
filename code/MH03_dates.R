@@ -12,8 +12,49 @@
 mh_dates <- mh_statid %>%
   # Only process regulations that happen before the terminal date of the processing period
   filter(EFFECTIVE_DATE <= end_timeseries) %>%
+  # IDENTIFY AND FLAG START OF EACH GROUPING
+  #ARRANGE AND AND GROUP
   arrange(CLUSTER, desc(START_DATE), desc(vol), desc(page)) %>%
   group_by(CLUSTER, ZONE_USE, MANAGEMENT_STATUS_USE) %>%
+  # IDENTIFY AND FLAG START OF EACH GROUPING
+  mutate(GROUP_START = min(START_DATE),
+         FIRST_REG = GROUP_START == START_DATE) %>%
+  #CREATE LINK BETWEEN ADJUSTMENTS AND REVERSIONS
+  mutate(LINK = case_when(ADJUSTMENT == 1 & lead(ADJUSTMENT, 1) !=1 ~ lead(REGULATION_ID, 1),
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 2) !=1 ~ lead(REGULATION_ID, 2),
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 3) !=1 ~ lead(REGULATION_ID, 3),
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 4) !=1 ~ lead(REGULATION_ID, 4),
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 5) !=1 ~ lead(REGULATION_ID, 5),
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 6) !=1 ~ lead(REGULATION_ID, 6),
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 1) ==1 & lead(FIRST_REG, 1) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 2) ==1 & lead(FIRST_REG, 2) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 3) ==1 & lead(FIRST_REG, 3) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 4) ==1 & lead(FIRST_REG, 4) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 5) ==1 & lead(FIRST_REG, 5) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 6) ==1 & lead(FIRST_REG, 6) ==1 ~ 0))
+
+
+
+
+table(mh_dates$ADJUSTMENT == 1 & mh_dates$FIRST_REG == FALSE , is.na(mh_dates$LINK))
+test = filter(mh_dates, ADJUSTMENT == 1, FIRST_REG == FALSE, is.na(LINK))
+head(test$CLUSTER)
+
+check991 = mh_dates %>% 
+  filter(CLUSTER == "991") %>% 
+  select(FIRST_REG, vol, page, ZONE_USE, 
+         MANAGEMENT_STATUS_USE, MULTI_REG, 
+         CLUSTER, ADJUSTMENT, LINK, REGULATION_ID)
+
+check874 = mh_dates %>% 
+  filter(CLUSTER == "874") %>% 
+  select(FIRST_REG, vol, page, ZONE_USE, 
+         MANAGEMENT_STATUS_USE, MULTI_REG,
+         START_DATE, EFFECTIVE_DATE, GROUP_START,
+         CLUSTER, ADJUSTMENT, LINK, REGULATION_ID)
+write.csv(check874, "check874.csv")
+
+
   # CREATE: the variable of diff and diff_days to signify the length of time between a 
   # regulation and its subsequent replacement.
   # When START_TIME is "12:01:00 AM" or "12:02:00 AM", diff should days should be lagged by one day.
@@ -50,11 +91,7 @@ mh_dates <- mh_statid %>%
                                        diff_days <= -1 ~ 1,
                                        START_DATE > END_DATE ~ 1,
                                        TRUE ~ 0)) %>%
-        # IDENTIFY AND FLAG START OF EACH CLUSTER
-        group_by(CLUSTER) %>%
-        mutate(CLUSTER_START = min(EFFECTIVE_DATE)) %>%
-        ungroup() %>%
-        mutate(FIRST_REG = CLUSTER_START == START_DATE)
+
 
 
 check1708 = mh_dates %>% 
@@ -62,19 +99,21 @@ check1708 = mh_dates %>%
   select(FIRST_REG, NEVER_IMPLEMENTED, vol, page, ZONE_USE, 
          MANAGEMENT_STATUS_USE, MULTI_REG, 
          CLUSTER, ADJUSTMENT, diff, diff_days, START_DATE, CHANGE_DATE, 
-         END_DATE, INEFFECTIVE_DATE)
+         END_DATE, INEFFECTIVE_DATE, LINK, REGULATION_ID)
 
 check991 = mh_dates %>% 
   filter(CLUSTER == "991") %>% 
   select(FIRST_REG, NEVER_IMPLEMENTED, vol, page, ZONE_USE, 
          MANAGEMENT_STATUS_USE, MULTI_REG, 
          CLUSTER, ADJUSTMENT, diff, diff_days, START_DATE, CHANGE_DATE, 
-         END_DATE, INEFFECTIVE_DATE)
+         END_DATE, INEFFECTIVE_DATE, LINK, REGULATION_ID)
 
 # Adjustments as FIRST_REG don't need adjusting (they either end or are overwritten)
 # Only add reversions after adjustments that are not FIRST_REG
 
 #every single adjustment needs to know the regID of the non-adjusment before it
+we could just give every adjustment a regID of the regulation before it regardless of whether it is an adjustment 
+adjLink
 
 
 # how to add duplicate a line in R dataframe
