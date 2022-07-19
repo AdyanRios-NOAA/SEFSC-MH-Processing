@@ -13,7 +13,7 @@ mh_dates <- mh_statid %>%
   # Only process regulations that happen before the terminal date of the processing period
   filter(EFFECTIVE_DATE <= end_timeseries) %>%
   arrange(CLUSTER, desc(START_DATE), desc(vol), desc(page)) %>%
-  group_by(CLUSTER, ZONE_USE, MANAGEMENT_STATUS_USE, ADJUSTMENT) %>%
+  group_by(CLUSTER, ZONE_USE, MANAGEMENT_STATUS_USE) %>%
   # CREATE: the variable of diff and diff_days to signify the length of time between a 
   # regulation and its subsequent replacement.
   # When START_TIME is "12:01:00 AM" or "12:02:00 AM", diff should days should be lagged by one day.
@@ -55,3 +55,32 @@ mh_dates <- mh_statid %>%
         mutate(CLUSTER_START = min(EFFECTIVE_DATE)) %>%
         ungroup() %>%
         mutate(FIRST_REG = CLUSTER_START == START_DATE)
+
+
+check1708 = mh_dates %>% 
+  filter(CLUSTER == "1708") %>% 
+  select(FIRST_REG, NEVER_IMPLEMENTED, vol, page, ZONE_USE, 
+         MANAGEMENT_STATUS_USE, MULTI_REG, 
+         CLUSTER, ADJUSTMENT, diff, diff_days, START_DATE, CHANGE_DATE, 
+         END_DATE, INEFFECTIVE_DATE)
+
+check991 = mh_dates %>% 
+  filter(CLUSTER == "991") %>% 
+  select(FIRST_REG, NEVER_IMPLEMENTED, vol, page, ZONE_USE, 
+         MANAGEMENT_STATUS_USE, MULTI_REG, 
+         CLUSTER, ADJUSTMENT, diff, diff_days, START_DATE, CHANGE_DATE, 
+         END_DATE, INEFFECTIVE_DATE)
+
+# Adjustments as FIRST_REG don't need adjusting (they either end or are overwritten)
+# Only add reversions after adjustments that are not FIRST_REG
+
+#every single adjustment needs to know the regID of the non-adjusment before it
+
+
+# how to add duplicate a line in R dataframe
+# If you are an ajustment after you comes a copy of the most recent regulation that was not an adjustment
+# That new copy needs to have a start date the end date of the adjustment
+# pull out the records that need to be duplicated (first we have to variable on the adjustment linking it to its reversions)
+# highlight the fact that it is a reversion
+# ID and flag records that happen before an adjustment that are not an adjustment
+
