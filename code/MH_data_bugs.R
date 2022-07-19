@@ -45,35 +45,7 @@ mh_cleaned <- mh_cleaned %>%
   #BUG ID -10 - REMOVING DUPLICATE ERRONEOUS FR (85 FR 50334)
   filter(REGULATION_ID != 206) %>%
   #Bug ID 5326
-  filter(REGULATION_ID != 872) %>%
-  #Bug ID -31
-  filter(REGULATION_ID != 360) %>%
-  #Bug ID -32
-  filter(REGULATION_ID != 359) %>%
-  #Bug ID -43
-  filter(REGULATION_ID != 644) %>%
-  #BUG ID -44
-  filter(REGULATION_ID != 645) %>%
-  #BUG ID -45
-  filter(REGULATION_ID != 646) %>%
-  #BUG ID -46
-  filter(REGULATION_ID != 647) %>%
-  #BUG ID -47
-  filter(REGULATION_ID != 247) %>%
-  #BUG ID -48
-  filter(REGULATION_ID != 248) %>%
-  #BUG ID -49
-  filter(REGULATION_ID != 249) %>%
-  #BUG ID -50
-  filter(REGULATION_ID != 250) %>%
-  #BUG ID -51
-  filter(REGULATION_ID != 970) %>%
-  #BUG ID -52
-  filter(REGULATION_ID != 971) %>%
-  #BUG ID -53
-  filter(REGULATION_ID != 972) %>%
-  #BUG ID -54
-  filter(REGULATION_ID != 973)
+  filter(REGULATION_ID != 872)
 
 # Bug ID 4461 - Change all effective dates to 1/3/17
 mh_cleaned <- mh_cleaned %>%
@@ -321,28 +293,7 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1241 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY),
-        
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4009 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4067 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4070 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4071 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4077 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4080 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4081 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4082 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 4083 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
          MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1212 ~ "OTHER",
-                                         TRUE ~ MANAGEMENT_CATEGORY),
-         MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1211 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY),
          MANAGEMENT_CATEGORY = case_when(REGULATION_ID == 1072 ~ "OTHER",
                                          TRUE ~ MANAGEMENT_CATEGORY))
@@ -351,16 +302,6 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(START_MONTH = case_when(!REGULATION_ID %in% c(1104, 1344, 234, 470, 240, 237, 667, 595, 592, 476, 473, 670, 1343) ~ START_MONTH),
          START_DAY = case_when(!REGULATION_ID %in% c(1104, 1344, 234, 470, 240, 237, 667, 59, 592, 476, 473, 670, 1343) ~ START_DAY))
-
-#Bug ID 6186  - Update Management Type to Quota Adjustment and remove start month, start day, and end date information for Catch Limit records
-mh_cleaned <- mh_cleaned %>%
-  mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID %in% c(439) ~ "QUOTA ADJUSTMENT",
-                                     TRUE ~ MANAGEMENT_TYPE),
-         START_MONTH = case_when(!REGULATION_ID %in% c(439) ~ START_MONTH),
-         START_DAY = case_when(!REGULATION_ID %in% c(439) ~ START_DAY),
-         END_DAY = case_when(!REGULATION_ID %in% c(439) ~ END_DAY),
-         END_MONTH = case_when(!REGULATION_ID %in% c(439) ~ END_MONTH),
-         END_YEAR = case_when(!REGULATION_ID %in% c(439) ~ END_YEAR))
 
 #Bug ID -18 - Remove start month, start day, and end date information for Catch Limit records and update flag to YES
 mh_cleaned <- mh_cleaned %>%
@@ -424,85 +365,6 @@ mh_cleaned <- mh_cleaned %>%
   mutate(START_MONTH = case_when(REGULATION_ID != 2006 ~ START_MONTH),
          START_DAY = case_when(REGULATION_ID != 2006 ~ START_DAY))
 
-#Bug ID -29 - Start time removed since it was incorrectly entered
-mh_cleaned <- mh_cleaned %>% 
-  mutate(START_TIME = case_when(REGULATION_ID != 385 ~ START_TIME))
-
-#Bug -33 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 778 ~ "12/31/2010",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         MANAGEMENT_STATUS = case_when(REGULATION_ID == 778 ~ "ONCE",
-                                       TRUE ~ MANAGEMENT_STATUS))
-
-#Bug -34 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 753 ~ "12/31/2012",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         MANAGEMENT_STATUS = case_when(REGULATION_ID == 753 ~ "ONCE",
-                                       TRUE ~ MANAGEMENT_STATUS))
-
-#Bug -35 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 712 ~ "12/31/2013",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID != 712 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 712 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 712 ~ END_YEAR))
-
-#Bug -36 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 711 ~ "12/31/2013",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID != 711 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 711 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 711 ~ END_YEAR))
-
-#Bug -37 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 710 ~ "12/31/2013",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID != 710 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 710 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 710 ~ END_YEAR))
-
-#Bug -38 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 709 ~ "12/31/2013",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID != 709 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 709 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 709 ~ END_YEAR))
-
-#Bug -39 - Update Ineffective Date to reflect the end of the fishing year, remove the end date information
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 708 ~ "12/31/2013",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         END_DAY = case_when(REGULATION_ID != 708 ~ END_DAY),
-         END_MONTH = case_when(REGULATION_ID != 708 ~ END_MONTH),
-         END_YEAR = case_when(REGULATION_ID != 708 ~ END_YEAR))
-
-#Bug ID -40 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 773 ~ "12/31/2015",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         MANAGEMENT_STATUS = case_when(REGULATION_ID == 773 ~ "ONCE",
-                                       TRUE ~ MANAGEMENT_STATUS))
-
-#Bug ID -41 - Update Ineffective Date to reflect the end of the fishing year and update the Manaagement Status to be ONCE
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 774 ~ "12/31/2015",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         MANAGEMENT_STATUS = case_when(REGULATION_ID == 774 ~ "ONCE",
-                                       TRUE ~ MANAGEMENT_STATUS))
-
-#Bug ID -42 - Update Ineffective Date to reflect the end of the fishing year 
-mh_cleaned <- mh_cleaned %>%
-  mutate(INEFFECTIVE_DATE = case_when(REGULATION_ID == 178 ~ "12/31/2020",
-                                      TRUE ~ INEFFECTIVE_DATE),
-         MANAGEMENT_STATUS = case_when(REGULATION_ID == 178 ~ "ONCE",
-                                       TRUE ~ MANAGEMENT_STATUS))
-
 #Bug ID -62 - Management Type should be updated to Possession Limit
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 2180 ~ "POSSESSION LIMIT",
@@ -521,10 +383,6 @@ mh_cleaned <- mh_cleaned %>%
 mh_cleaned <- mh_cleaned %>%
   mutate(MANAGEMENT_TYPE = case_when(REGULATION_ID == 792 ~ "MINIMUM SIZE LIMIT ADJUSTMENT",
                                      TRUE ~ MANAGEMENT_TYPE))
-
-#Bug ID -71 - Start time should be removed since FR Notice stated 2400 hours
-mh_cleaned <- mh_cleaned %>%
-  mutate(START_TIME = case_when(REGULATION_ID != 165 ~ START_TIME))
 
 #Create empty data frame
 mh_added = mh_cleaned %>% filter(is.na(REGULATION_ID))
