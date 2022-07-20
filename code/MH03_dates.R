@@ -31,14 +31,38 @@ mh_dates <- mh_statid %>%
                           ADJUSTMENT == 1 & lead(ADJUSTMENT, 3) ==1 & lead(FIRST_REG, 3) ==1 ~ 0,
                           ADJUSTMENT == 1 & lead(ADJUSTMENT, 4) ==1 & lead(FIRST_REG, 4) ==1 ~ 0,
                           ADJUSTMENT == 1 & lead(ADJUSTMENT, 5) ==1 & lead(FIRST_REG, 5) ==1 ~ 0,
-                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 6) ==1 & lead(FIRST_REG, 6) ==1 ~ 0))
-
-
-
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 6) ==1 & lead(FIRST_REG, 6) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 7) ==1 & lead(FIRST_REG, 7) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 8) ==1 & lead(FIRST_REG, 8) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 9) ==1 & lead(FIRST_REG, 9) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 10) ==1 & lead(FIRST_REG, 10) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 11) ==1 & lead(FIRST_REG, 11) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 12) ==1 & lead(FIRST_REG, 12) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 13) ==1 & lead(FIRST_REG, 13) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 14) ==1 & lead(FIRST_REG, 14) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 15) ==1 & lead(FIRST_REG, 15) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 16) ==1 & lead(FIRST_REG, 16) ==1 ~ 0,
+                          ADJUSTMENT == 1 & lead(ADJUSTMENT, 17) ==1 & lead(FIRST_REG, 17) ==1 ~ 0))
 
 table(mh_dates$ADJUSTMENT == 1 & mh_dates$FIRST_REG == FALSE , is.na(mh_dates$LINK))
-test = filter(mh_dates, ADJUSTMENT == 1, FIRST_REG == FALSE, is.na(LINK))
-head(test$CLUSTER)
+table(mh_dates$ADJUSTMENT == 1 & mh_dates$FIRST_REG == FALSE , mh_dates$LINK == 0)
+table(mh_dates$ADJUSTMENT == 1 & mh_dates$FIRST_REG == FALSE , mh_dates$LINK > 0)
+
+table(mh_dates$VALUE == "OPEN" , mh_dates$LINK > 0) #All but one reopening has a link (which one does not?)
+table(mh_dates$VALUE != "OPEN" , mh_dates$LINK > 0) #113 Links are not associated with re-openings
+summary(mh_dates$LINK)
+
+add_reversions = mh_dates %>%
+  filter(LINK > 0) %>%
+  group_by(LINK, REGULATION_ID) %>%
+  #GIVE EACH reversion A START_DATE2, THE DAY AFTER THE RESPECTIVE ADJUSTMENT
+  mutate(REVERSION = TRUE,
+         START_DATE_USE = END_DATE + 1) %>%
+  full_join(mh_dates, by = "LINK") %>%
+  mutate(START_DATE_USE = case_when(is.na(START_DATE_USE) ~ START_DATE,
+                                    TRUE ~ START_DATE_USE))
+# I THINK I GOT IT! Now we would just sort as normal (REPLACE START_DATE START_DATE )
+# WHY IS THERE ONE REVERSION WITHOUT A START_DATE?
 
 check991 = mh_dates %>% 
   filter(CLUSTER == "991") %>% 
